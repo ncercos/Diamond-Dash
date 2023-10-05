@@ -18,4 +18,8 @@ public class GameWindow {
 		jframe.setLocationRelativeTo(null); /* spawn center stage */
 		jframe.setVisible(true);
 	}
+
+	public JFrame getJFrame() {
+		return jframe;
+	}
 }

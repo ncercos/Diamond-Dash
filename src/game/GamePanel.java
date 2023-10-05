@@ -11,8 +11,11 @@ import java.awt.*;
  **/
 public class GamePanel extends JPanel {
 
+	private final Game game;
+
 	public GamePanel(Game game) {
-		addKeyListener(new KeyboardInputs(game));
+		this.game = game;
+		addKeyListener(new KeyboardInputs(game.getPlayer()));
 	}
 
 	/**
@@ -22,7 +25,6 @@ public class GamePanel extends JPanel {
 	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
-		g.fillRect(100, 100, 200, 50);
+		game.getPlayer().draw(g);
 	}
 }

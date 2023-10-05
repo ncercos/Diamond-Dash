@@ -1,4 +1,4 @@
-package utils;
+package entity;
 
 import java.awt.*;
 
@@ -6,17 +6,18 @@ import java.awt.*;
  * Written by Nicholas Cercos
  * Created on Oct 04 2023
  **/
-public class Rect {
+public class Hitbox {
 
 	/* Location & Size */
-	private double x, y, w, h;
+	private double x, y;
+	private final double w, h;
 
 	/* Physics */
 	private static final double GRAVITY = 0.4;
 	private double vx, vy;
 	private double ay = GRAVITY;
 
-	public Rect(double x, double y, double w, double h) {
+	public Hitbox(double x, double y, double w, double h) {
 		this.x = x;
 		this.y = y;
 		this.w = w;
@@ -75,7 +76,7 @@ public class Rect {
 	/**
 	 * Disables physics by resetting the velocity.
 	 */
-	public void physicsOff() {
+	public void physicsOFF() {
 		setVelocity (0, 0);
 	}
 
@@ -95,6 +96,22 @@ public class Rect {
 		vy = 0;
 	}
 
+	public double getX() {
+		return x;
+	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
 	// Collision
 
 	/**
@@ -103,7 +120,7 @@ public class Rect {
 	 * @param r The rectangle involved in collision.
 	 * @return True if the given rectangle is within the constraints of this rectangle.
 	 */
-	public boolean overlaps(Rect r) {
+	public boolean overlaps(Hitbox r) {
 		return (x     <= r.x + r.w) &&
 				   (x + w >= r.x)       &&
 				   (y     <= r.y + r.h) &&
@@ -131,19 +148,19 @@ public class Rect {
 	 * @param r The rectangle in question.
 	 * @return True if on the left side of the given rectangle.
 	 */
-	public boolean isLeftOf(Rect r) {
+	public boolean isLeftOf(Hitbox r) {
 		return x < r.x - w + 1;
 	}
 
-	public boolean isRightOf(Rect r) {
+	public boolean isRightOf(Hitbox r) {
 		return x > r.w + r.w - 1;
 	}
 
-	public boolean isAbove(Rect r) {
+	public boolean isAbove(Hitbox r) {
 		return y < r.y - h + 1;
 	}
 
-	public boolean isBelow(Rect r) {
+	public boolean isBelow(Hitbox r) {
 		return y > r.y + r.h - 1;
 	}
 
@@ -154,19 +171,19 @@ public class Rect {
 	 * @param r The rectangle in question.
 	 * @return True if this rectangle was on the left.
 	 */
-	public boolean wasLeftOf(Rect r) {
+	public boolean wasLeftOf(Hitbox r) {
 		return x - vx < r.x - w + 1;
 	}
 
-	public boolean wasRightOf(Rect r) {
+	public boolean wasRightOf(Hitbox r) {
 		return x - vx > r.x + r.w - 1;
 	}
 
-	public boolean wasAbove(Rect r) {
+	public boolean wasAbove(Hitbox r) {
 		return y - vy < r.y - h + 1;
 	}
 
-	public boolean wasBelow(Rect r) {
+	public boolean wasBelow(Hitbox r) {
 		return y - vy > r.y + r.h - 1;
 	}
 
@@ -176,26 +193,26 @@ public class Rect {
 	 *
 	 * @param r The rectangle involved in collision.
 	 */
-	public void pushedOutOf(Rect r) {
+	public void pushedOutOf(Hitbox r) {
 		if(wasLeftOf(r))  pushLeftOf(r);
 		if(wasRightOf(r)) pushRightOf(r);
 		if(wasAbove(r))   pushAbove(r);
 		if(wasBelow(r))   pushBelow(r);
 	}
 
-	public void pushLeftOf(Rect r) {
+	public void pushLeftOf(Hitbox r) {
 		x = r.x - w - 1;
 	}
 
-	public void pushRightOf(Rect r) {
+	public void pushRightOf(Hitbox r) {
 		x = r.x + r.w + 1;
 	}
 
-	public void pushAbove(Rect r) {
+	public void pushAbove(Hitbox r) {
 		y = r.y - h - 1;
 	}
 
-	public void pushBelow(Rect r) {
+	public void pushBelow(Hitbox r) {
 		y = r.y + r.h + 1;
 	}
 
@@ -205,12 +222,20 @@ public class Rect {
 	 * @param r An array of rectangles.
 	 * @return True if this rectangle is "standing" above another rectangle.
 	 */
-	public boolean standingOnAny(Rect[] r) {
+	public boolean standingOnAny(Hitbox[] r) {
 		for(int i = 0; i < r.length; i++) {
 			if(y + h == r[i].y - 1)
 				return true;
 		}
 		return false;
+	}
+
+	public double getWidth() {
+		return w;
+	}
+
+	public double getHeight() {
+		return h;
 	}
 
 	/**
