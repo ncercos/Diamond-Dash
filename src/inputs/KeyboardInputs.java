@@ -1,6 +1,6 @@
 package inputs;
 
-import entity.Player;
+import entities.Player;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

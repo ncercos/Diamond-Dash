@@ -1,6 +1,6 @@
 package game;
 
-import entity.Player;
+import entities.Player;
 
 /**
  * Written by Nicholas Cercos

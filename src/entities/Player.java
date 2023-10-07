@@ -1,6 +1,10 @@
-package entity;
+package entities;
 
 import inputs.Input;
+import sprites.Pose;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Written by Nicholas Cercos
@@ -11,8 +15,16 @@ public class Player extends Entity {
 	private final boolean[] pressing;
 
 	public Player(double x, double y, double w, double h) {
-		super(x, y, w, h);
+		super("player", x, y, w, h);
 		pressing = new boolean[1024];
+
+		// Establish poses and load animations
+		Map<Pose, Integer> poses = new HashMap<>();
+		poses.put(Pose.WALK_UP, 4);
+		poses.put(Pose.WALK_DN, 4);
+		poses.put(Pose.WALK_LT, 4);
+		poses.put(Pose.WALK_RT, 4);
+		loadAnimations(poses);
 	}
 
 	public Player(Hitbox hitbox) {

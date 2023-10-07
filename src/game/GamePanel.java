@@ -15,6 +15,7 @@ public class GamePanel extends JPanel {
 
 	public GamePanel(Game game) {
 		this.game = game;
+		setPreferredSize(new Dimension(1280, 800));
 		addKeyListener(new KeyboardInputs(game.getPlayer()));
 	}
 
