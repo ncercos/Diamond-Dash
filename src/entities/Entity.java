@@ -18,8 +18,8 @@ public class Entity extends Hitbox {
 	private int health = MAX_HEALTH;
 
 	private final Map<Pose, Animation> animations;
-	private Pose currentPose;
-	private boolean moving;
+	protected Pose currentPose;
+	protected boolean moving, jumping;
 
 	public Entity(String name, double x, double y, double w, double h) {
 		super(x, y, w, h);
@@ -35,8 +35,8 @@ public class Entity extends Hitbox {
 	public void draw(Graphics g) {
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
-		if(moving) g.drawImage(animation.getCurrentImage(), (int)getX(), (int)getY(), (int)getWidth(), (int)getHeight(), null);
-		else g.drawImage(animation.getStaticImage(), (int)getX(), (int)getY(), (int)getWidth(), (int)getHeight(), null);
+		if(moving) g.drawImage(animation.getCurrentImage(), (int)getX(), (int)getY(), (int)getWidth() + 1, (int)getHeight() + 1, null);
+		else g.drawImage(animation.getStaticImage(), (int)getX(), (int)getY(), (int)getWidth() + 1, (int)getHeight() + 1, null);
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class Entity extends Hitbox {
 	 * @param poses A hashmap of poses and the number of sprites within the animation (per pose).
 	 */
 	protected void loadAnimations(Map<Pose, Integer> poses) {
-		poses.forEach((k,v) -> animations.put(k, new Animation(name + "_" + k.getName(), v, 18)));
+		poses.forEach((k,v) -> animations.put(k, new Animation(name + "/" + k.getName(), v, 18)));
 	}
 
 	/**
@@ -71,36 +71,36 @@ public class Entity extends Hitbox {
 	}
 
 	@Override
-	public void physicsOFF() {
-		super.physicsOFF();
-		moving = false;
-	}
-
-	@Override
 	public void goLT(int dx) {
 		super.goLT(dx);
-		currentPose = Pose.WALK_LT;
+		if(!jumping) currentPose = Pose.WALK_LT;
 		moving = true;
 	}
 
 	@Override
 	public void goRT(int dx) {
 		super.goRT(dx);
-		currentPose = Pose.WALK_RT;
+		if(!jumping) currentPose = Pose.WALK_RT;
 		moving = true;
 	}
 
 	@Override
 	public void goUP(int dy) {
 		super.goUP(dy);
-		currentPose = Pose.WALK_UP;
+		if(Pose.isLeft(currentPose))
+			currentPose = Pose.JUMP_LT;
+		else currentPose = Pose.JUMP_RT;
 		moving = true;
+		jumping = true;
 	}
 
 	@Override
-	public void goDN(int dy) {
-		super.goDN(dy);
-		currentPose = Pose.WALK_DN;
-		moving = true;
+	public void stopFalling() {
+		super.stopFalling();
+		jumping = false;
+		if(currentPose.equals(Pose.JUMP_RT))
+			currentPose = Pose.WALK_RT;
+		else if(currentPose.equals(Pose.JUMP_LT))
+			currentPose = Pose.WALK_LT;
 	}
 }

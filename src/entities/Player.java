@@ -13,6 +13,7 @@ import java.util.Map;
 public class Player extends Entity {
 
 	private final boolean[] pressing;
+	private boolean sprinting;
 
 	public Player(double x, double y, double w, double h) {
 		super("player", x, y, w, h);
@@ -20,10 +21,12 @@ public class Player extends Entity {
 
 		// Establish poses and load animations
 		Map<Pose, Integer> poses = new HashMap<>();
-		poses.put(Pose.WALK_UP, 4);
-		poses.put(Pose.WALK_DN, 4);
 		poses.put(Pose.WALK_LT, 4);
 		poses.put(Pose.WALK_RT, 4);
+		poses.put(Pose.SPRINT_LT, 4);
+		poses.put(Pose.SPRINT_RT, 4);
+		poses.put(Pose.JUMP_LT, 2);
+		poses.put(Pose.JUMP_RT, 2);
 		loadAnimations(poses);
 	}
 
@@ -36,16 +39,45 @@ public class Player extends Entity {
 	 *		1. Remove previous velocity
 	 *	 	2. Handle inputs
 	 *	 	3. Move according to speed
+	 *
+	 * @param allowed Is the player allowed to move?
 	 */
-	public void handleMovement() {
-		int speed = 3;
+	public void handleMovement(boolean allowed) {
+		if(allowed) {
+			moving = false;
+			sprinting = pressing[Input.SPRINT];
+			int speed = sprinting ? 4 : 2;
 
-		physicsOFF();
-		if(pressing[Input.UP]) goUP(speed);
-		if(pressing[Input.DN]) goDN(speed);
-		if(pressing[Input.LT]) goLT(speed);
-		if(pressing[Input.RT]) goRT(speed);
+			if (pressing[Input.UP]) goUP(speed * (sprinting ? 3 : 5));
+			if (pressing[Input.LT]) goLT(speed);
+			if (pressing[Input.RT]) goRT(speed);
+			if(!sprinting || !moving) stopSprinting();
+		}
 		move();
+	}
+
+	/**
+	 * Stops the sprint pose & returns to idle (static walking).
+	 */
+	private void stopSprinting() {
+		if(currentPose.equals(Pose.SPRINT_RT))
+			currentPose = Pose.WALK_RT;
+		else if(currentPose.equals(Pose.SPRINT_LT))
+			currentPose = Pose.WALK_LT;
+	}
+
+	@Override
+	public void goLT(int dx) {
+		super.goLT(dx);
+		if(sprinting && !jumping)
+			currentPose = Pose.SPRINT_LT;
+	}
+
+	@Override
+	public void goRT(int dx) {
+		super.goRT(dx);
+		if(sprinting && !jumping)
+			currentPose = Pose.SPRINT_RT;
 	}
 
 	/**

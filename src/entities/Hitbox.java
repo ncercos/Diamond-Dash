@@ -244,6 +244,7 @@ public class Hitbox {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g) {
+		g.setColor(Color.BLUE);
 		g.drawRect((int)x, (int)y, (int)w, (int)h);
 	}
 }

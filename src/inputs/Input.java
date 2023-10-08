@@ -8,8 +8,8 @@ import java.awt.event.KeyEvent;
  **/
 public class Input {
 
-	public static final int UP = KeyEvent.VK_W;
-	public static final int DN = KeyEvent.VK_S;
+	public static final int UP = KeyEvent.VK_SPACE;
 	public static final int LT = KeyEvent.VK_A;
 	public static final int RT = KeyEvent.VK_D;
+	public static final int SPRINT = KeyEvent.VK_SHIFT;
 }

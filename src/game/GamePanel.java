@@ -22,7 +22,7 @@ public class GamePanel extends JPanel {
 		this.game = game;
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		addKeyListener(new KeyboardInputs(game.getPlayer()));
-		setVisible(true);
+		setFocusable(true);
 	}
 
 	/**

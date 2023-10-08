@@ -1,5 +1,6 @@
 package game;
 
+import entities.Hitbox;
 import entities.Player;
 
 import java.awt.*;
@@ -20,6 +21,12 @@ public class Game implements Runnable {
 
 	// Entities
 	private final Player player;
+
+	// Delete eventually
+	Hitbox[] platforms = {
+			new Hitbox(0, 400, 1000, 100),
+			new Hitbox(300, 600, 900, 100)
+	};
 
 	public Game() {
 		player = new Player(0, 0, 48, 60);
@@ -49,7 +56,15 @@ public class Game implements Runnable {
 			// Redraws the screen MAX_FPS times per second.
 			long now = System.nanoTime();
 			if(now - lastFrame >= timePerFrame) {
-				player.handleMovement();
+				player.handleMovement(player.standingOnAny(platforms));
+
+				for(Hitbox platform : platforms) {
+					if(player.overlaps(platform)) {
+						player.pushedOutOf(platform);
+						player.applyFrictionWithFloor();
+						player.stopFalling();
+					}
+				}
 
 				gamePanel.repaint();
 				lastFrame = now;
@@ -71,6 +86,7 @@ public class Game implements Runnable {
 	 * @param g The graphics context.
 	 */
 	public void render(Graphics g) {
+		for (Hitbox platform : platforms) platform.draw(g);
 		player.draw(g);
 	}
 

@@ -6,15 +6,30 @@ package sprites;
  **/
 public enum Pose {
 
-	WALK_UP("UP"),
-	WALK_DN("DN"),
-	WALK_LT("LT"),
-	WALK_RT("RT");
+	WALK_LT("WLT"),
+	WALK_RT("WRT"),
+
+	SPRINT_LT("SLT"),
+	SPRINT_RT("SRT"),
+
+	JUMP_LT("JLT"),
+	JUMP_RT("JRT"),
+
+	CROUCH_LT("CLT"),
+	CROUCH_RT("CRT"),
+
+	DEAD("DEAD");
 
 	private final String name;
 
 	Pose(String name) {
 		this.name = name;
+	}
+
+	public static boolean isLeft(Pose pose) {
+		String[] s = pose.name().split("_");
+		if(s.length != 2) return false;
+		return s[1].equals("LT");
 	}
 
 	public String getName() {
