@@ -2,6 +2,8 @@ package game;
 
 import entities.Player;
 
+import java.awt.*;
+
 /**
  * Written by Nicholas Cercos
  * Created on Oct 04 2023
@@ -20,7 +22,7 @@ public class Game implements Runnable {
 	private final Player player;
 
 	public Game() {
-		player = new Player(0, 0, 20, 20);
+		player = new Player(0, 0, 48, 60);
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();
@@ -61,6 +63,15 @@ public class Game implements Runnable {
 				frames = 0;
 			}
 		}
+	}
+
+	/**
+	 * Draws assets to the scene.
+	 *
+	 * @param g The graphics context.
+	 */
+	public void render(Graphics g) {
+		player.draw(g);
 	}
 
 	public Player getPlayer() {

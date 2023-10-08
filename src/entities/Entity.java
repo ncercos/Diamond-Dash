@@ -25,7 +25,7 @@ public class Entity extends Hitbox {
 		super(x, y, w, h);
 		this.name = name;
 		animations = new HashMap<>();
-		currentPose = Pose.WALK_UP;
+		currentPose = Pose.WALK_RT;
 	}
 
 	public Entity(String name, Hitbox hitbox) {

@@ -17,7 +17,7 @@ public class Animation {
 		delay = duration;
 		images = new Image[count];
 		for(int i = 0; i < count; i++)
-			images[i] = Toolkit.getDefaultToolkit().getImage(name + "_" + i + ".png");
+			images[i] = Toolkit.getDefaultToolkit().getImage("./res/" + name + "_" + i + ".png");
 	}
 
 	/**
