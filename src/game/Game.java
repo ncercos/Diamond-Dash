@@ -2,6 +2,8 @@ package game;
 
 import entities.Hitbox;
 import entities.Player;
+import levels.Level;
+import levels.LevelManager;
 
 import java.awt.*;
 
@@ -15,21 +17,27 @@ public class Game implements Runnable {
 	private final GameWindow gameWindow;
 	private final GamePanel gamePanel;
 
+	public final static int TILES_DEFAULT_SIZE = 16;
+	public final static float SCALE = 2.5f;
+	public final static int TILES_IN_WIDTH = 39;
+	public final static int TILES_IN_HEIGHT = 21;
+	public final static int TILES_SIZE = (int) (TILES_DEFAULT_SIZE * SCALE);
+	public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
+	public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
+
 	// Loop
 	private Thread gameThread;
-	private final int MAX_FPS = 120;
+	private final static int MAX_FPS = 120;
 
 	// Entities
 	private final Player player;
 
-	// Delete eventually
-	Hitbox[] platforms = {
-			new Hitbox(0, 400, 1000, 100),
-			new Hitbox(300, 600, 900, 100)
-	};
+	// Levels
+	private final LevelManager levelManager;
 
 	public Game() {
-		player = new Player(0, 0, 48, 60);
+		levelManager = new LevelManager(this);
+		player = new Player(0, 0, 16 * SCALE, 20 * SCALE);
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();
@@ -56,11 +64,12 @@ public class Game implements Runnable {
 			// Redraws the screen MAX_FPS times per second.
 			long now = System.nanoTime();
 			if(now - lastFrame >= timePerFrame) {
-				player.handleMovement(player.standingOnAny(platforms));
+				Level level = levelManager.getCurrentLevel();
+				player.handleMovement(player.standingOnAny(level.getHitboxes().toArray(new Hitbox[0])));
 
-				for(Hitbox platform : platforms) {
-					if(player.overlaps(platform)) {
-						player.pushedOutOf(platform);
+				for(Hitbox hb : level.getHitboxes()) {
+					if(player.overlaps(hb)) {
+						player.pushedOutOf(hb);
 						player.applyFrictionWithFloor();
 						player.stopFalling();
 					}
@@ -81,12 +90,12 @@ public class Game implements Runnable {
 	}
 
 	/**
-	 * Draws assets to the scene.
+	 * Renders assets to the scene.
 	 *
 	 * @param g The graphics context.
 	 */
-	public void render(Graphics g) {
-		for (Hitbox platform : platforms) platform.draw(g);
+	public void draw(Graphics g) {
+		levelManager.draw(g);
 		player.draw(g);
 	}
 

@@ -26,6 +26,12 @@ public enum Pose {
 		this.name = name;
 	}
 
+	/**
+	 * Determines if a pose is drawn for left side.
+	 *
+	 * @param pose The pose in question.
+	 * @return True if it is a left-sided pose.
+	 */
 	public static boolean isLeft(Pose pose) {
 		String[] s = pose.name().split("_");
 		if(s.length != 2) return false;
