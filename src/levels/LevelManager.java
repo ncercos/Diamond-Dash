@@ -1,6 +1,5 @@
 package levels;
 
-import entities.Hitbox;
 import game.Game;
 
 import javax.imageio.ImageIO;
@@ -104,7 +103,6 @@ public class LevelManager {
 				int value = color.getRed();
 				lvlData[h][w] = (value >= getTiles(level.getStyle()).length ? 0 : value);
 				if(level.getStyle().isNonSolid(value)) continue;
-				level.addHitbox(new Hitbox(w * TILES_SIZE, h * TILES_SIZE, TILES_SIZE, TILES_SIZE));
 			}
 		}
 		return lvlData;

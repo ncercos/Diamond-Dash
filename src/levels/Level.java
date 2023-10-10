@@ -1,11 +1,8 @@
 package levels;
 
-import entities.Hitbox;
 import game.Game;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Written by Nicholas Cercos
@@ -16,12 +13,10 @@ public class Level {
 	private final int id;
 	private final LevelStyle style;
 	private int[][] data;
-	private final Set<Hitbox> hitboxes;
 
 	public Level(LevelManager levelManager, int id, LevelStyle style) {
 		this.id = id;
 		this.style = style;
-		this.hitboxes = new HashSet<>();
 
 		try {
 			data = levelManager.getLevelData(this);
@@ -55,10 +50,6 @@ public class Level {
 		return data[y][x];
 	}
 
-	public void addHitbox(Hitbox hitbox) {
-		hitboxes.add(hitbox);
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -69,9 +60,5 @@ public class Level {
 
 	public int[][] getData() {
 		return data;
-	}
-
-	public Set<Hitbox> getHitboxes() {
-		return hitboxes;
 	}
 }
