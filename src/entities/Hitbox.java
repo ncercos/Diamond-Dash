@@ -1,5 +1,8 @@
 package entities;
 
+import game.Game;
+import levels.Level;
+
 import java.awt.*;
 
 /**
@@ -9,13 +12,14 @@ import java.awt.*;
 public class Hitbox {
 
 	/* Location & Size */
-	private double x, y;
-	private final double w, h;
+	protected double x, y;
+	protected final double w, h;
 
 	/* Physics */
-	private static final double GRAVITY = 0.4;
+	private static final double GRAVITY = 0.15 * Game.SCALE;
 	private double vx, vy;
-	private double ay = GRAVITY;
+	protected boolean moving = true;
+	protected boolean inAir = true;
 
 	public Hitbox(double x, double y, double w, double h) {
 		this.x = x;
@@ -30,21 +34,60 @@ public class Hitbox {
 	 * Modifies the position of the rectangle
 	 * by its given velocity.
 	 */
-	public void move() {
-		x += vx;
-		y += vy;
-		vy += ay;
+	public void move(Level level) {
+		if(!moving && !inAir)return;
+
+		if(!inAir)
+			if(!isOnTile(level))
+				inAir = true;
+
+		if(inAir) {
+			if(canMoveTo(x, y + vy, level)) {
+				y += vy;
+				vy += GRAVITY;
+				updateXPos(level);
+			} else {
+				y = getYPosAboveOrUnderTile();
+				if(vy > 0) stopFalling();
+				else vy = 0.5 * Game.SCALE;
+				updateXPos(level);
+			}
+		} else updateXPos(level);
 	}
 
 	/**
-	 * Sets the velocity of the rectangle.
+	 * Updates the current x-position to a location
+	 * based on the constraints of the level.
 	 *
-	 * @param vx The x-velocity.
-	 * @param vy The y-velocity.
+	 * @param level The current level.
 	 */
-	public void setVelocity(int vx, int vy) {
-		this.vx = vx;
-		this.vy = vy;
+	private void updateXPos(Level level) {
+		if(canMoveTo(x + vx, y, level)) x += vx;
+		else x = getXPosNextToTile();
+		applyFrictionWithFloor();
+	}
+
+	/**
+	 * @return The x-coordinate closest to an adjacent tile, horizontally.
+	 */
+	private double getXPosNextToTile() {
+		int currentTileIndex = (int) (x / Game.TILES_SIZE);
+		if(vx > 0) { /* moving to the right */
+			int tileXPos = currentTileIndex * Game.TILES_SIZE;
+			int xOffset = (int) (Game.TILES_SIZE - w);
+			return tileXPos + xOffset - 1;
+		} else return currentTileIndex * Game.TILES_SIZE;
+	}
+
+	/**
+	 * @return The y-coordinate closest to an adjacent tile, vertically.
+	 */
+	private double getYPosAboveOrUnderTile() {
+		int currentTileIndex = (int) (y / Game.TILES_SIZE);
+		if(vy > 0) { /* falling */
+			int tileYPos = currentTileIndex * Game.TILES_SIZE;
+			return tileYPos + h - 1;
+		} else return currentTileIndex * Game.TILES_SIZE;
 	}
 
 	/**
@@ -52,12 +95,14 @@ public class Hitbox {
 	 *
 	 * @param dx The delta-x determines how far it will move horizontally.
 	 */
-	public void goLT(int dx) {
-		vx = -dx;
+	public void goLT(double dx) {
+		vx = (int) (-dx * Game.SCALE);
+		moving = true;
 	}
 
-	public void goRT(int dx) {
-		vx = dx;
+	public void goRT(double dx) {
+		vx = (int) (dx * Game.SCALE);
+		moving = true;
 	}
 
 	/**
@@ -65,19 +110,11 @@ public class Hitbox {
 	 *
 	 * @param dy The delta-y determines how far it will move vertically.
 	 */
-	public void goUP(int dy) {
-		vy = -dy;
-	}
-
-	public void goDN(int dy) {
-		vy = dy;
-	}
-
-	/**
-	 * Disables physics by resetting the velocity.
-	 */
-	public void physicsOFF() {
-		setVelocity (0, 0);
+	public void goUP(double dy) {
+		if(inAir)return;
+		vy = (int) (-dy * Game.SCALE);
+		moving = true;
+		inAir = true;
 	}
 
 	/**
@@ -93,149 +130,40 @@ public class Hitbox {
 	 * Prevents infinite fall glitch due to gravity.
 	 */
 	public void stopFalling() {
+		inAir = false;
 		vy = 0;
-	}
-
-	public double getX() {
-		return x;
-	}
-
-	public void setX(double x) {
-		this.x = x;
-	}
-
-	public double getY() {
-		return y;
-	}
-
-	public void setY(double y) {
-		this.y = y;
 	}
 
 	// Collision
 
 	/**
-	 * Collision detection between two rectangles.
+	 * Checks if this can move to a new location based on
+	 * the current game level.
 	 *
-	 * @param r The rectangle involved in collision.
-	 * @return True if the given rectangle is within the constraints of this rectangle.
+	 * @param x 	  The new x-coordinate.
+	 * @param y 	  The new y-coordinate.
+	 * @param level The current level.
+	 * @return True if the move is possible, otherwise, false.
 	 */
-	public boolean overlaps(Hitbox r) {
-		return (x     <= r.x + r.w) &&
-				   (x + w >= r.x)       &&
-				   (y     <= r.y + r.h) &&
-				   (y + h >= r.y);
-	}
-
-	/**
-	 * Determines if two points are within rectangle constraints.
-	 *
-	 * @param px The x-value being checked.
-	 * @param py The y-value being checked.
-	 * @return True if both points are within the rectangle.
-	 */
-	public boolean contains(int px, int py) {
-		return (px >= x)   &&
-					 (px <= x+w) &&
-					 (py >= y)   &&
-					 (py <= y+h);
-	}
-
-	/**
-	 * Determines if the current rectangle is left of
-	 * a different rectangle.
-	 *
-	 * @param r The rectangle in question.
-	 * @return True if on the left side of the given rectangle.
-	 */
-	public boolean isLeftOf(Hitbox r) {
-		return x < r.x - w + 1;
-	}
-
-	public boolean isRightOf(Hitbox r) {
-		return x > r.w + r.w - 1;
-	}
-
-	public boolean isAbove(Hitbox r) {
-		return y < r.y - h + 1;
-	}
-
-	public boolean isBelow(Hitbox r) {
-		return y > r.y + r.h - 1;
-	}
-
-	/**
-	 * Determines if the previous location was
-	 * to the left of the given rectangle.
-	 *
-	 * @param r The rectangle in question.
-	 * @return True if this rectangle was on the left.
-	 */
-	public boolean wasLeftOf(Hitbox r) {
-		return x - vx < r.x - w + 1;
-	}
-
-	public boolean wasRightOf(Hitbox r) {
-		return x - vx > r.x + r.w - 1;
-	}
-
-	public boolean wasAbove(Hitbox r) {
-		return y - vy < r.y - h + 1;
-	}
-
-	public boolean wasBelow(Hitbox r) {
-		return y - vy > r.y + r.h - 1;
-	}
-
-	/**
-	 * Changes the position of this rectangle to be
-	 * adjacent to the given rectangle.
-	 *
-	 * @param r The rectangle involved in collision.
-	 */
-	public void pushedOutOf(Hitbox r) {
-		if(wasLeftOf(r))  pushLeftOf(r);
-		if(wasRightOf(r)) pushRightOf(r);
-		if(wasAbove(r))   pushAbove(r);
-		if(wasBelow(r))   pushBelow(r);
-	}
-
-	public void pushLeftOf(Hitbox r) {
-		x = r.x - w - 1;
-	}
-
-	public void pushRightOf(Hitbox r) {
-		x = r.x + r.w + 1;
-	}
-
-	public void pushAbove(Hitbox r) {
-		y = r.y - h - 1;
-	}
-
-	public void pushBelow(Hitbox r) {
-		y = r.y + r.h + 1;
-	}
-
-	/**
-	 * Checks if this rectangle is standing on another rectangle.
-	 *
-	 * @param r An array of rectangles.
-	 * @return True if this rectangle is "standing" above another rectangle.
-	 */
-	public boolean standingOnAny(Hitbox[] r) {
-		for(int i = 0; i < r.length; i++) {
-			if(y + h == r[i].y - 1)
-				return true;
-		}
+	public boolean canMoveTo(double x, double y, Level level) {
+		if(!level.isSolid(x, y))
+			if(!level.isSolid(x + w, y + h))
+				if(!level.isSolid(x + w, y))
+					return !level.isSolid(x, y + h);
 		return false;
 	}
 
-	public double getWidth() {
-		return w;
-	}
-
-	public double getHeight() {
-		return h;
+	/**
+	 * Determines if this rectangle is standing on
+	 * a solid tile.
+	 *
+	 * @param level The current level.
+	 * @return True if tile below is solid.
+	 */
+	private boolean isOnTile(Level level) {
+		if(!level.isSolid(x, y + h + 1))
+			return level.isSolid(x + w, y + h + 1);
+		return true;
 	}
 
 	/**

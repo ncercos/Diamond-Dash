@@ -19,7 +19,6 @@ public class Entity extends Hitbox {
 
 	private final Map<Pose, Animation> animations;
 	protected Pose currentPose;
-	protected boolean moving, jumping;
 
 	public Entity(String name, double x, double y, double w, double h) {
 		super(x, y, w, h);
@@ -28,15 +27,13 @@ public class Entity extends Hitbox {
 		currentPose = Pose.WALK_RT;
 	}
 
-	public Entity(String name, Hitbox hitbox) {
-		this(name, hitbox.getX(), hitbox.getY(), hitbox.getWidth(), hitbox.getHeight());
-	}
 	@Override
 	public void draw(Graphics g) {
+		super.draw(g);
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
-		if(moving) g.drawImage(animation.getCurrentImage(), (int)getX(), (int)getY(), (int)getWidth() + 1, (int)getHeight() + 1, null);
-		else g.drawImage(animation.getStaticImage(), (int)getX(), (int)getY(), (int)getWidth() + 1, (int)getHeight() + 1, null);
+		if(moving) g.drawImage(animation.getCurrentImage(), (int)x, (int)y, (int)w + 1, (int)h + 1, null);
+		else g.drawImage(animation.getStaticImage(), (int)x, (int)y, (int)w + 1, (int)h + 1, null);
 	}
 
 	/**
@@ -71,33 +68,28 @@ public class Entity extends Hitbox {
 	}
 
 	@Override
-	public void goLT(int dx) {
+	public void goLT(double dx) {
 		super.goLT(dx);
-		if(!jumping) currentPose = Pose.WALK_LT;
-		moving = true;
+		if(!inAir) currentPose = Pose.WALK_LT;
 	}
 
 	@Override
-	public void goRT(int dx) {
+	public void goRT(double dx) {
 		super.goRT(dx);
-		if(!jumping) currentPose = Pose.WALK_RT;
-		moving = true;
+		if(!inAir) currentPose = Pose.WALK_RT;
 	}
 
 	@Override
-	public void goUP(int dy) {
+	public void goUP(double dy) {
 		super.goUP(dy);
 		if(Pose.isLeft(currentPose))
 			currentPose = Pose.JUMP_LT;
 		else currentPose = Pose.JUMP_RT;
-		moving = true;
-		jumping = true;
 	}
 
 	@Override
 	public void stopFalling() {
 		super.stopFalling();
-		jumping = false;
 		if(currentPose.equals(Pose.JUMP_RT))
 			currentPose = Pose.WALK_RT;
 		else if(currentPose.equals(Pose.JUMP_LT))

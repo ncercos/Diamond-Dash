@@ -15,9 +15,9 @@ public class GameWindow {
 		jframe.setSize(400, 400);
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.add(gamePanel);
-		jframe.setLocationRelativeTo(null); /* spawn center stage */
 		jframe.setResizable(false);
 		jframe.pack();
+		jframe.setLocationRelativeTo(null); /* spawn center stage */
 		jframe.setVisible(true);
 	}
 

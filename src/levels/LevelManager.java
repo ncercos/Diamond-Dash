@@ -46,7 +46,7 @@ public class LevelManager {
 				int index = currentLevel.getTileIndex(w, h);
 				int x = w * TILES_SIZE;
 				int y = h * TILES_SIZE;
-				g.drawImage(getTiles(LevelStyle.NATURE)[index], x, y, TILES_SIZE, TILES_SIZE, null);
+				g.drawImage(getTiles(currentLevel.getStyle())[index], x, y, TILES_SIZE, TILES_SIZE, null);
 			}
 		}
 	}

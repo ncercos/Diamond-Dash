@@ -1,6 +1,7 @@
 package levels;
 
 import entities.Hitbox;
+import game.Game;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ public class Level {
 	private final int id;
 	private final LevelStyle style;
 	private int[][] data;
-	private Set<Hitbox> hitboxes;
+	private final Set<Hitbox> hitboxes;
 
 	public Level(LevelManager levelManager, int id, LevelStyle style) {
 		this.id = id;
@@ -27,6 +28,20 @@ public class Level {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Determines if a specific location contains a solid tile.
+	 *
+	 * @param x The x-coordinate.
+	 * @param y The y-coordinate.
+	 * @return True if the tile is solid, otherwise, false.
+	 */
+	public boolean isSolid(double x, double y) {
+		if(x < 0 || x >= Game.GAME_WIDTH) return true;
+		if(y < 0 || y >= Game.GAME_HEIGHT) return true;
+		int index = getTileIndex((int)x / Game.TILES_SIZE, (int)y / Game.TILES_SIZE);
+		return !getStyle().isNonSolid(index);
 	}
 
 	/**
@@ -44,10 +59,6 @@ public class Level {
 		hitboxes.add(hitbox);
 	}
 
-	public Set<Hitbox> getHitboxes() {
-		return hitboxes;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -58,5 +69,9 @@ public class Level {
 
 	public int[][] getData() {
 		return data;
+	}
+
+	public Set<Hitbox> getHitboxes() {
+		return hitboxes;
 	}
 }

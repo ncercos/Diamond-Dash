@@ -22,7 +22,7 @@ public enum LevelStyle {
 	 */
 	public boolean isNonSolid(int index) {
 		for(int i = 0; i < nonSolidIndex.length; i++) {
-			if(index == nonSolidIndex[i] || index == 0)
+			if(index == nonSolidIndex[i] || index < 1)
 				return true;
 		}
 		return false;

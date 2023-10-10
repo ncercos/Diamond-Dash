@@ -37,7 +37,7 @@ public class Game implements Runnable {
 
 	public Game() {
 		levelManager = new LevelManager(this);
-		player = new Player(0, 0, 16 * SCALE, 20 * SCALE);
+		player = new Player(this, 0, 0, 16 * (SCALE - 0.5), 20 * (SCALE - 0.5));
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();
@@ -64,17 +64,7 @@ public class Game implements Runnable {
 			// Redraws the screen MAX_FPS times per second.
 			long now = System.nanoTime();
 			if(now - lastFrame >= timePerFrame) {
-				Level level = levelManager.getCurrentLevel();
-				player.handleMovement(player.standingOnAny(level.getHitboxes().toArray(new Hitbox[0])));
-
-				for(Hitbox hb : level.getHitboxes()) {
-					if(player.overlaps(hb)) {
-						player.pushedOutOf(hb);
-						player.applyFrictionWithFloor();
-						player.stopFalling();
-					}
-				}
-
+				player.handleMovement();
 				gamePanel.repaint();
 				lastFrame = now;
 				frames++;
@@ -101,5 +91,9 @@ public class Game implements Runnable {
 
 	public Player getPlayer() {
 		return player;
+	}
+
+	public LevelManager getLevelManager() {
+		return levelManager;
 	}
 }
