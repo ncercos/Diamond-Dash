@@ -2,6 +2,7 @@ package entities;
 
 import game.Game;
 import inputs.Input;
+import levels.Level;
 import sprites.Pose;
 
 import java.util.HashMap;
@@ -13,13 +14,11 @@ import java.util.Map;
  **/
 public class Player extends Entity {
 
-	private final Game game;
 	private final boolean[] pressing;
 	private boolean sprinting;
 
 	public Player(Game game, double x, double y, double w, double h) {
-		super("player", x, y, w, h);
-		this.game = game;
+		super(game, "player", x, y, w, h);
 		pressing = new boolean[1024];
 
 		// Establish poses and load animations
@@ -49,6 +48,7 @@ public class Player extends Entity {
 		if (pressing[Input.RT]) goRT(speed);
 		if (!sprinting || !moving) stopSprinting();
 		move(game.getLevelManager().getCurrentLevel());
+		checkCloseToBorder();
 	}
 
 	/**
@@ -59,6 +59,18 @@ public class Player extends Entity {
 			currentPose = Pose.WALK_RT;
 		else if(currentPose.equals(Pose.SPRINT_LT))
 			currentPose = Pose.WALK_LT;
+	}
+
+	private void checkCloseToBorder() {
+		Level level = game.getLevelManager().getCurrentLevel();
+		if(level == null)return;
+		int currentXPos = (int)x;
+		int diff = currentXPos - level.getOffsetX();
+
+		if(diff > level.RT_BORDER)
+			level.addToOffsetX(diff - level.RT_BORDER);
+		else if(diff < level.LT_BORDER)
+			level.addToOffsetX(diff - level.LT_BORDER);
 	}
 
 	@Override

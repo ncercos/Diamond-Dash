@@ -40,10 +40,11 @@ public class LevelManager {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g) {
+		if(currentLevel == null)return;
 		for(int h = 0; h < TILES_IN_HEIGHT; h++) {
-			for(int w = 0; w < TILES_IN_WIDTH; w++) {
+			for(int w = 0; w < currentLevel.getData()[0].length; w++) {
 				int index = currentLevel.getTileIndex(w, h);
-				int x = w * TILES_SIZE;
+				int x = w * TILES_SIZE - currentLevel.getOffsetX();
 				int y = h * TILES_SIZE;
 				g.drawImage(getTiles(currentLevel.getStyle())[index], x, y, TILES_SIZE, TILES_SIZE, null);
 			}
@@ -94,15 +95,14 @@ public class LevelManager {
 	 * @throws IOException If the image cannot be accessed/found.
 	 */
 	public int[][] getLevelData(Level level) throws IOException {
-		int[][] lvlData = new int[TILES_IN_HEIGHT][TILES_IN_WIDTH];
 		BufferedImage lvlImage =ImageIO.read(new File("./res/levels/" + level.getId() + ".png"));
+		int[][] lvlData = new int[lvlImage.getHeight()][lvlImage.getWidth()];
 
 		for(int h = 0; h < lvlImage.getHeight(); h++) {
 			for(int w = 0; w < lvlImage.getWidth(); w++) {
 				Color color = new Color(lvlImage.getRGB(w, h));
 				int value = color.getRed();
 				lvlData[h][w] = (value >= getTiles(level.getStyle()).length ? 0 : value);
-				if(level.getStyle().isNonSolid(value)) continue;
 			}
 		}
 		return lvlData;

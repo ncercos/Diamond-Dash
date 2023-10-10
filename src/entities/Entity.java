@@ -1,5 +1,7 @@
 package entities;
 
+import game.Game;
+import levels.Level;
 import sprites.Animation;
 import sprites.Pose;
 
@@ -13,6 +15,7 @@ import java.util.Map;
  **/
 public class Entity extends Hitbox {
 
+	protected Game game;
 	private final String name;
 	private final int MAX_HEALTH = 10;
 	private int health = MAX_HEALTH;
@@ -20,8 +23,9 @@ public class Entity extends Hitbox {
 	private final Map<Pose, Animation> animations;
 	protected Pose currentPose;
 
-	public Entity(String name, double x, double y, double w, double h) {
+	public Entity(Game game, String name, double x, double y, double w, double h) {
 		super(x, y, w, h);
+		this.game = game;
 		this.name = name;
 		animations = new HashMap<>();
 		currentPose = Pose.WALK_RT;
@@ -31,8 +35,10 @@ public class Entity extends Hitbox {
 	public void draw(Graphics g) {
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
-		if(moving) g.drawImage(animation.getCurrentImage(), (int)x, (int)y, (int)w + 1, (int)h + 1, null);
-		else g.drawImage(animation.getStaticImage(), (int)x, (int)y, (int)w + 1, (int)h + 1, null);
+		Level level = game.getLevelManager().getCurrentLevel();
+		if(level == null)return;
+		if(moving) g.drawImage(animation.getCurrentImage(), (int)x - level.getOffsetX(), (int)y, (int)w + 1, (int)h + 1, null);
+		else g.drawImage(animation.getStaticImage(), (int)x - level.getOffsetX(), (int)y, (int)w + 1, (int)h + 1, null);
 	}
 
 	/**

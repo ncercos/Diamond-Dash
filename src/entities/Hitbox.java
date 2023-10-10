@@ -18,8 +18,7 @@ public class Hitbox {
 	/* Physics */
 	private static final double GRAVITY = 0.15 * Game.SCALE;
 	private double vx, vy;
-	protected boolean moving = true;
-	protected boolean inAir = true;
+	protected boolean moving, inAir = true;
 
 	public Hitbox(double x, double y, double w, double h) {
 		this.x = x;
