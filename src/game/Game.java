@@ -1,8 +1,6 @@
 package game;
 
-import entities.Hitbox;
 import entities.Player;
-import levels.Level;
 import levels.LevelManager;
 
 import java.awt.*;
@@ -18,9 +16,9 @@ public class Game implements Runnable {
 	private final GamePanel gamePanel;
 
 	public final static int TILES_DEFAULT_SIZE = 16;
-	public final static float SCALE = 2.5f;
-	public final static int TILES_IN_WIDTH = 39;
-	public final static int TILES_IN_HEIGHT = 21;
+	public final static float SCALE = 3f;
+	public final static int TILES_IN_WIDTH = 24;
+	public final static int TILES_IN_HEIGHT = 14;
 	public final static int TILES_SIZE = (int) (TILES_DEFAULT_SIZE * SCALE);
 	public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
 	public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
@@ -37,7 +35,7 @@ public class Game implements Runnable {
 
 	public Game() {
 		levelManager = new LevelManager(this);
-		player = new Player(this, 0, 0, 16 * (SCALE - 0.5), 20 * (SCALE - 0.5));
+		player = new Player(this, 0, 0, 16 * (SCALE * 0.8), 20 * (SCALE * 0.8));
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();

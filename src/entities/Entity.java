@@ -29,7 +29,6 @@ public class Entity extends Hitbox {
 
 	@Override
 	public void draw(Graphics g) {
-		super.draw(g);
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
 		if(moving) g.drawImage(animation.getCurrentImage(), (int)x, (int)y, (int)w + 1, (int)h + 1, null);

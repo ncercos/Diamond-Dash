@@ -72,11 +72,11 @@ public class Hitbox {
 	 */
 	private double getXPosNextToTile() {
 		int currentTileIndex = (int) (x / Game.TILES_SIZE);
+		int tileXPos = currentTileIndex * Game.TILES_SIZE;
 		if(vx > 0) { /* moving to the right */
-			int tileXPos = currentTileIndex * Game.TILES_SIZE;
 			int xOffset = (int) (Game.TILES_SIZE - w);
 			return tileXPos + xOffset - 1;
-		} else return currentTileIndex * Game.TILES_SIZE;
+		} else return tileXPos;
 	}
 
 	/**
