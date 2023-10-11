@@ -33,9 +33,12 @@ public class Game implements Runnable {
 	// Levels
 	private final LevelManager levelManager;
 
+	// Utils
+	public static final String RESOURCE_URL = "./res/";
+
 	public Game() {
 		levelManager = new LevelManager(this);
-		player = new Player(this, 0, 0, 16 * (SCALE * 0.8), 20 * (SCALE * 0.8));
+		player = new Player(this, 0, 0, 13 * SCALE, 13 * SCALE, 14);
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();
@@ -50,6 +53,19 @@ public class Game implements Runnable {
 		gameThread.start();
 	}
 
+	/**
+	 * Renders assets to the scene.
+	 *
+	 * @param g The graphics context.
+	 */
+	public void draw(Graphics g) {
+		levelManager.draw(g);
+		player.draw(g, levelManager.getCurrentLevel());
+	}
+
+	/**
+	 * The game loop.
+	 */
 	@Override
 	public void run() {
 		double timePerFrame = 1000000000.0 / MAX_FPS;
@@ -62,7 +78,7 @@ public class Game implements Runnable {
 			// Redraws the screen MAX_FPS times per second.
 			long now = System.nanoTime();
 			if(now - lastFrame >= timePerFrame) {
-				player.handleMovement();
+				player.update();
 				gamePanel.repaint();
 				lastFrame = now;
 				frames++;
@@ -78,13 +94,10 @@ public class Game implements Runnable {
 	}
 
 	/**
-	 * Renders assets to the scene.
-	 *
-	 * @param g The graphics context.
+	 * Handler for when the game window loses focus.
 	 */
-	public void draw(Graphics g) {
-		levelManager.draw(g);
-		player.draw(g);
+	public void lostFocus() {
+		player.resetVelocity();
 	}
 
 	public Player getPlayer() {

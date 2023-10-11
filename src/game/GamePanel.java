@@ -39,4 +39,8 @@ public class GamePanel extends JPanel {
 		game.draw(pen);
 		g.drawImage(scene, 0, 0, this);
 	}
+
+	public Game getGame() {
+		return game;
+	}
 }

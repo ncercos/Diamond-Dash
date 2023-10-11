@@ -17,6 +17,7 @@ public class Hitbox {
 
 	/* Physics */
 	private static final double GRAVITY = 0.15 * Game.SCALE;
+	private static final double MAX_FALL_VELOCITY = 2.0 * Game.SCALE;
 	private double vx, vy;
 	protected boolean moving, inAir = true;
 
@@ -43,12 +44,13 @@ public class Hitbox {
 		if(inAir) {
 			if(canMoveTo(x, y + vy, level)) {
 				y += vy;
-				vy += GRAVITY;
+				if(vy < MAX_FALL_VELOCITY)
+					vy += GRAVITY;
 				updateXPos(level);
 			} else {
 				y = getYPosAboveOrUnderTile();
 				if(vy > 0) stopFalling();
-				else vy = 0.5 * Game.SCALE;
+				else vy = GRAVITY;
 				updateXPos(level);
 			}
 		} else updateXPos(level);
@@ -73,7 +75,7 @@ public class Hitbox {
 		int currentTileIndex = (int) (x / Game.TILES_SIZE);
 		int tileXPos = currentTileIndex * Game.TILES_SIZE;
 		if(vx > 0) { /* moving to the right */
-			int xOffset = (int) (Game.TILES_SIZE - w);
+			int xOffset = (int)(Game.TILES_SIZE - w);
 			return tileXPos + xOffset - 1;
 		} else return tileXPos;
 	}
@@ -83,10 +85,11 @@ public class Hitbox {
 	 */
 	private double getYPosAboveOrUnderTile() {
 		int currentTileIndex = (int) (y / Game.TILES_SIZE);
+		int tileYPos = currentTileIndex * Game.TILES_SIZE;
 		if(vy > 0) { /* falling */
-			int tileYPos = currentTileIndex * Game.TILES_SIZE;
-			return tileYPos + h - 1;
-		} else return currentTileIndex * Game.TILES_SIZE;
+			int yOffset = (int)(Game.TILES_SIZE - h);
+			return tileYPos + yOffset - 1;
+		} else return tileYPos;
 	}
 
 	/**
@@ -133,6 +136,14 @@ public class Hitbox {
 		vy = 0;
 	}
 
+	/**
+	 * Sets all velocity variables to their default; zero.
+	 */
+	public void resetVelocity() {
+		vx = 0;
+		vy = 0;
+	}
+
 	// Collision
 
 	/**
@@ -170,8 +181,8 @@ public class Hitbox {
 	 *
 	 * @param g The graphics context.
 	 */
-	public void draw(Graphics g) {
+	public void draw(Graphics g, Level level) {
 		g.setColor(Color.ORANGE);
-		g.drawRect((int)x, (int)y, (int)w, (int)h);
+		g.drawRect((int)x - level.getOffsetX(), (int)y, (int)w, (int)h);
 	}
 }

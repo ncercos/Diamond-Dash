@@ -1,6 +1,12 @@
 package sprites;
 
+import game.Game;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Written by Nicholas Cercos
@@ -8,29 +14,50 @@ import java.awt.*;
  **/
 public class Animation {
 
-	private final Image[] images;
-	private final int duration;
+	private Image[] images;
+	private final int size, duration;
 	private int current, delay;
 
-	public Animation(String name, int count, int duration) {
+	public Animation(String name, int size, int duration) {
+		this.size = size;
 		this.duration = duration;
 		delay = duration;
-		images = new Image[count];
-		for(int i = 0; i < count; i++)
-			images[i] = Toolkit.getDefaultToolkit().getImage("./res/" + name + "_" + i + ".png");
+
+		try {
+			loadImages(name);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Loads all the frames for an animation.
+	 *
+	 * @param name The filePath for the animation sprite.
+	 * @throws IOException If the file cannot be accessed/found.
+	 */
+	public void loadImages(String name) throws IOException {
+		BufferedImage sprite = ImageIO.read(new File(Game.RESOURCE_URL + name + ".png"));
+		final int WIDTH = sprite.getWidth() / size;
+		images = new Image[WIDTH];
+
+		for(int i = 0; i < WIDTH; i++)
+			images[i] = sprite.getSubimage(i * size, 0, size, size);
+
 	}
 
 	/**
 	 * @return The default sprite for still frame.
 	 */
 	public Image getStaticImage() {
-		return images[0];
+		return images != null ? images[0] : null;
 	}
 
 	/**
 	 * @return The current image within the animation.
 	 */
 	public Image getCurrentImage() {
+		if(images == null) return null;
 		delay--;
 		if(delay ==0) {
 			current++;

@@ -6,6 +6,7 @@ import sprites.Animation;
 import sprites.Pose;
 
 import java.awt.*;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,32 +23,47 @@ public class Entity extends Hitbox {
 
 	private final Map<Pose, Animation> animations;
 	protected Pose currentPose;
+	private double flipX = 0;
+	private int flipW = 1;
 
-	public Entity(Game game, String name, double x, double y, double w, double h) {
+	public Entity(Game game, String name, double x, double y, double w, double h, int spriteWidth) {
 		super(x, y, w, h);
 		this.game = game;
 		this.name = name;
 		animations = new HashMap<>();
-		currentPose = Pose.WALK_RT;
+		currentPose = Pose.IDLE;
+		loadAllAnimations(spriteWidth);
 	}
 
 	@Override
-	public void draw(Graphics g) {
+	public void draw(Graphics g, Level level) {
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
-		Level level = game.getLevelManager().getCurrentLevel();
-		if(level == null)return;
-		if(moving) g.drawImage(animation.getCurrentImage(), (int)x - level.getOffsetX(), (int)y, (int)w + 1, (int)h + 1, null);
-		else g.drawImage(animation.getStaticImage(), (int)x - level.getOffsetX(), (int)y, (int)w + 1, (int)h + 1, null);
+		int px = (int) (x - level.getOffsetX() + flipX);
+		int width = (int)(w + 1) * flipW;
+		int height = (int)h + 1;
+
+		if(moving || currentPose.equals(Pose.IDLE))
+			g.drawImage(animation.getCurrentImage(), px, (int)y, width, height, null);
+		else g.drawImage(animation.getStaticImage(), px, (int)y, width, height, null);
 	}
 
 	/**
-	 * Loads in all animations based on the given poses.
-	 *
-	 * @param poses A hashmap of poses and the number of sprites within the animation (per pose).
+	 * Loads all animations within the resource directory under
+	 * the entity's given name. Sprites must be named after pose.
 	 */
-	protected void loadAnimations(Map<Pose, Integer> poses) {
-		poses.forEach((k,v) -> animations.put(k, new Animation(name + "/" + k.getName(), v, 18)));
+	private void loadAllAnimations(int spriteWidth) {
+		File file = new File(Game.RESOURCE_URL + name + "/");
+		if(!file.exists())return;
+		File[] sprites = file.listFiles();
+		if(sprites == null)return;
+
+		for(File s : sprites) {
+			String poseName = s.getName().split("\\.")[0];
+			Pose pose = Pose.getPose(poseName);
+			if(pose == null)continue;
+			animations.put(pose, new Animation(name + "/" + pose.getName(), spriteWidth, 18));
+		}
 	}
 
 	/**
@@ -75,29 +91,28 @@ public class Entity extends Hitbox {
 	@Override
 	public void goLT(double dx) {
 		super.goLT(dx);
-		if(!inAir) currentPose = Pose.WALK_LT;
+		currentPose = inAir ? Pose.JUMP : Pose.RUN;
+		flipX = w;
+		flipW = -1;
 	}
 
 	@Override
 	public void goRT(double dx) {
 		super.goRT(dx);
-		if(!inAir) currentPose = Pose.WALK_RT;
+		currentPose = inAir ? Pose.JUMP : Pose.RUN;
+		flipX = 0;
+		flipW = 1;
 	}
 
 	@Override
 	public void goUP(double dy) {
 		super.goUP(dy);
-		if(Pose.isLeft(currentPose))
-			currentPose = Pose.JUMP_LT;
-		else currentPose = Pose.JUMP_RT;
+		currentPose = Pose.JUMP;
 	}
 
 	@Override
 	public void stopFalling() {
 		super.stopFalling();
-		if(currentPose.equals(Pose.JUMP_RT))
-			currentPose = Pose.WALK_RT;
-		else if(currentPose.equals(Pose.JUMP_LT))
-			currentPose = Pose.WALK_LT;
+		currentPose = Pose.RUN;
 	}
 }

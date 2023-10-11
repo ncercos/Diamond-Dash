@@ -28,7 +28,7 @@ public class LevelManager {
 
 		try {
 			loadAllTiles();
-			currentLevel = new Level(this, 1, LevelStyle.NATURE);
+			currentLevel = loadLevel(1, LevelStyle.NATURE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -41,6 +41,7 @@ public class LevelManager {
 	 */
 	public void draw(Graphics g) {
 		if(currentLevel == null)return;
+		//g.drawImage(Toolkit.getDefaultToolkit().getImage("./res/backgrounds/noon.png"), 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
 		for(int h = 0; h < TILES_IN_HEIGHT; h++) {
 			for(int w = 0; w < currentLevel.getData()[0].length; w++) {
 				int index = currentLevel.getTileIndex(w, h);
@@ -59,7 +60,7 @@ public class LevelManager {
 	 */
 	public void loadAllTiles() throws IOException {
 		for(LevelStyle style : LevelStyle.values()) {
-			BufferedImage sprite = ImageIO.read(new File("./res/tiles/" + style.getFileName()));
+			BufferedImage sprite = ImageIO.read(new File(RESOURCE_URL + "tiles/" + style.getFileName()));
 			final int WIDTH = sprite.getWidth() / TILES_DEFAULT_SIZE;
 			final int HEIGHT = sprite.getHeight() / TILES_DEFAULT_SIZE;
 			Image[] tiles = new Image[WIDTH * HEIGHT];
@@ -89,23 +90,23 @@ public class LevelManager {
 	/**
 	 * Determine the tiles that will be used for a given level
 	 * based on the RED color value of the pixel within the
-	 * levels image.
+	 * levels image and saves it to memory as a Level object.
 	 *
-	 * @return A 2D array containing the tile type at a given x and y coordinate.
+	 * @return A Level object containing the tile type at a given x and y coordinate.
 	 * @throws IOException If the image cannot be accessed/found.
 	 */
-	public int[][] getLevelData(Level level) throws IOException {
-		BufferedImage lvlImage =ImageIO.read(new File("./res/levels/" + level.getId() + ".png"));
-		int[][] lvlData = new int[lvlImage.getHeight()][lvlImage.getWidth()];
+	private Level loadLevel(int id, LevelStyle style) throws IOException {
+		BufferedImage image =ImageIO.read(new File(RESOURCE_URL + "levels/" + id + ".png"));
+		int[][] data = new int[image.getHeight()][image.getWidth()];
 
-		for(int h = 0; h < lvlImage.getHeight(); h++) {
-			for(int w = 0; w < lvlImage.getWidth(); w++) {
-				Color color = new Color(lvlImage.getRGB(w, h));
+		for(int h = 0; h < image.getHeight(); h++) {
+			for(int w = 0; w < image.getWidth(); w++) {
+				Color color = new Color(image.getRGB(w, h));
 				int value = color.getRed();
-				lvlData[h][w] = (value >= getTiles(level.getStyle()).length ? 0 : value);
+				data[h][w] = (value >= getTiles(style).length ? 0 : value);
 			}
 		}
-		return lvlData;
+		return new Level(id, style, data);
 	}
 
 	public Level getCurrentLevel() {

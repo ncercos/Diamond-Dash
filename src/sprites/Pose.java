@@ -6,40 +6,24 @@ package sprites;
  **/
 public enum Pose {
 
-	WALK_LT("WLT"),
-	WALK_RT("WRT"),
-
-	SPRINT_LT("SLT"),
-	SPRINT_RT("SRT"),
-
-	JUMP_LT("JLT"),
-	JUMP_RT("JRT"),
-
-	CROUCH_LT("CLT"),
-	CROUCH_RT("CRT"),
-
-	DEAD("DEAD");
-
-	private final String name;
-
-	Pose(String name) {
-		this.name = name;
-	}
+	IDLE,
+	RUN,
+	JUMP;
 
 	/**
-	 * Determines if a pose is drawn for left side.
+	 * Obtain a specific pose via its name.
 	 *
-	 * @param pose The pose in question.
-	 * @return True if it is a left-sided pose.
+	 * @param name The name of the pose.
+	 * @return The enum pose value.
 	 */
-	public static boolean isLeft(Pose pose) {
-		String[] s = pose.name().split("_");
-		if(s.length != 2) return false;
-		return s[1].equals("LT");
+	public static Pose getPose(String name) {
+		for(Pose pose : values())
+			if(pose.getName().equalsIgnoreCase(name))
+				return pose;
+		return null;
 	}
 
 	public String getName() {
-		return name;
+		return name().toLowerCase();
 	}
-
 }

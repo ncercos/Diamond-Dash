@@ -2,8 +2,6 @@ package levels;
 
 import game.Game;
 
-import java.io.IOException;
-
 /**
  * Written by Nicholas Cercos
  * Created on Oct 08 2023
@@ -12,37 +10,34 @@ public class Level {
 
 	private final int id;
 	private final LevelStyle style;
-	private int[][] data;
+	private final int[][] data;
 
-	private int offsetX, maxTilesOffset;
+	private int offsetX;
+	private final int maxTilesOffset;
 	public final int LT_BORDER = (int) (0.2 * Game.GAME_WIDTH);
 	public final int RT_BORDER = (int) (0.8 * Game.GAME_WIDTH);
 
-	public Level(LevelManager levelManager, int id, LevelStyle style) {
+	public Level(int id, LevelStyle style, int[][] data) {
 		this.id = id;
 		this.style = style;
-
-		try {
-			data = levelManager.getLevelData(this);
-			int tilesWide = data[0].length;
-			maxTilesOffset = (tilesWide - Game.TILES_IN_WIDTH) * Game.TILES_SIZE;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.data = data;
+		int tilesWide = data[0].length;
+		maxTilesOffset = (tilesWide - Game.TILES_IN_WIDTH) * Game.TILES_SIZE;
 	}
 
 	/**
 	 * Determines if a specific location contains a solid tile.
 	 *
-	 * @param x The x-coordinate.
-	 * @param y The y-coordinate.
+	 * @param px The x-position.
+	 * @param py The y-position.
 	 * @return True if the tile is solid, otherwise, false.
 	 */
-	public boolean isSolid(double x, double y) {
+	public boolean isSolid(double px, double py) {
+		int x = (int)px;  int y = (int)py;
 		int maxWidth = data[0].length * Game.TILES_SIZE;
 		if(x < 0 || x >= maxWidth) return true;
 		if(y < 0 || y >= Game.GAME_HEIGHT) return true;
-		int index = getTileIndex((int)x / Game.TILES_SIZE, (int)y / Game.TILES_SIZE);
+		int index = getTileIndex(x / Game.TILES_SIZE, y / Game.TILES_SIZE);
 		return !getStyle().isNonSolid(index);
 	}
 
@@ -59,11 +54,6 @@ public class Level {
 
 	public void addToOffsetX(int value) {
 		offsetX += value;
-		maintainOffsetConstraints();
-	}
-
-	public void setOffsetX(int offsetX) {
-		this.offsetX = offsetX;
 		maintainOffsetConstraints();
 	}
 

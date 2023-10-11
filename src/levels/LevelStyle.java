@@ -21,10 +21,10 @@ public enum LevelStyle {
 	 * @return True if not solid.
 	 */
 	public boolean isNonSolid(int index) {
-		for(int i = 0; i < nonSolidIndex.length; i++) {
-			if(index == nonSolidIndex[i] || index < 1)
+		if(index < 1)return true;
+		for (int solidIndex : nonSolidIndex)
+			if (index == solidIndex)
 				return true;
-		}
 		return false;
 	}
 
@@ -33,9 +33,5 @@ public enum LevelStyle {
 	 */
 	public String getFileName() {
 		return name().toLowerCase() + ".png";
-	}
-
-	public int[] getNonSolidIndex() {
-		return nonSolidIndex;
 	}
 }

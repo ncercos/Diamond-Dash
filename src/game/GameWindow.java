@@ -1,6 +1,8 @@
 package game;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 
 /**
  * Written by Nicholas Cercos
@@ -19,6 +21,16 @@ public class GameWindow {
 		jframe.pack();
 		jframe.setLocationRelativeTo(null); /* spawn center stage */
 		jframe.setVisible(true);
+
+		jframe.addWindowFocusListener(new WindowFocusListener() {
+			@Override
+			public void windowGainedFocus(WindowEvent e) {}
+
+			@Override
+			public void windowLostFocus(WindowEvent e) {
+				gamePanel.getGame().lostFocus();
+			}
+		});
 	}
 
 	public JFrame getJFrame() {
