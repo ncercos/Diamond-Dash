@@ -43,10 +43,8 @@ public class Entity extends Hitbox {
 		int width = (int)(w + 1) * flipW;
 		int height = (int)h + 1;
 
-		if(animation.isCycleCompleted() && !currentPose.isRepeated()) {
+		if(animation.isCycleCompleted() && !currentPose.isRepeated())
 			currentPose = moving ? Pose.RUN : inAir ? Pose.JUMP : Pose.IDLE;
-			System.out.println("cycle completed!");
-		}
 
 		g.drawImage(animation.getCurrentImage(), px, (int)y, width, height, null);
 	}
