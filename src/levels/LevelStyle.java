@@ -6,7 +6,8 @@ package levels;
  **/
 public enum LevelStyle {
 
-	NATURE(35, 36);
+	LUSH,
+	DRY;
 
 	private final int[] nonSolidIndex;
 
@@ -28,10 +29,14 @@ public enum LevelStyle {
 		return false;
 	}
 
+	public String getName() {
+		return name().toLowerCase();
+	}
+
 	/**
 	 * @return The file name for a specific style.
 	 */
 	public String getFileName() {
-		return name().toLowerCase() + ".png";
+		return getName() + ".png";
 	}
 }

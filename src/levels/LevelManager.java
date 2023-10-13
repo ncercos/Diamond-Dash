@@ -18,17 +18,20 @@ import static game.Game.*;
  **/
 public class LevelManager {
 
+	// Level Data
 	private final Game game;
 	private final Map<LevelStyle, Image[]> tiles;
+	private final Map<LevelStyle, BufferedImage[]> backgrounds;
 	private Level currentLevel;
 
 	public LevelManager(Game game) {
 		this.game = game;
 		this.tiles = new HashMap<>();
+		this.backgrounds = new HashMap<>();
 
 		try {
-			loadAllTiles();
-			currentLevel = loadLevel(1, LevelStyle.NATURE);
+			loadResourcesForStyles();
+			currentLevel = loadLevel(1, LevelStyle.LUSH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -41,25 +44,18 @@ public class LevelManager {
 	 */
 	public void draw(Graphics g) {
 		if(currentLevel == null)return;
-		//g.drawImage(Toolkit.getDefaultToolkit().getImage("./res/backgrounds/noon.png"), 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
-		for(int h = 0; h < TILES_IN_HEIGHT; h++) {
-			for(int w = 0; w < currentLevel.getData()[0].length; w++) {
-				int index = currentLevel.getTileIndex(w, h);
-				int x = w * TILES_SIZE - currentLevel.getOffsetX();
-				int y = h * TILES_SIZE;
-				g.drawImage(getTiles(currentLevel.getStyle())[index], x, y, TILES_SIZE, TILES_SIZE, null);
-			}
-		}
+		currentLevel.draw(g);
 	}
 
 	/**
-	 * Load tiles for all level styles and keep them
-	 * in memory to build world.
+	 * Load tiles & backgrounds for all level styles and
+	 * keeps them in memory to easily build worlds.
 	 *
 	 * @throws IOException If the image could not be accessed/found.
 	 */
-	public void loadAllTiles() throws IOException {
+	public void loadResourcesForStyles() throws IOException {
 		for(LevelStyle style : LevelStyle.values()) {
+			// Load tiles
 			BufferedImage sprite = ImageIO.read(new File(RESOURCE_URL + "tiles/" + style.getFileName()));
 			final int WIDTH = sprite.getWidth() / TILES_DEFAULT_SIZE;
 			final int HEIGHT = sprite.getHeight() / TILES_DEFAULT_SIZE;
@@ -71,10 +67,47 @@ public class LevelManager {
 					tiles[index] = sprite.getSubimage(w * TILES_DEFAULT_SIZE, h * TILES_DEFAULT_SIZE, TILES_DEFAULT_SIZE, TILES_DEFAULT_SIZE);
 				}
 			}
-
-			if(tiles.length == 0)continue;
 			this.tiles.put(style, tiles);
+
+			// Load background
+			String backgroundDirectory = Game.RESOURCE_URL + "backgrounds/" + style.getName() + "/";
+			backgrounds.put(style, new BufferedImage[] {
+					ImageIO.read(new File(backgroundDirectory + "sky.png")),
+					ImageIO.read(new File(backgroundDirectory + "shadow.png")),
+					ImageIO.read(new File(backgroundDirectory + "mountains_fog_large.png")),
+					ImageIO.read(new File(backgroundDirectory + "mountains_large.png")),
+					ImageIO.read(new File(backgroundDirectory + "mountains_fog_small.png")),
+					ImageIO.read(new File(backgroundDirectory + "mountains_small.png"))
+			});
 		}
+	}
+
+	/**
+	 * @param style The style of the level.
+	 * @return A background image based on the current level's style.
+	 */
+	public BufferedImage getBackgroundImage(LevelStyle style) {
+		return backgrounds.getOrDefault(style, null)[0];
+	}
+
+	/**
+	 * @param style The style of the level.
+	 * @return A mountain shadow image based on the current level's style the level background.
+	 */
+	public BufferedImage getMountainShadowImage(LevelStyle style) {
+		return backgrounds.getOrDefault(style, null)[1];
+	}
+
+	/**
+	 * Obtain the mountain image for the background based on the current level's style.
+	 *
+	 * @param style The style of the level.
+	 * @param large Do you want the large or small mountains?
+	 * @param foggy Do you want foggy or clear skies?
+	 * @return An image object, if it exists.
+	 */
+	public BufferedImage getMountainImage(LevelStyle style, boolean large, boolean foggy) {
+		return backgrounds.getOrDefault(style, null)[large ? (foggy ? 2 : 3) : (foggy ? 4 : 5)];
 	}
 
 	/**
@@ -96,7 +129,7 @@ public class LevelManager {
 	 * @throws IOException If the image cannot be accessed/found.
 	 */
 	private Level loadLevel(int id, LevelStyle style) throws IOException {
-		BufferedImage image =ImageIO.read(new File(RESOURCE_URL + "levels/" + id + ".png"));
+		BufferedImage image = ImageIO.read(new File(RESOURCE_URL + "levels/" + id + ".png"));
 		int[][] data = new int[image.getHeight()][image.getWidth()];
 
 		for(int h = 0; h < image.getHeight(); h++) {
@@ -106,7 +139,7 @@ public class LevelManager {
 				data[h][w] = (value >= getTiles(style).length ? 0 : value);
 			}
 		}
-		return new Level(id, style, data);
+		return new Level(this, id, style, data);
 	}
 
 	public Level getCurrentLevel() {

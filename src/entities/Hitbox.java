@@ -182,7 +182,7 @@ public class Hitbox {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g, Level level) {
-		g.setColor(Color.ORANGE);
+		g.setColor(Color.BLACK);
 		g.drawRect((int)x - level.getOffsetX(), (int)y, (int)w, (int)h);
 	}
 }
