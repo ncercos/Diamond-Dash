@@ -39,13 +39,16 @@ public class Entity extends Hitbox {
 	public void draw(Graphics g, Level level) {
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
-		int px = (int) (x - level.getOffsetX() + flipX);
+		int px = (int)(x - level.getOffsetX() + flipX);
 		int width = (int)(w + 1) * flipW;
 		int height = (int)h + 1;
 
-		if(moving || currentPose.equals(Pose.IDLE))
-			g.drawImage(animation.getCurrentImage(), px, (int)y, width, height, null);
-		else g.drawImage(animation.getStaticImage(), px, (int)y, width, height, null);
+		if(animation.isCycleCompleted() && !currentPose.isRepeated()) {
+			currentPose = moving ? Pose.RUN : inAir ? Pose.JUMP : Pose.IDLE;
+			System.out.println("cycle completed!");
+		}
+
+		g.drawImage(animation.getCurrentImage(), px, (int)y, width, height, null);
 	}
 
 	/**
@@ -62,7 +65,7 @@ public class Entity extends Hitbox {
 			String poseName = s.getName().split("\\.")[0];
 			Pose pose = Pose.getPose(poseName);
 			if(pose == null)continue;
-			animations.put(pose, new Animation(name + "/" + pose.getName(), spriteWidth, 18));
+			animations.put(pose, new Animation(name + "/" + pose.getName(), spriteWidth, pose.getDuration()));
 		}
 	}
 
@@ -82,16 +85,42 @@ public class Entity extends Hitbox {
 	}
 
 	/**
+	 * Sets the pose for the entity.
+	 *
+	 * @param pose The new animation pose.
+	 */
+	public void setCurrentPose(Pose pose) {
+		currentPose = pose;
+		if(!pose.isRepeated())
+			getCurrentAnimation().resetAnimation();
+	}
+
+	/**
 	 * @return The current animation based on entity pose. (Defaults to null)
 	 */
 	public Animation getCurrentAnimation() {
 		return animations.getOrDefault(currentPose, null);
 	}
 
+	/**
+	 * @return True if the entity is not moving or in an action state.
+	 */
+	public boolean isIdling() {
+		return !moving && !inAir && !isRolling();
+	}
+
+	/**
+	 * @return True if the entity is in the roll animation.
+	 */
+	public boolean isRolling() {
+		return currentPose.equals(Pose.ROLL);
+	}
+
 	@Override
 	public void goLT(double dx) {
 		super.goLT(dx);
-		currentPose = inAir ? Pose.JUMP : Pose.RUN;
+		if(!isRolling())
+			setCurrentPose(inAir ? Pose.JUMP : Pose.RUN);
 		flipX = w;
 		flipW = -1;
 	}
@@ -99,7 +128,8 @@ public class Entity extends Hitbox {
 	@Override
 	public void goRT(double dx) {
 		super.goRT(dx);
-		currentPose = inAir ? Pose.JUMP : Pose.RUN;
+		if(!isRolling())
+			setCurrentPose(inAir ? Pose.JUMP : Pose.RUN);
 		flipX = 0;
 		flipW = 1;
 	}
@@ -107,12 +137,14 @@ public class Entity extends Hitbox {
 	@Override
 	public void goUP(double dy) {
 		super.goUP(dy);
-		currentPose = Pose.JUMP;
+		if(!isRolling())
+			setCurrentPose(Pose.JUMP);
 	}
 
 	@Override
 	public void stopFalling() {
 		super.stopFalling();
-		currentPose = Pose.RUN;
+		if(!isRolling())
+			setCurrentPose(Pose.RUN);
 	}
 }

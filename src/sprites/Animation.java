@@ -17,6 +17,7 @@ public class Animation {
 	private Image[] images;
 	private final int size, duration;
 	private int current, delay;
+	private boolean cycleCompleted;
 
 	public Animation(String name, int size, int duration) {
 		this.size = size;
@@ -28,6 +29,15 @@ public class Animation {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Starts animation from the beginning.
+	 */
+	public void resetAnimation() {
+		this.current = 0;
+		this.delay = duration;
+		cycleCompleted = false;
 	}
 
 	/**
@@ -59,11 +69,21 @@ public class Animation {
 	public Image getCurrentImage() {
 		if(images == null) return null;
 		delay--;
-		if(delay ==0) {
+		if(delay == 0) {
 			current++;
-			if(current == images.length) current = 0;
+			if(current == images.length) {
+				current = 0;
+				cycleCompleted = true;
+			}
 			delay = duration;
 		}
 		return images[current];
+	}
+
+	/**
+	 * @return True if all animation sprites have been shown at least once.
+	 */
+	public boolean isCycleCompleted() {
+		return cycleCompleted;
 	}
 }

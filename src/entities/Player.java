@@ -31,7 +31,11 @@ public class Player extends Entity {
 		if (pressing[Input.LT]) goLT(speed);
 		if (pressing[Input.RT] ) goRT(speed);
 		if (pressing[Input.UP]) goUP(speed * 3.5);
-		if (!moving && !inAir) currentPose = Pose.IDLE;
+
+		if (pressing[Input.ROLL] && !currentPose.equals(Pose.ROLL))
+			setCurrentPose(Pose.ROLL);
+
+		if (isIdling()) setCurrentPose(Pose.IDLE);
 		move(game.getLevelManager().getCurrentLevel());
 		checkCloseToLevelBorder();
 	}

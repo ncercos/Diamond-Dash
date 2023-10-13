@@ -8,7 +8,21 @@ public enum Pose {
 
 	IDLE,
 	RUN,
-	JUMP;
+	JUMP,
+	ROLL(false, 6);
+
+	private final boolean repeated;
+	private final int duration;
+
+	Pose(boolean repeated, int duration) {
+		this.repeated = repeated;
+		this.duration = duration;
+	}
+
+	Pose() {
+		repeated = true;
+		duration = 18;
+	}
 
 	/**
 	 * Obtain a specific pose via its name.
@@ -25,5 +39,21 @@ public enum Pose {
 
 	public String getName() {
 		return name().toLowerCase();
+	}
+
+	/**
+	 * @return True if this pose will loop until it is told not to.
+	 * If false, the pose will only loop through animations once.
+	 */
+	public boolean isRepeated() {
+		return repeated;
+	}
+
+	/**
+	 * @return The length in which each sprite of a specific pose
+	 * will be shown on the screen. (Animation Speed)
+	 */
+	public int getDuration() {
+		return duration;
 	}
 }
