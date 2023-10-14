@@ -25,7 +25,7 @@ public class Game implements Runnable {
 
 	// Loop
 	private Thread gameThread;
-	private final static int MAX_FPS = 120;
+	private final static int MAX_FPS = 100;
 
 	// Entities
 	private final Player player;
@@ -60,7 +60,6 @@ public class Game implements Runnable {
 	 */
 	public void draw(Graphics g) {
 		levelManager.draw(g);
-		player.draw(g, levelManager.getCurrentLevel());
 	}
 
 	/**
