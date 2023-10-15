@@ -210,6 +210,13 @@ public class LevelManager {
 		return decorTiles[index];
 	}
 
+	/**
+	 * Get the animation of a dynamic tile.
+	 *
+	 * @param layer The layer the tile is located in.
+	 * @param index The tile index within its sheet.
+	 * @return An animation object, if it exists.
+	 */
 	public Animation getTileAnimation(LevelLayer layer, int index) {
 		TileAnimations ta = animations.getOrDefault(layer, null);
 		if(ta == null)return null;

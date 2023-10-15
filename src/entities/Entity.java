@@ -95,13 +95,12 @@ public class Entity {
 				y += vy;
 				if(vy < MAX_FALL_VELOCITY)
 					vy += GRAVITY;
-				updateXPos(level);
 			} else {
 				y = getYPosAboveOrUnderTile();
 				if(vy > 0) stopFalling();
 				else vy = GRAVITY;
-				updateXPos(level);
 			}
+			updateXPos(level);
 		} else updateXPos(level);
 	}
 
