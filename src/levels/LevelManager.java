@@ -32,7 +32,7 @@ public class LevelManager {
 
 	public int MAX_TILES_PER_SHEET;
 
-	private final Map<LevelLayer, TileAnimation[]> animations;
+	private final Map<LevelLayer, TileAnimations> animations;
 
 	public LevelManager(Game game) {
 		this.game = game;
@@ -87,16 +87,15 @@ public class LevelManager {
 			floraTiles = importTiles(ImageIO.read(new File(TILE_DIRECTORY + "flora.png")));
 		}
 
-		final String ANIMATIONS_DIRECTORY = "tiles/animations/";
-		animations.put(LevelLayer.ITEMS, new TileAnimation[] {
-				new TileAnimation(0, new Animation( ANIMATIONS_DIRECTORY + "gold", 16, 110)),
-				new TileAnimation(4, new Animation(ANIMATIONS_DIRECTORY + "diamond", 16, 25))
-		});
-		animations.put(LevelLayer.WATER, new TileAnimation[] {
-				new TileAnimation(0, new Animation(ANIMATIONS_DIRECTORY + "water/some_bubbles", 16, 125)),
-				new TileAnimation(4, new Animation(ANIMATIONS_DIRECTORY + "water/many_bubbles", 16, 100)),
-				new TileAnimation(8, new Animation(ANIMATIONS_DIRECTORY + "water/no_bubbles", 16, 150))
-		});
+		animations.put(LevelLayer.ITEMS, new TileAnimations(new String[]{
+				"gold",
+				"diamond" },
+				new int[]{ 110, 25 }));
+		animations.put(LevelLayer.WATER, new TileAnimations(new String[]{
+				"water/some_bubbles",
+				"water/many_bubbles",
+				"water/no_bubbles" },
+				new int[]{ 125, 100, 150 }));
 	}
 
 	/**
@@ -212,13 +211,9 @@ public class LevelManager {
 	}
 
 	public Animation getTileAnimation(LevelLayer layer, int index) {
-		TileAnimation[] tileAnimations = animations.getOrDefault(layer, null);
-		if(tileAnimations == null)return null;
-		for(TileAnimation animation : tileAnimations) {
-			if(animation.getTileIndex() == index)
-				return animation.getAnimation();
-		}
-		return null;
+		TileAnimations ta = animations.getOrDefault(layer, null);
+		if(ta == null)return null;
+		return ta.getAnimations().getOrDefault(index, null);
 	}
 
 	/**
@@ -291,22 +286,26 @@ public class LevelManager {
 		return game;
 	}
 
-	class TileAnimation {
+	class TileAnimations {
 
-		int tileIndex;
-		Animation animation;
+		String[] files;
+		int[] durations;
 
-		public TileAnimation(int tileIndex, Animation animation) {
-			this.tileIndex = tileIndex;
-			this.animation = animation;
+		Map<Integer, Animation> animations;
+
+		public TileAnimations(String[] files, int[] durations) {
+			this.files = files;
+			this.durations = durations;
+			this.animations = new HashMap<>();
+
+			for(int i = 0; i < files.length; i++) {
+				Animation animation = new Animation("tiles/animations/" + files[i], TILES_DEFAULT_SIZE, durations[i]);
+				animations.put(i * animation.getImages().length, animation);
+			}
 		}
 
-		public int getTileIndex() {
-			return tileIndex;
-		}
-
-		public Animation getAnimation() {
-			return animation;
+		public Map<Integer, Animation> getAnimations() {
+			return animations;
 		}
 	}
 }

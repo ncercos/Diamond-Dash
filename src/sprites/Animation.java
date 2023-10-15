@@ -86,4 +86,8 @@ public class Animation {
 	public boolean isCycleCompleted() {
 		return cycleCompleted;
 	}
+
+	public Image[] getImages() {
+		return images;
+	}
 }
