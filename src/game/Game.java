@@ -54,6 +54,13 @@ public class Game implements Runnable {
 	}
 
 	/**
+	 * Everything that needs to be updated and re-rendered.
+	 */
+	private void update() {
+		player.update();
+	}
+
+	/**
 	 * Renders assets to the scene.
 	 *
 	 * @param g The graphics context.
@@ -67,23 +74,23 @@ public class Game implements Runnable {
 	 */
 	@Override
 	public void run() {
-		double timePerFrame = 1000000000.0 / MAX_FPS;
-		long lastFrame = System.nanoTime();
+		double timePerFrame =  1000000000.0 / MAX_FPS;
+		long lastFrame    = System.nanoTime();
 
-		int frames = 0;
+		int frames  = 0;
 		long lastCheck = System.currentTimeMillis();
 
 		while(true) {
-			// Redraws the screen MAX_FPS times per second.
+			/* Redraws the screen MAX_FPS times per second. */
 			long now = System.nanoTime();
 			if(now - lastFrame >= timePerFrame) {
-				player.update();
+				update();
 				gamePanel.repaint();
 				lastFrame = now;
 				frames++;
 			}
 
-			// Displays FPS in console once per second.
+			/* Displays FPS in console once per second. */
 			if(System.currentTimeMillis() - lastCheck >= 1000) {
 				lastCheck = System.currentTimeMillis();
 				System.out.println("FPS: " + frames);

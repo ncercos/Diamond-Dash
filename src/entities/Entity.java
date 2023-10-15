@@ -69,6 +69,14 @@ public class Entity {
 		g.drawImage(animation.getCurrentImage(), px, (int)y, width, height, null);
 	}
 
+	/**
+	 * Variables to be set and modified
+	 * per game draw.
+	 */
+	public void update() {
+		moving = false;
+	}
+
 	// Movement
 
 	/**

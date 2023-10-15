@@ -1,6 +1,7 @@
 package levels;
 
 import game.Game;
+import sprites.Animation;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -8,7 +9,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -29,10 +32,13 @@ public class LevelManager {
 
 	public int MAX_TILES_PER_SHEET;
 
+	private final Map<LevelLayer, TileAnimation[]> animations;
+
 	public LevelManager(Game game) {
 		this.game = game;
 		this.foregroundTiles = new HashMap<>();
 		this.backgrounds = new HashMap<>();
+		this.animations = new HashMap<>();
 
 		try {
 			loadAllLevelResources();
@@ -80,27 +86,37 @@ public class LevelManager {
 			midGroundTiles = importTiles(ImageIO.read(new File(TILE_DIRECTORY + "midground.png")));
 			floraTiles = importTiles(ImageIO.read(new File(TILE_DIRECTORY + "flora.png")));
 		}
+
+		final String ANIMATIONS_DIRECTORY = "tiles/animations/";
+		animations.put(LevelLayer.ITEMS, new TileAnimation[] {
+				new TileAnimation(0, new Animation( ANIMATIONS_DIRECTORY + "gold", 16, 110)),
+				new TileAnimation(4, new Animation(ANIMATIONS_DIRECTORY + "diamond", 16, 25))
+		});
+		animations.put(LevelLayer.WATER, new TileAnimation[] {
+				new TileAnimation(0, new Animation(ANIMATIONS_DIRECTORY + "water/some_bubbles", 16, 125)),
+				new TileAnimation(4, new Animation(ANIMATIONS_DIRECTORY + "water/many_bubbles", 16, 100)),
+				new TileAnimation(8, new Animation(ANIMATIONS_DIRECTORY + "water/no_bubbles", 16, 150))
+		});
 	}
 
 	/**
 	 * Takes a sprite sheet and cuts out each tile and places
 	 * them in an array.
 	 *
-	 * @param sprite The sprite sheet in which tiles will be imported from.
+	 * @param sprites The sprite sheet(s) in which tiles will be imported from.
 	 * @return An array of tile images.
 	 */
-	private Image[] importTiles(BufferedImage sprite) {
-		final int WIDTH = sprite.getWidth() / TILES_DEFAULT_SIZE;
-		final int HEIGHT = sprite.getHeight() / TILES_DEFAULT_SIZE;
-		Image[] tiles = new Image[WIDTH * HEIGHT];
+	private Image[] importTiles(BufferedImage... sprites) {
+		List<Image> tiles = new ArrayList<>();
+		for(BufferedImage sprite : sprites) {
+			final int WIDTH = sprite.getWidth() / TILES_DEFAULT_SIZE;
+			final int HEIGHT = sprite.getHeight() / TILES_DEFAULT_SIZE;
 
-		for(int h = 0; h < HEIGHT; h++) {
-			for(int w = 0; w < WIDTH; w++) {
-				int index = h * WIDTH + w;
-				tiles[index] = sprite.getSubimage(w * TILES_DEFAULT_SIZE, h * TILES_DEFAULT_SIZE, TILES_DEFAULT_SIZE, TILES_DEFAULT_SIZE);
-			}
+			for(int h = 0; h < HEIGHT; h++)
+				for(int w = 0; w < WIDTH; w++)
+					tiles.add(sprite.getSubimage(w * TILES_DEFAULT_SIZE, h * TILES_DEFAULT_SIZE, TILES_DEFAULT_SIZE, TILES_DEFAULT_SIZE));
 		}
-		return tiles;
+		return tiles.toArray(tiles.toArray(new Image[0]));
 	}
 
 	/**
@@ -195,6 +211,16 @@ public class LevelManager {
 		return decorTiles[index];
 	}
 
+	public Animation getTileAnimation(LevelLayer layer, int index) {
+		TileAnimation[] tileAnimations = animations.getOrDefault(layer, null);
+		if(tileAnimations == null)return null;
+		for(TileAnimation animation : tileAnimations) {
+			if(animation.getTileIndex() == index)
+				return animation.getAnimation();
+		}
+		return null;
+	}
+
 	/**
 	 * Loads a level's property file which contains all its data.
 	 *
@@ -231,6 +257,13 @@ public class LevelManager {
 		return new Level(this, id, style, data);
 	}
 
+	/**
+	 * Takes a string of level data and makes it useful.
+	 *
+	 * @param properties The properties file of the level.
+	 * @param layer      The layer that will be parsed.
+	 * @return A 2D array of tile index for a specific layer.
+	 */
 	private int[][] parseLevelData(Properties properties, LevelLayer layer) {
 		String data = properties.getProperty(layer.getName());
 		int offset = Integer.parseInt(properties.getProperty(layer.getName() + "-offset"));
@@ -256,5 +289,24 @@ public class LevelManager {
 
 	public Game getGame() {
 		return game;
+	}
+
+	class TileAnimation {
+
+		int tileIndex;
+		Animation animation;
+
+		public TileAnimation(int tileIndex, Animation animation) {
+			this.tileIndex = tileIndex;
+			this.animation = animation;
+		}
+
+		public int getTileIndex() {
+			return tileIndex;
+		}
+
+		public Animation getAnimation() {
+			return animation;
+		}
 	}
 }

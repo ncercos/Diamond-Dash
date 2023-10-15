@@ -1,6 +1,7 @@
 package levels;
 
 import game.Game;
+import sprites.Animation;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -87,7 +88,8 @@ public class Level {
 				if(index < 0)continue;
 				Image image = levelManager.getTile(style, layer, index);
 				if(image == null) continue;
-				g.drawImage(image, x, y, TILES_SIZE, TILES_SIZE, null);
+				Animation animation = levelManager.getTileAnimation(layer, index);
+				g.drawImage(animation != null ? animation.getCurrentImage() : image, x, y, TILES_SIZE, TILES_SIZE, null);
 			}
 		}
 	}

@@ -8,7 +8,9 @@ public enum LevelLayer {
 
 	MIDGROUND,
 	DECOR,
+	ITEMS,
 	FLORA(true),
+	WATER,
 	FOREGROUND;
 
 	private final boolean entityDrawnHere;

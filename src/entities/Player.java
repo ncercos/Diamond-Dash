@@ -24,10 +24,11 @@ public class Player extends Entity {
 	 *	 	2. Handle inputs
 	 *	 	3. Move according to speed
 	 */
+	@Override
 	public void update() {
-		moving = false;
-		double speed = 1.15;
+		super.update();
 
+		double speed = 1.15;
 		if (pressing[Input.LT]) goLT(speed);
 		if (pressing[Input.RT] ) goRT(speed);
 		if (pressing[Input.UP]) goUP(speed * 3.5);
