@@ -3,8 +3,11 @@ package levels;
 import game.Game;
 import sprites.Animation;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -56,7 +59,6 @@ public class Level {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g) {
-
 		// Background
 		g.drawImage(background, 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
 		for(int i = 0; i < 3; i++) {
@@ -87,8 +89,8 @@ public class Level {
 				int index = getTileIndex(layer, w, h);
 				if(index < 0)continue;
 				Image image = levelManager.getTile(style, layer, index);
-				if(image == null) continue;
 				Animation animation = levelManager.getTileAnimation(layer, index);
+				if(image == null && animation == null) continue;
 				g.drawImage(animation != null ? animation.getCurrentImage() : image, x, y, TILES_SIZE, TILES_SIZE, null);
 			}
 		}

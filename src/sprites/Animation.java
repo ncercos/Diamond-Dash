@@ -15,7 +15,8 @@ import java.io.IOException;
 public class Animation {
 
 	private Image[] images;
-	private final int size, duration;
+	private int size;
+	private final int duration;
 	private int current, delay;
 	private boolean cycleCompleted;
 
@@ -25,10 +26,16 @@ public class Animation {
 		delay = duration;
 
 		try {
-			loadImages(name);
+			images = loadImages(name);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Animation(Image[] images, int duration) {
+		this.images = images;
+		this.duration = duration;
+		delay = duration;
 	}
 
 	/**
@@ -46,14 +53,14 @@ public class Animation {
 	 * @param name The filePath for the animation sprite.
 	 * @throws IOException If the file cannot be accessed/found.
 	 */
-	public void loadImages(String name) throws IOException {
+	public Image[] loadImages(String name) throws IOException {
 		BufferedImage sprite = ImageIO.read(new File(Game.RESOURCE_URL + name + ".png"));
 		final int WIDTH = sprite.getWidth() / size;
-		images = new Image[WIDTH];
+		Image[] images = new Image[WIDTH];
 
 		for(int i = 0; i < WIDTH; i++)
 			images[i] = sprite.getSubimage(i * size, 0, size, size);
-
+		return images;
 	}
 
 	/**

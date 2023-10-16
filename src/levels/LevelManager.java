@@ -23,11 +23,10 @@ import static game.Game.*;
  **/
 public class LevelManager {
 
-	// Level Data
 	private final Game game;
 	private final Map<LevelStyle, BufferedImage[]> backgrounds;
 	private final Map<LevelStyle, Image[]> foregroundTiles;
-	private Image[] midGroundTiles, floraTiles, decorTiles;
+	public Image[] midGroundTiles, floraTiles, decorTiles;
 	private Level currentLevel;
 
 	public int MAX_TILES_PER_SHEET;
@@ -65,6 +64,8 @@ public class LevelManager {
 	 * @throws IOException If the image could not be accessed/found.
 	 */
 	public void loadAllLevelResources() throws IOException {
+		final String TILE_DIRECTORY = RESOURCE_URL + "tiles/";
+
 		for(LevelStyle style : LevelStyle.values()) {
 			// Load background
 			String backgroundDirectory = Game.RESOURCE_URL + "backgrounds/" + style.getName() + "/";
@@ -78,7 +79,6 @@ public class LevelManager {
 			});
 
 			// Load tiles
-			final String TILE_DIRECTORY = RESOURCE_URL + "tiles/";
 			BufferedImage tileSheet = ImageIO.read(new File(TILE_DIRECTORY + style.getFileName()));
 			MAX_TILES_PER_SHEET = (tileSheet.getWidth() / TILES_DEFAULT_SIZE) * (tileSheet.getHeight() / TILES_DEFAULT_SIZE);
 			foregroundTiles.put(style, importTiles(tileSheet));
@@ -87,15 +87,17 @@ public class LevelManager {
 			floraTiles = importTiles(ImageIO.read(new File(TILE_DIRECTORY + "flora.png")));
 		}
 
-		animations.put(LevelLayer.ITEMS, new TileAnimations(new String[]{
-				"gold",
-				"diamond" },
-				new int[]{ 110, 25 }));
-		animations.put(LevelLayer.WATER, new TileAnimations(new String[]{
-				"water/some_bubbles",
-				"water/many_bubbles",
-				"water/no_bubbles" },
-				new int[]{ 125, 100, 150 }));
+		animations.put(LevelLayer.ITEMS, new TileAnimations(ImageIO.read(new File(TILE_DIRECTORY + "items.png")), 4,
+				new int[] {110, 															// gold
+										25 																// diamond
+		}));
+		animations.put(LevelLayer.WATER, new TileAnimations(ImageIO.read(new File(TILE_DIRECTORY + "water.png")), 4,
+				new int[] {150, 125, 100, 										// still, some, many bubbles
+						       95,           											// main water flow
+						       22, 22, 22, 22, 22, 22, 22, 				// water fall lush rock
+									 22, 22, 22, 22, 22, 								// split water, split water crash, water crack, water leak, water leak crash
+						       22, 22, 22, 22, 22, 22, 22, 				// water fall dry rock
+						       0, 0}));
 	}
 
 	/**
@@ -170,7 +172,7 @@ public class LevelManager {
 	 */
 	private Image getForegroundTile(LevelStyle style, int index) {
 		Image[] images = foregroundTiles.getOrDefault(style, null);
-		if(images == null || (index >= images.length - 1))return null;
+		if(images == null || (index >= images.length))return null;
 		return images[index];
 	}
 
@@ -182,7 +184,7 @@ public class LevelManager {
 	 * @return An image object, if it exists.
 	 */
 	private Image getMidGroundTile(int index) {
-		if(index >= midGroundTiles.length - 1)return null;
+		if(index >= midGroundTiles.length)return null;
 		return midGroundTiles[index];
 	}
 
@@ -194,7 +196,7 @@ public class LevelManager {
 	 * @return An image object, if it exists.
 	 */
 	private Image getFloraTile(int index) {
-		if(index >= floraTiles.length - 1)return null;
+		if(index >= floraTiles.length)return null;
 		return floraTiles[index];
 	}
 
@@ -206,7 +208,7 @@ public class LevelManager {
 	 * @return An image object, if it exists.
 	 */
 	private Image getDecorTile(int index) {
-		if(index >= decorTiles.length - 1)return null;
+		if(index >= decorTiles.length)return null;
 		return decorTiles[index];
 	}
 
@@ -295,19 +297,26 @@ public class LevelManager {
 
 	class TileAnimations {
 
-		String[] files;
-		int[] durations;
-
 		Map<Integer, Animation> animations;
 
-		public TileAnimations(String[] files, int[] durations) {
-			this.files = files;
-			this.durations = durations;
+		/**
+		 * Used to initialize animated tile sheets.
+		 *
+		 * @param sprite  	The sprite that will be cut into different animations.
+		 * @param count   	The number of images per animation.
+		 * @param duration 	An array of durations for each animation.
+		 */
+		public TileAnimations(BufferedImage sprite, int count, int[] duration) {
 			this.animations = new HashMap<>();
 
-			for(int i = 0; i < files.length; i++) {
-				Animation animation = new Animation("tiles/animations/" + files[i], TILES_DEFAULT_SIZE, durations[i]);
-				animations.put(i * animation.getImages().length, animation);
+			Image[] allAnimations = importTiles(sprite);
+
+			for(int i = 0; i < allAnimations.length; i += count) {
+				Image[] groupedAnimations = new Image[count];
+				System.arraycopy(allAnimations, i, groupedAnimations, 0, count);
+				Animation animation = new Animation(groupedAnimations, duration[animations.size()]);
+				int index = animations.size() * animation.getImages().length;
+				animations.put(index, animation);
 			}
 		}
 
