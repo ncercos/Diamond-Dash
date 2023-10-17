@@ -22,7 +22,7 @@ public class Entity {
 
 	/* Physics */
 	private static final double GRAVITY = 0.15 * Game.SCALE;
-	private static final double MAX_FALL_VELOCITY = 2.0 * Game.SCALE;
+	private static final double MAX_FALL_VELOCITY = 3.0 * Game.SCALE;
 	private double vx, vy;
 	protected boolean moving, inAir = true;
 
@@ -86,9 +86,8 @@ public class Entity {
 	public void move(Level level) {
 		if(!moving && !inAir)return;
 
-		if(!inAir)
-			if(!isOnTile(level))
-				inAir = true;
+		if(!inAir && !isOnTile(level))
+			inAir = true;
 
 		if(inAir) {
 			if(canMoveTo(x, y + vy, level)) {

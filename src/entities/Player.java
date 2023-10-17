@@ -28,10 +28,10 @@ public class Player extends Entity {
 	public void update() {
 		super.update();
 
-		double speed = 1.15;
+		double speed = 1.65;
 		if (pressing[Input.LT]) goLT(speed);
-		if (pressing[Input.RT] ) goRT(speed);
-		if (pressing[Input.UP]) goUP(speed * 3.5);
+		if (pressing[Input.RT]) goRT(speed);
+		if (pressing[Input.UP]) goUP(speed * 2.15);
 
 		if (pressing[Input.ROLL] && !currentPose.equals(Pose.ROLL))
 			setCurrentPose(Pose.ROLL);

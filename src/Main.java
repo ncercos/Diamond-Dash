@@ -1,5 +1,7 @@
 import game.Game;
 
+import java.util.Scanner;
+
 /**
  * Written by Nicholas Cercos
  * Created on Oct 04 2023
@@ -7,26 +9,29 @@ import game.Game;
 public class Main {
 
 	public static void main(String[] args) {
-		new Game();
+		if(false) {
+			Scanner scanner = new Scanner(System.in);
+			System.out.println("--> Please input data to be formatted below:");
+			String data = scanner.nextLine();
+			String[] tilesIndex = data.split(",");
+			final int WIDTH = tilesIndex.length / Game.TILES_IN_HEIGHT;
 
-		// WIP: Make it easier to translate level data using this scanner system.
-		/*
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Input Data to Be Formatted: ");
-		List<String> data = new ArrayList<>();
-		while(scanner.hasNextLine())  {
-			if(scanner.next().equals("exit"))break;
-			data.add(scanner.nextLine());
-			System.out.println(">> Added data");
-		}
+			System.out.println("--> There are " + tilesIndex.length + " tiles to format!");
 
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0, count = 1; i < tilesIndex.length; i++, count++) {
+				boolean outOfBounds = count > WIDTH;
+				if (outOfBounds) {
+					count = 1;
+					builder.append(";");
+				}
+				builder.append(tilesIndex[i].trim()).append(",");
+			}
 
-		System.out.println(">> Formatting...");
-		StringBuilder builder = new StringBuilder();
-		for(String d : data) builder.append(d).append(";");
-		String s = builder.toString();
-		System.out.println("DONE!");
-		System.out.println(s);
-		 */
+			String s = builder.toString();
+			System.out.println("--> Complete!");
+			System.out.println(s.substring(0, s.length() - 1));
+			scanner.close();
+		} else new Game();
 	}
 }
