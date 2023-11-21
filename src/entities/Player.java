@@ -1,5 +1,6 @@
 package entities;
 
+import entities.items.Item;
 import game.Game;
 import inputs.Input;
 import levels.Level;
@@ -11,10 +12,12 @@ import sprites.Pose;
  **/
 public class Player extends Entity {
 
+	private final Game game;
 	private final boolean[] pressing;
 
 	public Player(Game game, double x, double y, double w, double h, int spriteWidth) {
-		super(game, "player", x, y, w, h, spriteWidth);
+		super("player", x, y, w, h, spriteWidth);
+		this.game = game;
 		pressing = new boolean[1024];
 	}
 
@@ -35,10 +38,18 @@ public class Player extends Entity {
 
 		if (pressing[Input.ROLL] && !currentPose.equals(Pose.ROLL))
 			setCurrentPose(Pose.ROLL);
-
 		if (isIdling()) setCurrentPose(Pose.IDLE);
-		move(game.getLevelManager().getCurrentLevel());
+
+		Level level = game.getLevelManager().getCurrentLevel();
+		move(level);
 		checkCloseToLevelBorder();
+
+		for(Item item : level.getItems()) {
+			if(overlaps(item)) {
+				item.collected();
+				break;
+			}
+		}
 	}
 
 	/**

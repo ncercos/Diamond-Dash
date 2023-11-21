@@ -1,13 +1,16 @@
 package levels;
 
+import entities.Entity;
+import entities.items.Diamond;
+import entities.items.Gold;
+import entities.items.Item;
 import game.Game;
 import sprites.Animation;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,6 +36,8 @@ public class Level {
 	private final BufferedImage background, largeMountain, smallMountain, mountainShadow;
 	private final int LARGE_MOUNTAIN_WIDTH, SMALL_MOUNTAIN_WIDTH, MOUNTAIN_SHADOW_WIDTH;
 
+	private final List<Item> items;
+
 	public Level(LevelManager levelManager, int id, LevelStyle style, Map<LevelLayer, int[][]> data) {
 		this.levelManager = levelManager;
 		this.id = id;
@@ -51,6 +56,9 @@ public class Level {
 		LARGE_MOUNTAIN_WIDTH  = (int) (largeMountain.getWidth()  * SCALE);
 		SMALL_MOUNTAIN_WIDTH  = (int) (smallMountain.getWidth()  * SCALE);
 		MOUNTAIN_SHADOW_WIDTH = (int) (mountainShadow.getWidth() * SCALE);
+
+		items = new ArrayList<>();
+		loadAllItems();
 	}
 
 	/**
@@ -72,6 +80,8 @@ public class Level {
 			if(layer.isEntityDrawnHere()) levelManager.getGame().getPlayer().draw(g, this);
 			drawLayer(g, layer);
 		}
+
+		items.forEach(i -> i.draw(g, this));
 	}
 
 	/**
@@ -94,6 +104,42 @@ public class Level {
 				g.drawImage(animation != null ? animation.getCurrentImage() : image, x, y, TILES_SIZE, TILES_SIZE, null);
 			}
 		}
+	}
+
+	/**
+	 * Loads a hitbox for all items in the level and
+	 * saves it to memory for collision.
+	 */
+	private void loadAllItems() {
+		int[][] itemData = data.get(LevelLayer.ITEMS);
+		for(int h = 0; h < itemData.length; h++) {
+			for(int w = 0; w < itemData[h].length; w++) {
+				int index = itemData[h][w];
+				if(index < 0)continue;
+				int x = w * TILES_SIZE, y = h * TILES_SIZE;
+				addItem(index == 0 ? new Gold(this, x, y)    :
+						    index == 4 ? new Diamond(this, x, y) : null);
+			}
+		}
+	}
+
+	/**
+	 * Removes an item from the level.
+	 *
+	 * @param item The item that will be removed.
+	 */
+	public void removeItem(Item item) {
+		items.remove(item);
+		data.get(LevelLayer.ITEMS)[item.getTileY()][item.getTileX()] = -1;
+	}
+
+	private void addItem(Item item) {
+		if(item == null)return;
+		items.add(item);
+	}
+
+	public List<Item> getItems() {
+		return items;
 	}
 
 	/**

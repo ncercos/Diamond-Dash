@@ -37,10 +37,7 @@ public class Entity {
 	private double flipX = 0;
 	private int flipW = 1;
 
-	protected Game game;
-
-	public Entity(Game game, String name, double x, double y, double w, double h, int spriteWidth) {
-		this.game = game;
+	public Entity(String name, double x, double y, double w, double h, int spriteWidth) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
@@ -51,12 +48,25 @@ public class Entity {
 		loadAllAnimations(spriteWidth);
 	}
 
+	public Entity(double x, double y, double w, double h) {
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+		name = null;
+		animations = null;
+		currentPose = null;
+	}
+
 	/**
 	 * Draws to the screen.
 	 *
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g, Level level) {
+		//g.drawRect((int)x - level.getOffsetX(), (int)y, (int)w, (int)h);
+		if(animations == null || currentPose == null)return;
+
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
 		int px = (int)(x - level.getOffsetX() + flipX);
@@ -229,6 +239,19 @@ public class Entity {
 		if(!level.isSolid(x, y + h + 1))
 			return level.isSolid(x + w, y + h + 1);
 		return true;
+	}
+
+	/**
+	 * Determines if two entity hitboxes are overlapping.
+	 *
+	 * @param e The other entity in question.
+	 * @return True if both entities are colliding.
+	 */
+	public boolean overlaps(Entity e) {
+		return (x     <= e.x + e.w) &&
+				   (x + w >= e.x      ) &&
+				   (y     <= e.y + e.h) &&
+				   (y + h >= e.y      );
 	}
 
 	// Animations
