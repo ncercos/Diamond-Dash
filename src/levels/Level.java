@@ -1,7 +1,6 @@
 package levels;
 
 import entities.Matter;
-import entities.Trap;
 import entities.items.Diamond;
 import entities.items.Gold;
 import entities.traps.ThornFence;
