@@ -43,14 +43,15 @@ public class Player extends Entity {
 		move(level);
 		checkCloseToLevelBorder();
 
-		for(Item item : level.getItems()) {
+		for(Matter item : level.getItems()) {
 			if(overlaps(item)) {
-				item.collected();
+				level.removeItem(item);
+				item.onCollide();
 				break;
 			}
 		}
 
-		for(Trap trap : level.getTraps()) {
+		for(Matter trap : level.getTraps()) {
 			if(overlaps(trap)) {
 				trap.onCollide();
 				break;

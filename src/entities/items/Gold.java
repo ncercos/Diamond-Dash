@@ -1,13 +1,13 @@
 package entities.items;
 
-import entities.Item;
+import entities.Matter;
 import levels.Level;
 
 /**
  * Written by Nicholas Cercos
  * Created on Nov 21 2023
  **/
-public class Gold extends Item {
+public class Gold extends Matter {
 
 	/**
 	 * Create a Gold item with an adjusted hitbox.
@@ -21,6 +21,6 @@ public class Gold extends Item {
 	}
 
 	@Override
-	public void onCollect() {}
+	public void onCollide() {}
 
 }

@@ -1,15 +1,15 @@
 package entities.traps;
 
-import entities.Trap;
+import entities.Matter;
 import levels.Level;
 
 /**
  * Written by Nicholas Cercos
  * Created on Nov 23 2023
  **/
-public class ThornedFence extends Trap {
+public class ThornFence extends Matter {
 
-	public ThornedFence(Level level, double x, double y, boolean facesLeft) {
+	public ThornFence(Level level, double x, double y, boolean facesLeft) {
 		super(level,
 				x, y,
 				facesLeft ? 12 : 15,

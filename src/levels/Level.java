@@ -1,10 +1,10 @@
 package levels;
 
+import entities.Matter;
 import entities.Trap;
 import entities.items.Diamond;
 import entities.items.Gold;
-import entities.Item;
-import entities.traps.ThornedFence;
+import entities.traps.ThornFence;
 import game.Game;
 import sprites.Animation;
 
@@ -37,8 +37,7 @@ public class Level {
 	private final BufferedImage background, largeMountain, smallMountain, mountainShadow;
 	private final int LARGE_MOUNTAIN_WIDTH, SMALL_MOUNTAIN_WIDTH, MOUNTAIN_SHADOW_WIDTH;
 
-	private final List<Item> items;
-	private final List<Trap> traps;
+	private final List<Matter> items, traps;
 
 	public Level(LevelManager levelManager, int id, LevelStyle style, Map<LevelLayer, int[][]> data) {
 		this.levelManager = levelManager;
@@ -133,17 +132,17 @@ public class Level {
 	 *
 	 * @param item The item that will be removed.
 	 */
-	public void removeItem(Item item) {
+	public void removeItem(Matter item) {
 		items.remove(item);
 		data.get(LevelLayer.ITEMS)[item.getTileY()][item.getTileX()] = -1;
 	}
 
-	private void addItem(Item item) {
+	private void addItem(Matter item) {
 		if(item == null)return;
 		items.add(item);
 	}
 
-	public List<Item> getItems() {
+	public List<Matter> getItems() {
 		return items;
 	}
 
@@ -158,12 +157,12 @@ public class Level {
 				int index = trapData[h][w];
 				if(!Trap.TrapType.isTrap(index))continue;
 				int x = w * TILES_SIZE, y = h * TILES_SIZE;
-				traps.add(new ThornedFence(this, x, y, index == Trap.TrapType.STICK_LEFT.getTileID()));
+				traps.add(new ThornFence(this, x, y, index == Trap.TrapType.STICK_LEFT.getTileID()));
 			}
 		}
 	}
 
-	public List<Trap> getTraps() {
+	public List<Matter> getTraps() {
 		return traps;
 	}
 
