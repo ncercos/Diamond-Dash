@@ -154,9 +154,9 @@ public class Level {
 		for(int h = 0; h < trapData.length; h++) {
 			for(int w = 0; w < trapData[h].length; w++) {
 				int index = trapData[h][w];
-				if(!Trap.TrapType.isTrap(index))continue;
+				if(!Matter.Type.isTrap(index))continue;
 				int x = w * TILES_SIZE, y = h * TILES_SIZE;
-				traps.add(new ThornFence(this, x, y, index == Trap.TrapType.STICK_LEFT.getTileID()));
+				traps.add(new ThornFence(this, x, y, index == Matter.Type.THORN_FENCE_LEFT.getTileID()));
 			}
 		}
 	}
