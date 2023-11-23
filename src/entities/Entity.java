@@ -64,7 +64,7 @@ public class Entity {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g, Level level) {
-		//g.drawRect((int)x - level.getOffsetX(), (int)y, (int)w, (int)h);
+		g.drawRect((int)x - level.getOffsetX(), (int)y, (int)w, (int)h);
 		if(animations == null || currentPose == null)return;
 
 		Animation animation = getCurrentAnimation();

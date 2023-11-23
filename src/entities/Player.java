@@ -1,6 +1,5 @@
 package entities;
 
-import entities.items.Item;
 import game.Game;
 import inputs.Input;
 import levels.Level;
@@ -47,6 +46,13 @@ public class Player extends Entity {
 		for(Item item : level.getItems()) {
 			if(overlaps(item)) {
 				item.collected();
+				break;
+			}
+		}
+
+		for(Trap trap : level.getTraps()) {
+			if(overlaps(trap)) {
+				trap.onCollide();
 				break;
 			}
 		}

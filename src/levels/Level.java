@@ -1,9 +1,10 @@
 package levels;
 
-import entities.Entity;
+import entities.Trap;
 import entities.items.Diamond;
 import entities.items.Gold;
-import entities.items.Item;
+import entities.Item;
+import entities.traps.ThornedFence;
 import game.Game;
 import sprites.Animation;
 
@@ -37,6 +38,7 @@ public class Level {
 	private final int LARGE_MOUNTAIN_WIDTH, SMALL_MOUNTAIN_WIDTH, MOUNTAIN_SHADOW_WIDTH;
 
 	private final List<Item> items;
+	private final List<Trap> traps;
 
 	public Level(LevelManager levelManager, int id, LevelStyle style, Map<LevelLayer, int[][]> data) {
 		this.levelManager = levelManager;
@@ -58,7 +60,9 @@ public class Level {
 		MOUNTAIN_SHADOW_WIDTH = (int) (mountainShadow.getWidth() * SCALE);
 
 		items = new ArrayList<>();
+		traps = new ArrayList<>();
 		loadAllItems();
+		loadAllTraps();
 	}
 
 	/**
@@ -82,6 +86,7 @@ public class Level {
 		}
 
 		items.forEach(i -> i.draw(g, this));
+		traps.forEach(i -> i.draw(g, this));
 	}
 
 	/**
@@ -140,6 +145,26 @@ public class Level {
 
 	public List<Item> getItems() {
 		return items;
+	}
+
+	/**
+	 * Loads a hitbox for all traps in the level and
+	 * saves it to memory for collision.
+	 */
+	private void loadAllTraps() {
+		int[][] trapData = data.get(LevelLayer.FLORA);
+		for(int h = 0; h < trapData.length; h++) {
+			for(int w = 0; w < trapData[h].length; w++) {
+				int index = trapData[h][w];
+				if(!Trap.TrapType.isTrap(index))continue;
+				int x = w * TILES_SIZE, y = h * TILES_SIZE;
+				traps.add(new ThornedFence(this, x, y, index == Trap.TrapType.STICK_LEFT.getTileID()));
+			}
+		}
+	}
+
+	public List<Trap> getTraps() {
+		return traps;
 	}
 
 	/**

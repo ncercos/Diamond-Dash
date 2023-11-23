@@ -1,5 +1,6 @@
 package entities.items;
 
+import entities.Item;
 import levels.Level;
 
 /**

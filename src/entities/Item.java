@@ -1,6 +1,5 @@
-package entities.items;
+package entities;
 
-import entities.Entity;
 import game.Game;
 import levels.Level;
 
