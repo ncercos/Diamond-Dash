@@ -27,6 +27,8 @@ public class Menu extends State {
 	private int mX, mY, mW, mH;
 
 	private final BufferedImage bgImg, lmImg, smImg, msImg;
+	private int bgOffsetX;
+	private boolean bgMoveLeft;
 
 	public Menu(Game game) {
 		super(game);
@@ -77,7 +79,12 @@ public class Menu extends State {
 
 	@Override
 	public void draw(Graphics g) {
-		game.getInGame().getLevelManager().getCurrentLevel().drawBackground(g, bgImg, lmImg, msImg, smImg);
+		int BG_SCROLL_LIMIT = (int) (766 * Game.SCALE);
+		if(bgOffsetX == BG_SCROLL_LIMIT && bgMoveLeft) bgMoveLeft = false;
+		else if(bgOffsetX == 0 && !bgMoveLeft) bgMoveLeft = true;
+		bgOffsetX = bgMoveLeft ? (bgOffsetX + 1) : (bgOffsetX - 1);
+
+		game.getInGame().getLevelManager().getCurrentLevel().drawBackground(g, bgImg, lmImg, msImg, smImg, bgOffsetX);
 		g.drawImage(menuImg, mX, mY, mW, mH, null);
 		buttons.forEach(b -> b.draw(g));
 	}

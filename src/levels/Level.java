@@ -64,7 +64,7 @@ public class Level {
 	 */
 	public void draw(Graphics g) {
 		// Background
-		drawBackground(g, background, largeMountain, mountainShadow, smallMountain);
+		drawBackground(g, background, largeMountain, mountainShadow, smallMountain, offsetX);
 
 		// Tiles
 		for(LevelLayer layer : LevelLayer.values()) {
@@ -85,7 +85,7 @@ public class Level {
 	 * @param ms The mountain shadow image.
 	 * @param sm The small mountain image.
 	 */
-	public void drawBackground(Graphics g, BufferedImage bg, BufferedImage lm, BufferedImage ms, BufferedImage sm) {
+	public void drawBackground(Graphics g, BufferedImage bg, BufferedImage lm, BufferedImage ms, BufferedImage sm, int offsetX) {
 		final int LM_WIDTH = (int) (lm.getWidth() * SCALE);
 		final int MS_WIDTH = (int) (ms.getWidth() * SCALE);
 		final int SM_WIDTH = (int) (sm.getWidth() * SCALE);
