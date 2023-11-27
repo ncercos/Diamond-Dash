@@ -1,7 +1,8 @@
 package game;
 
-import entities.Player;
-import levels.LevelManager;
+import game.states.InGame;
+import game.states.Menu;
+import game.states.State;
 
 import java.awt.*;
 
@@ -23,18 +24,16 @@ public class Game implements Runnable {
 	public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
 	public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
-	// Entities
-	private final Player player;
-
-	// Levels
-	private final LevelManager levelManager;
+	// States
+	private final Menu menu;
+	private final InGame inGame;
 
 	// Utils
 	public static final String RESOURCE_URL = "./res/";
 
 	public Game() {
-		levelManager = new LevelManager(this);
-		player = new Player(this, 0, 0, 13 * SCALE, 13 * SCALE, 14);
+		menu = new Menu(this);
+		inGame = new InGame(this);
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();
@@ -52,7 +51,7 @@ public class Game implements Runnable {
 	 * Everything that needs to be updated and re-rendered.
 	 */
 	private void update() {
-		player.update();
+		getCurrentState().update();
 	}
 
 	/**
@@ -61,7 +60,14 @@ public class Game implements Runnable {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g) {
-		levelManager.draw(g);
+		getCurrentState().draw(g);
+	}
+
+	/**
+	 * Handler for when the game window loses focus.
+	 */
+	public void lostFocus() {
+		getCurrentState().lostFocus();
 	}
 
 	/**
@@ -81,17 +87,21 @@ public class Game implements Runnable {
 	}
 
 	/**
-	 * Handler for when the game window loses focus.
+	 * @return The game's current state.
 	 */
-	public void lostFocus() {
-		player.resetVelocity();
+	public State getCurrentState() {
+		switch (GameState.current) {
+			case MENU ->   { return menu;   }
+			case INGAME -> { return inGame; }
+		}
+		return null;
 	}
 
-	public Player getPlayer() {
-		return player;
+	public Menu getMenu() {
+		return menu;
 	}
 
-	public LevelManager getLevelManager() {
-		return levelManager;
+	public InGame getInGame() {
+		return inGame;
 	}
 }

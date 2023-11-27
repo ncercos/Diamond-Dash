@@ -39,7 +39,7 @@ public class Player extends Entity {
 			setCurrentPose(Pose.ROLL);
 		if (isIdling()) setCurrentPose(Pose.IDLE);
 
-		Level level = game.getLevelManager().getCurrentLevel();
+		Level level = game.getInGame().getLevelManager().getCurrentLevel();
 		move(level);
 		checkCloseToLevelBorder();
 
@@ -64,7 +64,7 @@ public class Player extends Entity {
 	 * extend (if possible) by offsetting the value that was traveled.
 	 */
 	private void checkCloseToLevelBorder() {
-		Level level = game.getLevelManager().getCurrentLevel();
+		Level level = game.getInGame().getLevelManager().getCurrentLevel();
 		if(level == null)return;
 		int currentXPos = (int)x;
 		int diff = currentXPos - level.getOffsetX();

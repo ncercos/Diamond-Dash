@@ -79,7 +79,7 @@ public class Level {
 
 		// Tiles
 		for(LevelLayer layer : LevelLayer.values()) {
-			if(layer.isEntityDrawnHere()) levelManager.getGame().getPlayer().draw(g, this);
+			if(layer.isEntityDrawnHere()) levelManager.getGame().getInGame().getPlayer().draw(g, this);
 			drawLayer(g, layer);
 		}
 

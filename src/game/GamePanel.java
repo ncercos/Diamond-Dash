@@ -1,12 +1,13 @@
 package game;
 
 import inputs.KeyboardInputs;
+import inputs.MouseInputs;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static game.Game.GAME_WIDTH;
 import static game.Game.GAME_HEIGHT;
+import static game.Game.GAME_WIDTH;
 
 /**
  * Written by Nicholas Cercos
@@ -20,8 +21,11 @@ public class GamePanel extends JPanel {
 
 	public GamePanel(Game game) {
 		this.game = game;
+		MouseInputs mouseInputs = new MouseInputs(game);
 		setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
-		addKeyListener(new KeyboardInputs(game.getPlayer()));
+		addKeyListener(new KeyboardInputs(game));
+		addMouseListener(mouseInputs);
+		addMouseMotionListener(mouseInputs);
 		setFocusable(true);
 	}
 

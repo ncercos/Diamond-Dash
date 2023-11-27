@@ -1,6 +1,7 @@
 package inputs;
 
-import entities.Player;
+import game.Game;
+import game.GameState;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -11,22 +12,22 @@ import java.awt.event.KeyListener;
  **/
 public class KeyboardInputs implements KeyListener {
 
-	private final Player player;
+	private final Game game;
 
-	public KeyboardInputs(Player player) {
-		this.player = player;
+	public KeyboardInputs(Game game) {
+		this.game = game;
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {}
-
-	@Override
 	public void keyPressed(KeyEvent e) {
-		player.setPressing(e.getKeyCode(), true);
+		game.getCurrentState().keyPressed(e);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		player.setPressing(e.getKeyCode(), false);
+		game.getCurrentState().keyReleased(e);
 	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {}
 }
