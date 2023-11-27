@@ -20,11 +20,13 @@ public class KeyboardInputs implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if(game.getCurrentState() == null)return;
 		game.getCurrentState().keyPressed(e);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		if(game.getCurrentState() == null)return;
 		game.getCurrentState().keyReleased(e);
 	}
 

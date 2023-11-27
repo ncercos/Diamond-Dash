@@ -2,10 +2,19 @@ package game.states;
 
 import game.Game;
 import game.GameState;
+import levels.LevelStyle;
+import ui.MenuButton;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Written by Nicholas Cercos
@@ -13,25 +22,68 @@ import java.awt.event.MouseEvent;
  **/
 public class Menu extends State {
 
+	private BufferedImage menuImg;
+	private final Set<MenuButton> buttons;
+	private int mX, mY, mW, mH;
+
+	private final BufferedImage bgImg, lmImg, smImg, msImg;
+
 	public Menu(Game game) {
 		super(game);
+		buttons = new HashSet<>();
+		LevelStyle style = LevelStyle.values()[ThreadLocalRandom.current().nextInt(LevelStyle.values().length)];
+		bgImg = game.getInGame().getLevelManager().getBackgroundImage(style);
+		lmImg = game.getInGame().getLevelManager().getMountainImage(style, true, true);
+		smImg = game.getInGame().getLevelManager().getMountainImage(style, false, true);
+		msImg = game.getInGame().getLevelManager().getMountainShadowImage(style);
+		loadMenu();
+		loadButtons();
+	}
+
+	private void loadMenu() {
+		try {
+			menuImg = ImageIO.read(new File(Game.RESOURCE_URL + "ui/menu.png"));
+			mW = (int) (menuImg.getWidth() * Game.SCALE) / 2;
+			mH = (int) (menuImg.getHeight() * Game.SCALE) / 2;
+			mX = (Game.GAME_WIDTH / 2) - (mW / 2);
+			mY = (int) (30 * Game.SCALE);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Loads all menu buttons based on their respective state.
+	 * Each button will be placed 70px under the other. (adjusted to scale, ofc)
+	 */
+	private void loadButtons() {
+		int yPos = 82;
+		for(int i = 0; i < GameState.values().length; i++) {
+			GameState state = GameState.values()[i];
+			if(state.equals(GameState.MENU))continue;
+			buttons.add(new MenuButton(Game.GAME_WIDTH / 2, (int) (yPos * Game.SCALE), i - 1, state));
+			yPos += 35;
+		}
+	}
+
+	private void resetButtons() {
+		buttons.forEach(MenuButton::reset);
 	}
 
 	@Override
 	public void update() {
-
+		buttons.forEach(MenuButton::update);
 	}
 
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(Color.BLACK);
-		g.drawString("MENU", Game.GAME_WIDTH / 2, 200);
+		game.getInGame().getLevelManager().getCurrentLevel().drawBackground(g, bgImg, lmImg, msImg, smImg);
+		g.drawImage(menuImg, mX, mY, mW, mH, null);
+		buttons.forEach(b -> b.draw(g));
 	}
 
 	@Override
-	public void lostFocus() {
-
-	}
+	public void lostFocus() {}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -40,27 +92,42 @@ public class Menu extends State {
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-
-	}
+	public void mouseClicked(MouseEvent e) {}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-
+		for(MenuButton b : buttons) {
+			if(isInteractingWith(e, b)) {
+				b.setMousePressed(true);
+				break;
+			}
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-
+		for(MenuButton b : buttons) {
+			if(isInteractingWith(e, b)) {
+				if(b.isMousePressed())
+					b.applyState();
+				break;
+			}
+		}
+		resetButtons();
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		buttons.forEach(b -> b.setMouseOver(false));
 
+		for(MenuButton b : buttons) {
+			if(isInteractingWith(e, b)) {
+				b.setMouseOver(true);
+				break;
+			}
+		}
 	}
 }

@@ -20,21 +20,25 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		if(game.getCurrentState() == null)return;
 		game.getCurrentState().mouseClicked(e);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if(game.getCurrentState() == null)return;
 		game.getCurrentState().mousePressed(e);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		if(game.getCurrentState() == null)return;
 		game.getCurrentState().mouseReleased(e);
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		if(game.getCurrentState() == null)return;
 		game.getCurrentState().mouseMoved(e);
 	}
 

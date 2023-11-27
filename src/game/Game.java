@@ -32,8 +32,8 @@ public class Game implements Runnable {
 	public static final String RESOURCE_URL = "./res/";
 
 	public Game() {
-		menu = new Menu(this);
 		inGame = new InGame(this);
+		menu = new Menu(this);
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();
@@ -51,7 +51,12 @@ public class Game implements Runnable {
 	 * Everything that needs to be updated and re-rendered.
 	 */
 	private void update() {
-		getCurrentState().update();
+		State state = getCurrentState();
+		if(state == null) {
+			System.exit(0);
+			return;
+		}
+		state.update();
 	}
 
 	/**

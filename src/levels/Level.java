@@ -34,8 +34,6 @@ public class Level {
 	public final int RT_BORDER = (int) (0.8 * Game.GAME_WIDTH);
 
 	private final BufferedImage background, largeMountain, smallMountain, mountainShadow;
-	private final int LARGE_MOUNTAIN_WIDTH, SMALL_MOUNTAIN_WIDTH, MOUNTAIN_SHADOW_WIDTH;
-
 	private final List<Matter> items, traps;
 
 	public Level(LevelManager levelManager, int id, LevelStyle style, Map<LevelLayer, int[][]> data) {
@@ -53,10 +51,6 @@ public class Level {
 		smallMountain  = levelManager.getMountainImage(style, false, foggy);
 		mountainShadow = levelManager.getMountainShadowImage(style);
 
-		LARGE_MOUNTAIN_WIDTH  = (int) (largeMountain.getWidth()  * SCALE);
-		SMALL_MOUNTAIN_WIDTH  = (int) (smallMountain.getWidth()  * SCALE);
-		MOUNTAIN_SHADOW_WIDTH = (int) (mountainShadow.getWidth() * SCALE);
-
 		items = new ArrayList<>();
 		traps = new ArrayList<>();
 		loadAllItems();
@@ -70,12 +64,7 @@ public class Level {
 	 */
 	public void draw(Graphics g) {
 		// Background
-		g.drawImage(background, 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
-		for(int i = 0; i < 3; i++) {
-			g.drawImage(largeMountain,  i * LARGE_MOUNTAIN_WIDTH  - (int) (offsetX * 0.3), (int) (85 * SCALE),  LARGE_MOUNTAIN_WIDTH,  (int) (largeMountain.getHeight() * SCALE), null);
-			g.drawImage(mountainShadow, i * MOUNTAIN_SHADOW_WIDTH - (int) (offsetX * 0.5), (int) (70 * SCALE),  MOUNTAIN_SHADOW_WIDTH, (int) (mountainShadow.getHeight() * SCALE), null);
-			g.drawImage(smallMountain,  i * SMALL_MOUNTAIN_WIDTH  - (int) (offsetX * 0.7), (int) (170 * SCALE), SMALL_MOUNTAIN_WIDTH,  (int) (smallMountain.getHeight() * SCALE), null);
-		}
+		drawBackground(g, background, largeMountain, mountainShadow, smallMountain);
 
 		// Tiles
 		for(LevelLayer layer : LevelLayer.values()) {
@@ -85,6 +74,28 @@ public class Level {
 
 		items.forEach(i -> i.draw(g, this));
 		traps.forEach(i -> i.draw(g, this));
+	}
+
+	/**
+	 * Draws the complete background of a level.
+	 *
+	 * @param g  The graphics context.
+	 * @param bg The background image.
+	 * @param lm The large mountain image.
+	 * @param ms The mountain shadow image.
+	 * @param sm The small mountain image.
+	 */
+	public void drawBackground(Graphics g, BufferedImage bg, BufferedImage lm, BufferedImage ms, BufferedImage sm) {
+		final int LM_WIDTH = (int) (lm.getWidth() * SCALE);
+		final int MS_WIDTH = (int) (ms.getWidth() * SCALE);
+		final int SM_WIDTH = (int) (sm.getWidth() * SCALE);
+
+		g.drawImage(bg, 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
+		for(int i = 0; i < 3; i++) {
+			g.drawImage(lm, i * LM_WIDTH - (int) (offsetX * 0.3), (int) (85 * SCALE),  LM_WIDTH, (int) (largeMountain.getHeight()  * SCALE), null);
+			g.drawImage(ms, i * MS_WIDTH - (int) (offsetX * 0.5), (int) (70 * SCALE),  MS_WIDTH, (int) (mountainShadow.getHeight() * SCALE), null);
+			g.drawImage(sm, i * SM_WIDTH - (int) (offsetX * 0.7), (int) (168 * SCALE), SM_WIDTH, (int) (smallMountain.getHeight()  * SCALE), null);
+		}
 	}
 
 	/**
