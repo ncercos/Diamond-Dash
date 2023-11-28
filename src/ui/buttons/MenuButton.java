@@ -16,7 +16,6 @@ import java.io.IOException;
 public class MenuButton extends Button {
 
 	private final int rowIndex;
-	private int currentIndex;
 	private final GameState state;
 	private BufferedImage[] sprites;
 
@@ -35,7 +34,7 @@ public class MenuButton extends Button {
 		this.state = state;
 
 		loadSprites();
-		hitbox = new Rectangle(x - X_CENTER_OFFSET, y, WIDTH, HEIGHT);
+		hitbox.x = x - X_CENTER_OFFSET;
 	}
 
 	/**
@@ -44,9 +43,9 @@ public class MenuButton extends Button {
 	private void loadSprites() {
 		sprites = new BufferedImage[3];
 		try {
-			BufferedImage sprite = ImageIO.read(new File(Game.RESOURCE_URL + "ui/menu_buttons.png"));
+			BufferedImage sheet = ImageIO.read(new File(Game.RESOURCE_URL + "ui/menu_buttons.png"));
 			for (int i = 0; i < sprites.length; i++)
-				sprites[i] = sprite.getSubimage(i * DEFAULT_WIDTH, rowIndex * DEFAULT_HEIGHT,
+				sprites[i] = sheet.getSubimage(i * DEFAULT_WIDTH, rowIndex * DEFAULT_HEIGHT,
 						DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -58,17 +57,6 @@ public class MenuButton extends Button {
 	 */
 	public void applyState() {
 		GameState.current = state;
-	}
-
-	/**
-	 * Updates a button's animation based on the
-	 * actions of the mouse.
-	 */
-	@Override
-	public void update() {
-		                 currentIndex = 0;
-		if(mouseOver)    currentIndex = 1;
-		if(mousePressed) currentIndex = 2;
 	}
 
 	@Override

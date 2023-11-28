@@ -134,4 +134,7 @@ public class Menu extends State {
 			}
 		}
 	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {}
 }

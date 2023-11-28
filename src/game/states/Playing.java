@@ -96,6 +96,12 @@ public class Playing extends State {
 		pauseOverlay.mouseMoved(e);
 	}
 
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if(!paused)return;
+		pauseOverlay.mouseDragged(e);
+	}
+
 	public Player getPlayer() {
 		return player;
 	}

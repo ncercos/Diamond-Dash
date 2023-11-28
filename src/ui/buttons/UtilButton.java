@@ -33,10 +33,10 @@ public class UtilButton extends Button {
 	 */
 	private void loadButtons() {
 		try {
-			BufferedImage sprite = ImageIO.read(new File(Game.RESOURCE_URL + "ui/util_buttons.png"));
+			BufferedImage sheet = ImageIO.read(new File(Game.RESOURCE_URL + "ui/util_buttons.png"));
 			buttons = new BufferedImage[3];
 			for(int i = 0; i < buttons.length; i++) {
-				buttons[i] = sprite.getSubimage(i * DEFAULT_SIZE, type.getRowIndex() * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
+				buttons[i] = sheet.getSubimage(i * DEFAULT_SIZE, type.getRowIndex() * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

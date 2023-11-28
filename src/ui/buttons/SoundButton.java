@@ -16,7 +16,7 @@ public class SoundButton extends Button {
 
 	private BufferedImage[][] buttonImgs;
 	private boolean muted;
-	private int rowIndex, colIndex;
+	private int rowIndex;
 
 	// Dimensions
 	private static final int DEFAULT_SIZE = 42;
@@ -32,11 +32,11 @@ public class SoundButton extends Button {
 	 */
 	private void loadButtonImgs() {
 		try {
-			BufferedImage sprite = ImageIO.read(new File(Game.RESOURCE_URL + "ui/sound_buttons.png"));
+			BufferedImage sheet = ImageIO.read(new File(Game.RESOURCE_URL + "ui/sound_buttons.png"));
 			buttonImgs = new BufferedImage[2][3];
 			for(int h = 0; h < buttonImgs.length; h++) {
 				for(int w = 0; w < buttonImgs[h].length; w++) {
-					buttonImgs[h][w] = sprite.getSubimage(w * DEFAULT_SIZE, h * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
+					buttonImgs[h][w] = sheet.getSubimage(w * DEFAULT_SIZE, h * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
 				}
 			}
 		} catch (IOException e) {
@@ -48,19 +48,15 @@ public class SoundButton extends Button {
 	 * Update the button's animation and texture based on mouse action.
 	 * Shows whether sound is enabled or disabled.
 	 */
+	@Override
 	public void update() {
-		// Button texture
+		super.update();
 		if(muted) rowIndex = 1;
 		else      rowIndex = 0;
-
-		// Button animation
-		colIndex = 0;
-		if(mouseOver) 	 colIndex = 1;
-		if(mousePressed) colIndex = 2;
 	}
 
 	public void draw(Graphics g) {
-		g.drawImage(buttonImgs[rowIndex][colIndex], x, y, w, h, null);
+		g.drawImage(buttonImgs[rowIndex][currentIndex], x, y, w, h, null);
 	}
 
 	public boolean isMuted() {

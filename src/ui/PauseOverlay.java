@@ -6,6 +6,7 @@ import game.states.Playing;
 import ui.buttons.Button;
 import ui.buttons.SoundButton;
 import ui.buttons.UtilButton;
+import ui.buttons.VolumeButton;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,8 +14,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Written by Nicholas Cercos
@@ -26,14 +27,16 @@ public class PauseOverlay {
 	private BufferedImage pmImg;
 	private int pmX, pmY, pmW, pmH;
 
-	private SoundButton[] soundButtons;
-	private UtilButton[] utilButtons;
+	private List<SoundButton> soundButtons;
+	private List<UtilButton> utilButtons;
+	private List<VolumeButton> volumeButtons;
 
 	public PauseOverlay(Playing playing) {
 		this.playing = playing;
 		loadOverlay();
 		createSoundButtons();
 		createUtilButtons();
+		createVolumeButton();
 	}
 
 
@@ -58,12 +61,12 @@ public class PauseOverlay {
 	 * Music & Sound Effects
 	 */
 	private void createSoundButtons() {
-		soundButtons = new SoundButton[2];
+		soundButtons = new ArrayList<>();
 		int xPos   = (int) (210 * Game.SCALE);
 		int musicY = (int) (65 * Game.SCALE);
 		int sfxY   = (int) (89 * Game.SCALE);
-		soundButtons[0] = new SoundButton(xPos, musicY);
-		soundButtons[1] = new SoundButton(xPos, sfxY);
+		soundButtons.add(new SoundButton(xPos, musicY));
+		soundButtons.add(new SoundButton(xPos, sfxY));
 	}
 
 	/**
@@ -71,14 +74,24 @@ public class PauseOverlay {
 	 * Menu, Replay Level, Unpause
 	 */
 	private void createUtilButtons() {
-		utilButtons = new UtilButton[3];
+		utilButtons = new ArrayList<>();
 		int yPos = (int) (158 * Game.SCALE);
 		int menuX = (int) (140 * Game.SCALE);
 		int replayX = (int) (178 * Game.SCALE);
 		int unpauseX = (int) (216 * Game.SCALE);
-		utilButtons[0] = new UtilButton(menuX, yPos, UtilButton.Type.HOME);
-		utilButtons[1] = new UtilButton(replayX, yPos, UtilButton.Type.REPLAY);
-		utilButtons[2] = new UtilButton(unpauseX, yPos, UtilButton.Type.START);
+		utilButtons.add(new UtilButton(menuX, yPos, UtilButton.Type.HOME));
+		utilButtons.add(new UtilButton(replayX, yPos, UtilButton.Type.REPLAY));
+		utilButtons.add(new UtilButton(unpauseX, yPos, UtilButton.Type.START));
+	}
+
+	/**
+	 * Initializes the volume controls.
+	 */
+	private void createVolumeButton() {
+		volumeButtons = new ArrayList<>();
+		int xPos = (int) (139 * Game.SCALE);
+		int yPos = (int) (135 * Game.SCALE);
+		volumeButtons.add(new VolumeButton(xPos, yPos));
 	}
 
 	/**
@@ -90,10 +103,14 @@ public class PauseOverlay {
 	}
 
 	/**
-	 * @return An array that contains both sound and utility buttons via superclass.
+	 * @return An arraylist that contains both sound and utility buttons via superclass.
 	 */
-	private Button[] getButtons() {
-		return Stream.concat(Arrays.stream(soundButtons), Arrays.stream(utilButtons)).toArray(Button[]::new);
+	private List<Button> getButtons() {
+		List<Button> buttons = new ArrayList<>();
+		buttons.addAll(soundButtons);
+		buttons.addAll(utilButtons);
+		buttons.addAll(volumeButtons);
+		return buttons;
 	}
 
 	public void update() {
@@ -107,8 +124,6 @@ public class PauseOverlay {
 		for(Button button : getButtons())
 			button.draw(g);
 	}
-
-	public void mouseMoved() {}
 
 	public void mousePressed(MouseEvent e) {
 		for(Button button : getButtons()) {
@@ -150,5 +165,10 @@ public class PauseOverlay {
 		}
 	}
 
-	public void mouseDragged(MouseEvent e) {}
+	public void mouseDragged(MouseEvent e) {
+		for(VolumeButton vb : volumeButtons) {
+			if(vb.isMousePressed())
+				vb.move(e.getX());
+		}
+	}
 }

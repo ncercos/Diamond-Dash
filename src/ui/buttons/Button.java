@@ -9,8 +9,9 @@ import java.awt.*;
 public abstract class Button {
 
 	protected int x, y, w, h;
-	protected Rectangle hitbox;
+	protected final Rectangle hitbox;
 	protected boolean mouseOver, mousePressed;
+	protected int currentIndex;
 
 	public Button(int x, int y, int w, int h) {
 		this.x = x;
@@ -22,9 +23,13 @@ public abstract class Button {
 
 	/**
 	 * Any attributes that need to update alongside
-	 * the game loop.
+	 * the game loop. (Button Animations)
 	 */
-	public abstract void update();
+	public void update() {
+		 								 currentIndex = 0;
+		if(mouseOver)    currentIndex = 1;
+		if(mousePressed) currentIndex = 2;
+	}
 
 	/**
 	 * Draws button to screen.
