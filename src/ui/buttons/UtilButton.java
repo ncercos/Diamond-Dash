@@ -1,0 +1,84 @@
+package ui.buttons;
+
+import game.Game;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+/**
+ * Written by Nicholas Cercos
+ * Created on Nov 27 2023
+ **/
+public class UtilButton extends Button {
+
+	private BufferedImage[] buttons;
+	private final Type type;
+	private int currentIndex;
+
+	// Dimensions
+	private static final int DEFAULT_SIZE = 56;
+	private static final int SIZE = (int) (DEFAULT_SIZE * Game.SCALE) / 2;
+
+	public UtilButton(int x, int y, Type type) {
+		super(x, y, SIZE, SIZE);
+		this.type = type;
+		loadButtons();
+	}
+
+	/**
+	 * Loads a specific utility button based on the given type.
+	 */
+	private void loadButtons() {
+		try {
+			BufferedImage sprite = ImageIO.read(new File(Game.RESOURCE_URL + "ui/util_buttons.png"));
+			buttons = new BufferedImage[3];
+			for(int i = 0; i < buttons.length; i++) {
+				buttons[i] = sprite.getSubimage(i * DEFAULT_SIZE, type.getRowIndex() * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Changes the animation of button based on mouse action.
+	 * 0 - Default Button
+	 * 1 - Hover Button
+	 * 2 - Pressed Button
+	 */
+	@Override
+	public void update() {
+		                 currentIndex = 0;
+		if(mouseOver) 	 currentIndex = 1;
+		if(mousePressed) currentIndex = 2;
+	}
+
+	@Override
+	public void draw(Graphics g) {
+		g.drawImage(buttons[currentIndex], x, y, SIZE, SIZE, null);
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public enum Type {
+
+		START(0),
+		REPLAY(1),
+		HOME(2);
+
+		private final int rowIndex;
+
+		Type(int rowIndex) {
+			this.rowIndex = rowIndex;
+		}
+
+		public int getRowIndex() {
+			return rowIndex;
+		}
+	}
+}

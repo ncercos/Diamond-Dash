@@ -2,9 +2,9 @@ package game.states;
 
 import entities.Player;
 import game.Game;
-import game.GameState;
 import inputs.Input;
 import levels.LevelManager;
+import ui.PauseOverlay;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -16,7 +16,7 @@ import static game.Game.SCALE;
  * Written by Nicholas Cercos
  * Created on Nov 27 2023
  **/
-public class InGame extends State {
+public class Playing extends State {
 
 	// Entities
 	private final Player player;
@@ -24,20 +24,37 @@ public class InGame extends State {
 	// Levels
 	private final LevelManager levelManager;
 
-	public InGame(Game game) {
+	// Paused
+	private boolean paused;
+	private final PauseOverlay pauseOverlay;
+
+	public Playing(Game game) {
 		super(game);
+		paused = false;
 		levelManager = new LevelManager(game);
 		player = new Player(game, 0, 0, 13 * SCALE, 13 * SCALE, 14);
+		pauseOverlay = new PauseOverlay(this);
+	}
+
+	/**
+	 * Resumes the game if it is paused.
+	 * All key's pressed will be reset to prevent sticky keys.
+	 */
+	public void unpause() {
+		player.initPressing();
+		paused = false;
 	}
 
 	@Override
 	public void update() {
-		player.update();
+		if(paused) pauseOverlay.update();
+		else player.update();
 	}
 
 	@Override
 	public void draw(Graphics g) {
 		levelManager.draw(g);
+		if(paused) pauseOverlay.draw(g);
 	}
 
 	@Override
@@ -47,15 +64,14 @@ public class InGame extends State {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == Input.ESC) {
-			GameState.current = GameState.MENU;
-			return;
-		}
+		if(e.getKeyCode() == Input.ESC) paused = !paused;
+		if(paused)return;
 		player.setPressing(e.getKeyCode(), true);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		if(paused)return;
 		player.setPressing(e.getKeyCode(), false);
 	}
 
@@ -63,13 +79,22 @@ public class InGame extends State {
 	public void mouseClicked(MouseEvent e) {}
 
 	@Override
-	public void mousePressed(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {
+		if(!paused)return;
+		pauseOverlay.mousePressed(e);
+	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {
+		if(!paused)return;
+		pauseOverlay.mouseReleased(e);
+	}
 
 	@Override
-	public void mouseMoved(MouseEvent e) {}
+	public void mouseMoved(MouseEvent e) {
+		if(!paused)return;
+		pauseOverlay.mouseMoved(e);
+	}
 
 	public Player getPlayer() {
 		return player;
@@ -77,5 +102,9 @@ public class InGame extends State {
 
 	public LevelManager getLevelManager() {
 		return levelManager;
+	}
+
+	public boolean isPaused() {
+		return paused;
 	}
 }

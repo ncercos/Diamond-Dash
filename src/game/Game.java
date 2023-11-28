@@ -1,6 +1,6 @@
 package game;
 
-import game.states.InGame;
+import game.states.Playing;
 import game.states.Menu;
 import game.states.State;
 
@@ -26,13 +26,13 @@ public class Game implements Runnable {
 
 	// States
 	private final Menu menu;
-	private final InGame inGame;
+	private final Playing playing;
 
 	// Utils
 	public static final String RESOURCE_URL = "./res/";
 
 	public Game() {
-		inGame = new InGame(this);
+		playing = new Playing(this);
 		menu = new Menu(this);
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
@@ -97,7 +97,7 @@ public class Game implements Runnable {
 	public State getCurrentState() {
 		switch (GameState.current) {
 			case MENU ->   { return menu;   }
-			case INGAME -> { return inGame; }
+			case PLAYING -> { return playing; }
 		}
 		return null;
 	}
@@ -106,7 +106,7 @@ public class Game implements Runnable {
 		return menu;
 	}
 
-	public InGame getInGame() {
-		return inGame;
+	public Playing getPlaying() {
+		return playing;
 	}
 }

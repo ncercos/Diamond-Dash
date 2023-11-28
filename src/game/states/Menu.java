@@ -3,7 +3,7 @@ package game.states;
 import game.Game;
 import game.GameState;
 import levels.LevelStyle;
-import ui.MenuButton;
+import ui.buttons.MenuButton;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -34,10 +34,10 @@ public class Menu extends State {
 		super(game);
 		buttons = new HashSet<>();
 		LevelStyle style = LevelStyle.values()[ThreadLocalRandom.current().nextInt(LevelStyle.values().length)];
-		bgImg = game.getInGame().getLevelManager().getBackgroundImage(style);
-		lmImg = game.getInGame().getLevelManager().getMountainImage(style, true, true);
-		smImg = game.getInGame().getLevelManager().getMountainImage(style, false, true);
-		msImg = game.getInGame().getLevelManager().getMountainShadowImage(style);
+		bgImg = game.getPlaying().getLevelManager().getBackgroundImage(style);
+		lmImg = game.getPlaying().getLevelManager().getMountainImage(style, true, true);
+		smImg = game.getPlaying().getLevelManager().getMountainImage(style, false, true);
+		msImg = game.getPlaying().getLevelManager().getMountainShadowImage(style);
 		loadMenu();
 		loadButtons();
 	}
@@ -68,10 +68,6 @@ public class Menu extends State {
 		}
 	}
 
-	private void resetButtons() {
-		buttons.forEach(MenuButton::reset);
-	}
-
 	@Override
 	public void update() {
 		buttons.forEach(MenuButton::update);
@@ -84,7 +80,7 @@ public class Menu extends State {
 		else if(bgOffsetX == 0 && !bgMoveLeft) bgMoveLeft = true;
 		bgOffsetX = bgMoveLeft ? (bgOffsetX + 1) : (bgOffsetX - 1);
 
-		game.getInGame().getLevelManager().getCurrentLevel().drawBackground(g, bgImg, lmImg, msImg, smImg, bgOffsetX);
+		game.getPlaying().getLevelManager().getCurrentLevel().drawBackground(g, bgImg, lmImg, msImg, smImg, bgOffsetX);
 		g.drawImage(menuImg, mX, mY, mW, mH, null);
 		buttons.forEach(b -> b.draw(g));
 	}
@@ -93,10 +89,7 @@ public class Menu extends State {
 	public void lostFocus() {}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ENTER)
-			GameState.current = GameState.INGAME;
-	}
+	public void keyPressed(KeyEvent e) {}
 
 	@Override
 	public void keyReleased(KeyEvent e) {}
@@ -118,12 +111,16 @@ public class Menu extends State {
 	public void mouseReleased(MouseEvent e) {
 		for(MenuButton b : buttons) {
 			if(isInteractingWith(e, b)) {
-				if(b.isMousePressed())
+				if(b.isMousePressed()) {
 					b.applyState();
+
+					if(b.getState().equals(GameState.PLAYING))
+						game.getPlaying().unpause();
+				}
 				break;
 			}
 		}
-		resetButtons();
+		buttons.forEach(MenuButton::reset);
 	}
 
 	@Override

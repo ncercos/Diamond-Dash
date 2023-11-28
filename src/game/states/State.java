@@ -1,7 +1,8 @@
 package game.states;
 
 import game.Game;
-import ui.MenuButton;
+import ui.buttons.Button;
+import ui.buttons.MenuButton;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -29,7 +30,7 @@ public abstract class State {
 	public abstract void mouseReleased(MouseEvent e);
 	public abstract void mouseMoved(MouseEvent e);
 
-	public boolean isInteractingWith(MouseEvent e, MenuButton button) {
+	public boolean isInteractingWith(MouseEvent e, Button button) {
 		return button.getHitbox().contains(e.getX(), e.getY());
 	}
 

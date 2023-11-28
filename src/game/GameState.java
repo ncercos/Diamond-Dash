@@ -7,7 +7,7 @@ package game;
 public enum GameState {
 
 	MENU,
-	INGAME,
+	PLAYING,
 	HELP,
 	QUIT;
 

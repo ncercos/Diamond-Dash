@@ -12,12 +12,12 @@ import sprites.Pose;
 public class Player extends Entity {
 
 	private final Game game;
-	private final boolean[] pressing;
+	private boolean[] pressing;
 
 	public Player(Game game, double x, double y, double w, double h, int spriteWidth) {
 		super("player", x, y, w, h, spriteWidth);
 		this.game = game;
-		pressing = new boolean[1024];
+		initPressing();
 	}
 
 	/**
@@ -39,7 +39,7 @@ public class Player extends Entity {
 			setCurrentPose(Pose.ROLL);
 		if (isIdling()) setCurrentPose(Pose.IDLE);
 
-		Level level = game.getInGame().getLevelManager().getCurrentLevel();
+		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
 		move(level);
 		checkCloseToLevelBorder();
 
@@ -64,7 +64,7 @@ public class Player extends Entity {
 	 * extend (if possible) by offsetting the value that was traveled.
 	 */
 	private void checkCloseToLevelBorder() {
-		Level level = game.getInGame().getLevelManager().getCurrentLevel();
+		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
 		if(level == null)return;
 		int currentXPos = (int)x;
 		int diff = currentXPos - level.getOffsetX();
@@ -83,5 +83,9 @@ public class Player extends Entity {
 	 */
 	public void setPressing(int keyCode, boolean value) {
 		pressing[keyCode] = value;
+	}
+
+	public void initPressing() {
+		 pressing = new boolean[1024];
 	}
 }

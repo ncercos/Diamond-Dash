@@ -64,7 +64,7 @@ public class Entity {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g, Level level) {
-		g.drawRect((int)x - level.getOffsetX(), (int)y, (int)w, (int)h);
+		//g.drawRect((int)x - level.getOffsetX(), (int)y, (int)w, (int)h);
 		if(animations == null || currentPose == null)return;
 
 		Animation animation = getCurrentAnimation();
@@ -76,7 +76,8 @@ public class Entity {
 		if(animation.isCycleCompleted() && !currentPose.isRepeated())
 			currentPose = moving ? Pose.RUN : inAir ? Pose.JUMP : Pose.IDLE;
 
-		g.drawImage(animation.getCurrentImage(), px, (int)y, width, height, null);
+		g.drawImage(animation.getCurrentImage(level.getLevelManager().getGame().getPlaying()),
+				px, (int)y, width, height, null);
 	}
 
 	/**

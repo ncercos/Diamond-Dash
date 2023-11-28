@@ -68,7 +68,7 @@ public class Level {
 
 		// Tiles
 		for(LevelLayer layer : LevelLayer.values()) {
-			if(layer.isEntityDrawnHere()) levelManager.getGame().getInGame().getPlayer().draw(g, this);
+			if(layer.isEntityDrawnHere()) levelManager.getGame().getPlaying().getPlayer().draw(g, this);
 			drawLayer(g, layer);
 		}
 
@@ -115,7 +115,7 @@ public class Level {
 				Image image = levelManager.getTile(style, layer, index);
 				Animation animation = levelManager.getTileAnimation(layer, index);
 				if(image == null && animation == null) continue;
-				g.drawImage(animation != null ? animation.getCurrentImage() : image, x, y, TILES_SIZE, TILES_SIZE, null);
+				g.drawImage(animation != null ? animation.getCurrentImage(levelManager.getGame().getPlaying()) : image, x, y, TILES_SIZE, TILES_SIZE, null);
 			}
 		}
 	}
@@ -229,5 +229,9 @@ public class Level {
 
 	public LevelStyle getStyle() {
 		return style;
+	}
+
+	public LevelManager getLevelManager() {
+		return levelManager;
 	}
 }

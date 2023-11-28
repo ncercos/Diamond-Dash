@@ -1,6 +1,7 @@
 package sprites;
 
 import game.Game;
+import game.states.Playing;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -73,9 +74,9 @@ public class Animation {
 	/**
 	 * @return The current image within the animation.
 	 */
-	public Image getCurrentImage() {
+	public Image getCurrentImage(Playing playing) {
 		if(images == null) return null;
-		delay--;
+		if(!playing.isPaused()) delay--;
 		if(delay == 0) {
 			current++;
 			if(current == images.length) {
