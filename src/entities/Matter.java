@@ -13,9 +13,9 @@ public abstract class Matter extends Entity {
 	private final int tileX, tileY;
 
 	public Matter(Level level, double x, double y, double w, double h, double xHitboxOffset, double yHitboxOffset) {
-		super(x, y, w * Game.SCALE, h * Game.SCALE);
-		this.x = x + (xHitboxOffset * Game.SCALE);
-		this.y = y + (yHitboxOffset * Game.SCALE);
+		super(x, y, w * Game.SCALE, h * Game.SCALE, xHitboxOffset, yHitboxOffset);
+		this.x = x + xDrawOffset;
+		this.y = y + yDrawOffset;
 		this.level = level;
 
 		tileX = (int)(x / Game.TILES_SIZE);

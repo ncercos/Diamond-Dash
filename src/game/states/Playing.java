@@ -32,7 +32,7 @@ public class Playing extends State {
 		super(game);
 		paused = false;
 		levelManager = new LevelManager(game);
-		player = new Player(game, 0, 0, 13 * SCALE, 13 * SCALE, 14);
+		player = new Player(game, 0, 0, 11 * SCALE, 13 * SCALE, 32);
 		pauseOverlay = new PauseOverlay(this);
 	}
 
@@ -42,6 +42,7 @@ public class Playing extends State {
 	 */
 	public void unpause() {
 		player.initPressing();
+		player.initClicking();
 		paused = false;
 	}
 
@@ -80,14 +81,14 @@ public class Playing extends State {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(!paused)return;
-		pauseOverlay.mousePressed(e);
+		if(paused) pauseOverlay.mousePressed(e);
+		else player.setClicking(e.getButton(), true);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if(!paused)return;
-		pauseOverlay.mouseReleased(e);
+		if(paused) pauseOverlay.mouseReleased(e);
+		else player.setClicking(e.getButton(), false);
 	}
 
 	@Override

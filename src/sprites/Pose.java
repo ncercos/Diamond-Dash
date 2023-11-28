@@ -9,7 +9,8 @@ public enum Pose {
 	IDLE,
 	RUN,
 	JUMP,
-	ROLL(false, 3);
+	ROLL(false, 4),
+	ATTACK(false, 6);
 
 	private final boolean repeated;
 	private final int duration;

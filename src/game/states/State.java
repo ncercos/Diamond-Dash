@@ -30,6 +30,15 @@ public abstract class State {
 	public abstract void mouseMoved(MouseEvent e);
 	public abstract void mouseDragged(MouseEvent e);
 
+
+	/**
+	 * Checks if the location of the mouse is within
+	 * the constraints of a button.
+	 *
+	 * @param e      The mouse event.
+	 * @param button The button in question.
+	 * @return True if within button hitbox.
+	 */
 	public boolean isInteractingWith(MouseEvent e, Button button) {
 		return button.getHitbox().contains(e.getX(), e.getY());
 	}

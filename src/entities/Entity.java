@@ -14,11 +14,12 @@ import java.util.Map;
  * Written by Nicholas Cercos
  * Created on Oct 04 2023
  **/
-public class Entity {
+public abstract class Entity {
 
 	/* Location & Size */
 	protected double x, y;
 	protected final double w, h;
+	protected final double xDrawOffset, yDrawOffset;
 
 	/* Physics */
 	private static final double GRAVITY = 0.15 * Game.SCALE;
@@ -34,25 +35,31 @@ public class Entity {
 	/* Sprites & Animations */
 	private final Map<Pose, Animation> animations;
 	protected Pose currentPose;
+	private int spriteWidth;
 	private double flipX = 0;
 	private int flipW = 1;
 
-	public Entity(String name, double x, double y, double w, double h, int spriteWidth) {
+	public Entity(String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.w = w;
 		this.h = h;
+		this.spriteWidth = spriteWidth;
+		this.xDrawOffset = xDrawOffset * Game.SCALE;
+		this.yDrawOffset = yDrawOffset * Game.SCALE;
 		animations = new HashMap<>();
 		currentPose = Pose.IDLE;
 		loadAllAnimations(spriteWidth);
 	}
 
-	public Entity(double x, double y, double w, double h) {
+	public Entity(double x, double y, double w, double h, double xDrawOffset, double yDrawOffset) {
 		this.x = x;
 		this.y = y;
 		this.w = w;
 		this.h = h;
+		this.xDrawOffset = xDrawOffset * Game.SCALE;
+		this.yDrawOffset = yDrawOffset * Game.SCALE;
 		name = null;
 		animations = null;
 		currentPose = null;
@@ -64,20 +71,20 @@ public class Entity {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g, Level level) {
-		//g.drawRect((int)x - level.getOffsetX(), (int)y, (int)w, (int)h);
+		//drawHitbox(g, level.getOffsetX());
 		if(animations == null || currentPose == null)return;
 
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
 		int px = (int)(x - level.getOffsetX() + flipX);
-		int width = (int)(w + 1) * flipW;
-		int height = (int)h + 1;
+		int width  = (int) ((spriteWidth * Game.SCALE) * flipW);
+		int height = (int)  (spriteWidth * Game.SCALE);
 
 		if(animation.isCycleCompleted() && !currentPose.isRepeated())
 			currentPose = moving ? Pose.RUN : inAir ? Pose.JUMP : Pose.IDLE;
 
 		g.drawImage(animation.getCurrentImage(level.getLevelManager().getGame().getPlaying()),
-				px, (int)y, width, height, null);
+				(int)(px - xDrawOffset), (int) (y - yDrawOffset), width, height, null);
 	}
 
 	/**
@@ -158,15 +165,15 @@ public class Entity {
 	public void goLT(double dx) {
 		vx = (int) (-dx * Game.SCALE);
 		moving = true;
-		if(!isRolling()) setCurrentPose(inAir ? Pose.JUMP : Pose.RUN);
-		flipX = w;
+		if(!isRolling() && !isAttacking()) setCurrentPose(inAir ? Pose.JUMP : Pose.RUN);
+		flipX = spriteWidth * Game.SCALE;
 		flipW = -1;
 	}
 
 	public void goRT(double dx) {
 		vx = (int) (dx * Game.SCALE);
 		moving = true;
-		if(!isRolling()) setCurrentPose(inAir ? Pose.JUMP : Pose.RUN);
+		if(!isRolling() && !isAttacking()) setCurrentPose(inAir ? Pose.JUMP : Pose.RUN);
 		flipX = 0;
 		flipW = 1;
 	}
@@ -181,7 +188,7 @@ public class Entity {
 		vy = (int) (-dy * Game.SCALE);
 		moving = true;
 		inAir = true;
-		if(!isRolling()) setCurrentPose(Pose.JUMP);
+		if(!isRolling() && !isAttacking()) setCurrentPose(Pose.JUMP);
 	}
 
 	/**
@@ -199,7 +206,7 @@ public class Entity {
 	public void stopFalling() {
 		inAir = false;
 		vy = 0;
-		if(!isRolling()) setCurrentPose(Pose.RUN);
+		if(!isRolling() && !isAttacking()) setCurrentPose(Pose.RUN);
 	}
 
 	/**
@@ -255,6 +262,17 @@ public class Entity {
 				   (y + h >= e.y      );
 	}
 
+	/**
+	 * Draw the hitbox for debugging.
+	 *
+	 * @param g           The graphics context.
+	 * @param levelOffset The x-draw offset of the current level.
+	 */
+	protected void drawHitbox(Graphics g, int levelOffset) {
+		g.setColor(Color.PINK);
+		g.drawRect((int)x - levelOffset, (int)y, (int)w, (int)h);
+	}
+
 	// Animations
 
 	/**
@@ -297,7 +315,7 @@ public class Entity {
 	 * @return True if the entity is not moving or in an action state.
 	 */
 	public boolean isIdling() {
-		return !moving && !inAir && !isRolling();
+		return !moving && !inAir && !isRolling() && !isAttacking();
 	}
 
 	/**
@@ -305,6 +323,13 @@ public class Entity {
 	 */
 	public boolean isRolling() {
 		return currentPose.equals(Pose.ROLL);
+	}
+
+	/**
+	 * @return True if the entity is in the attack animation.
+	 */
+	public boolean isAttacking() {
+		return currentPose.equals(Pose.ATTACK);
 	}
 
 	// Settings

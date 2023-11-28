@@ -13,11 +13,13 @@ public class Player extends Entity {
 
 	private final Game game;
 	private boolean[] pressing;
+	private boolean[] clicking;
 
 	public Player(Game game, double x, double y, double w, double h, int spriteWidth) {
-		super("player", x, y, w, h, spriteWidth);
+		super("player", x, y, w, h, spriteWidth, 10, 18.5);
 		this.game = game;
 		initPressing();
+		initClicking();
 	}
 
 	/**
@@ -31,12 +33,16 @@ public class Player extends Entity {
 		super.update();
 
 		double speed = 1.65;
-		if (pressing[Input.LT]) goLT(speed);
-		if (pressing[Input.RT]) goRT(speed);
-		if (pressing[Input.UP]) goUP(speed * 2.15);
+		if(!isAttacking()) {
+			if (pressing[Input.LT]) goLT(speed);
+			if (pressing[Input.RT]) goRT(speed);
+			if (pressing[Input.UP]) goUP(speed * 2.15);
 
-		if (pressing[Input.ROLL] && !currentPose.equals(Pose.ROLL))
-			setCurrentPose(Pose.ROLL);
+			if (pressing[Input.ROLL] && !isRolling())
+				setCurrentPose(Pose.ROLL);
+			if(clicking[Input.ATTACK] && !isRolling())
+				setCurrentPose(Pose.ATTACK);
+		}
 		if (isIdling()) setCurrentPose(Pose.IDLE);
 
 		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
@@ -87,5 +93,19 @@ public class Player extends Entity {
 
 	public void initPressing() {
 		 pressing = new boolean[1024];
+	}
+
+	/**
+	 * Updates the value for a mouse click.
+	 *
+	 * @param buttonCode The index of the click.
+	 * @param value      Whether the key was pressed or released.
+	 */
+	public void setClicking(int buttonCode, boolean value) {
+		clicking[buttonCode] = value;
+	}
+
+	public void initClicking() {
+		clicking = new boolean[4];
 	}
 }

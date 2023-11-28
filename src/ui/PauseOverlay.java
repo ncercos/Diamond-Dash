@@ -39,7 +39,6 @@ public class PauseOverlay {
 		createVolumeButton();
 	}
 
-
 	/**
 	 * Loads the main overlay that will be used as a background
 	 * for all pause menu buttons.
