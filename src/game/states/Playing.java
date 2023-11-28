@@ -37,13 +37,13 @@ public class Playing extends State {
 	}
 
 	/**
-	 * Resumes the game if it is paused.
+	 * Resumes / Stops the game immediately.
 	 * All key's pressed will be reset to prevent sticky keys.
 	 */
-	public void unpause() {
+	public void togglePause() {
 		player.initPressing();
 		player.initClicking();
-		paused = false;
+		paused = !paused;
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class Playing extends State {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == Input.ESC) paused = !paused;
+		if(e.getKeyCode() == Input.ESC) togglePause();
 		if(paused)return;
 		player.setPressing(e.getKeyCode(), true);
 	}

@@ -114,8 +114,9 @@ public class Menu extends State {
 				if(b.isMousePressed()) {
 					b.applyState();
 
-					if(b.getState().equals(GameState.PLAYING))
-						game.getPlaying().unpause();
+					if(b.getState().equals(GameState.PLAYING) &&
+							game.getPlaying().isPaused())
+						game.getPlaying().togglePause();
 				}
 				break;
 			}

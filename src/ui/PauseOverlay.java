@@ -144,7 +144,7 @@ public class PauseOverlay {
 						else if(ub.getType().equals(UtilButton.Type.REPLAY))
 							System.out.println("replay level");
 						else if(ub.getType().equals(UtilButton.Type.START))
-							playing.unpause();
+							playing.togglePause();
 					}
 					break;
 				}
