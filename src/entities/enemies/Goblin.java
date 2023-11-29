@@ -34,12 +34,12 @@ public class Goblin extends Hostile {
 		}
 
 		if(!isAttacking()) {
-			double speed = 1.25;
+			double speed = 1;
 			if (facingLeft) goLT(speed);
 			else 						goRT(speed);
 
 			if (canMoveTo(getKineticX(), y)) {
-				if (getLevel().isSolid(getKineticX(), y + h + 1)) {
+				if (getLevel().isSolid(getKineticX() + (facingLeft ? 0 : w), y + h + 1)) {
 					setX(getKineticX());
 					return;
 				}

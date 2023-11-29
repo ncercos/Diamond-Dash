@@ -52,8 +52,12 @@ public abstract class Hostile extends Entity {
 	}
 
 	private boolean isWalkable(Player player) {
-		int pTileX = player.getTileX();
 		int tileX = getTileX();
+		int pTileX;
+
+		if(getLevel().isSolid(player.getX(), player.getY() + player.getHeight() + 1))
+			pTileX = player.getTileX();
+		else pTileX = (int) ((player.getX() + player.getWidth()) / Game.TILES_SIZE);
 
 		if(tileX < pTileX) return isPathClear(tileX, pTileX);
 		else 							 return isPathClear(pTileX, tileX);

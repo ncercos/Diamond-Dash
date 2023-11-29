@@ -332,6 +332,14 @@ public abstract class Entity {
 		g.drawRect((int)x - levelOffset, (int)y, (int)w, (int)h);
 	}
 
+	public double getWidth() {
+		return w;
+	}
+
+	public double getHeight() {
+		return h;
+	}
+
 	// Animations
 
 	/**

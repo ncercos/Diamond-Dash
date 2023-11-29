@@ -21,10 +21,10 @@ public class Player extends Entity {
 	 */
 	public Player(Game game, double x, double y) {
 		super(game, "player", x, y,
-				11 * Game.SCALE,
+				6 * Game.SCALE,
 				13 * Game.SCALE,
 				32,
-				10,
+				13,
 				18.5);
 
 		initPressing();
