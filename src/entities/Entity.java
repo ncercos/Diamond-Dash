@@ -71,8 +71,8 @@ public abstract class Entity {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g, Level level) {
-		//drawHitbox(g, level.getOffsetX());
-		if(animations == null || currentPose == null)return;
+		//drawHitbox(g, level == null ? 0 : level.getOffsetX());
+		if(animations == null || currentPose == null || level == null)return;
 
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
@@ -260,6 +260,21 @@ public abstract class Entity {
 				   (x + w >= e.x      ) &&
 				   (y     <= e.y + e.h) &&
 				   (y + h >= e.y      );
+	}
+
+	/**
+	 * Checks if the location of a mouse is within
+	 * the constraints of the hitbox.
+	 *
+	 * @param mx The x-coordinate.
+	 * @param my The y-coordinate.
+	 * @return True if within the point is within hitbox.
+	 */
+	public boolean contains(int mx, int my) {
+		return (mx >= x  )   &&
+					 (mx <= x+w)   &&
+					 (my >= y  )   &&
+					 (my <= y+h);
 	}
 
 	/**

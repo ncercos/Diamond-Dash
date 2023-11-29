@@ -1,24 +1,20 @@
 package ui.buttons;
 
+import entities.Entity;
+
 import java.awt.*;
 
 /**
  * Written by Nicholas Cercos
  * Created on Nov 27 2023
  **/
-public abstract class Button {
+public abstract class Button extends Entity {
 
-	protected int x, y, w, h;
-	protected final Rectangle hitbox;
 	protected boolean mouseOver, mousePressed;
 	protected int currentIndex;
 
-	public Button(int x, int y, int w, int h) {
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
-		hitbox = new Rectangle(x, y, w, h);
+	public Button(int x, int y, int w, int h, int xDrawOffset, int yDrawOffset) {
+		super(x, y, w, h, xDrawOffset, yDrawOffset);
 	}
 
 	/**
@@ -44,18 +40,6 @@ public abstract class Button {
 	public void reset() {
 		mouseOver = false;
 		mousePressed = false;
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	public Rectangle getHitbox() {
-		return hitbox;
 	}
 
 	public boolean isMouseOver() {

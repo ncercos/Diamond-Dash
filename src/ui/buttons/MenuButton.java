@@ -24,17 +24,13 @@ public class MenuButton extends Button {
 	private static final int DEFAULT_HEIGHT = 56;
 	private static final int WIDTH = (int) (DEFAULT_WIDTH * Game.SCALE) / 2;
 	private static final int HEIGHT = (int) (DEFAULT_HEIGHT * Game.SCALE) / 2;
-	private final int X_CENTER_OFFSET = WIDTH / 2;
+	private static final int X_CENTER_OFFSET = WIDTH / 2;
 
 	public MenuButton(int x, int y, int rowIndex, GameState state) {
-		super(x, y, WIDTH, HEIGHT);
-		this.x = x;
-		this.y = y;
+		super(x - X_CENTER_OFFSET, y, WIDTH, HEIGHT, 0, 0);
 		this.rowIndex = rowIndex;
 		this.state = state;
-
 		loadSprites();
-		hitbox.x = x - X_CENTER_OFFSET;
 	}
 
 	/**
@@ -61,7 +57,7 @@ public class MenuButton extends Button {
 
 	@Override
 	public void draw(Graphics g) {
-		g.drawImage(sprites[currentIndex], x - X_CENTER_OFFSET, y, WIDTH, HEIGHT, null);
+		g.drawImage(sprites[currentIndex], (int) x, (int) y, WIDTH, HEIGHT, null);
 	}
 
 	public GameState getState() {

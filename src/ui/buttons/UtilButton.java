@@ -23,7 +23,7 @@ public class UtilButton extends Button {
 	private static final int SIZE = (int) (DEFAULT_SIZE * Game.SCALE) / 2;
 
 	public UtilButton(int x, int y, Type type) {
-		super(x, y, SIZE, SIZE);
+		super(x, y, SIZE, SIZE, 0, 0);
 		this.type = type;
 		loadButtons();
 	}
@@ -58,7 +58,7 @@ public class UtilButton extends Button {
 
 	@Override
 	public void draw(Graphics g) {
-		g.drawImage(buttons[currentIndex], x, y, SIZE, SIZE, null);
+		g.drawImage(buttons[currentIndex], (int) x, (int) y, SIZE, SIZE, null);
 	}
 
 	public Type getType() {

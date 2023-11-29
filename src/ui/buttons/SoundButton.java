@@ -23,7 +23,7 @@ public class SoundButton extends Button {
 	private static final int SIZE = (int) (DEFAULT_SIZE * Game.SCALE) / 2;
 
 	public SoundButton(int x, int y) {
-		super(x, y, SoundButton.SIZE, SoundButton.SIZE);
+		super(x, y, SoundButton.SIZE, SoundButton.SIZE, 0, 0);
 		loadButtonImgs();
 	}
 
@@ -56,7 +56,7 @@ public class SoundButton extends Button {
 	}
 
 	public void draw(Graphics g) {
-		g.drawImage(buttonImgs[rowIndex][currentIndex], x, y, w, h, null);
+		g.drawImage(buttonImgs[rowIndex][currentIndex], (int) x, (int) y, (int) w, (int) h, null);
 	}
 
 	public boolean isMuted() {

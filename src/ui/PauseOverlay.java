@@ -126,7 +126,7 @@ public class PauseOverlay {
 
 	public void mousePressed(MouseEvent e) {
 		for(Button button : getButtons()) {
-			if(playing.isInteractingWith(e, button)) {
+			if(button.contains(e.getX(), e.getY())) {
 				button.setMousePressed(true);
 				break;
 			}
@@ -135,7 +135,7 @@ public class PauseOverlay {
 
 	public void mouseReleased(MouseEvent e) {
 		for(Button button : getButtons()) {
-			if(playing.isInteractingWith(e, button)) {
+			if(button.contains(e.getX(), e.getY())) {
 				if(button.isMousePressed()) {
 					if(button instanceof SoundButton sb) sb.setMuted(!sb.isMuted());
 					else if(button instanceof UtilButton ub) {
@@ -157,7 +157,7 @@ public class PauseOverlay {
 		for(Button button : getButtons()) {
 			button.reset();
 
-			if(playing.isInteractingWith(e, button)) {
+			if(button.contains(e.getX(), e.getY())) {
 				button.setMouseOver(true);
 				break;
 			}

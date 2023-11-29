@@ -100,7 +100,7 @@ public class Menu extends State {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		for(MenuButton b : buttons) {
-			if(isInteractingWith(e, b)) {
+			if(b.contains(e.getX(), e.getY())) {
 				b.setMousePressed(true);
 				break;
 			}
@@ -110,7 +110,7 @@ public class Menu extends State {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		for(MenuButton b : buttons) {
-			if(isInteractingWith(e, b)) {
+			if(b.contains(e.getX(), e.getY())) {
 				if(b.isMousePressed()) {
 					b.applyState();
 
@@ -129,7 +129,7 @@ public class Menu extends State {
 		buttons.forEach(b -> b.setMouseOver(false));
 
 		for(MenuButton b : buttons) {
-			if(isInteractingWith(e, b)) {
+			if(b.contains(e.getX(), e.getY())) {
 				b.setMouseOver(true);
 				break;
 			}
