@@ -13,14 +13,14 @@ public enum LevelLayer {
 	FOREGROUND,
 	WATER;
 
-	private final boolean entityDrawnHere;
+	private final boolean mobSpawn;
 
-	LevelLayer(boolean entityDrawnHere) {
-		this.entityDrawnHere = entityDrawnHere;
+	LevelLayer(boolean mobSpawn) {
+		this.mobSpawn = mobSpawn;
 	}
 
 	LevelLayer() {
-		this.entityDrawnHere = false;
+		this.mobSpawn = false;
 	}
 
 	public String getName() {
@@ -28,9 +28,9 @@ public enum LevelLayer {
 	}
 
 	/**
-	 * @return True if this layer will be where entities will be drawn.
+	 * @return True if this layer will be where mobs will be drawn.
 	 */
-	public boolean isEntityDrawnHere() {
-		return entityDrawnHere;
+	public boolean isMobSpawn() {
+		return mobSpawn;
 	}
 }

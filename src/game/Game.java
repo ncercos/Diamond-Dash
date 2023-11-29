@@ -96,14 +96,10 @@ public class Game implements Runnable {
 	 */
 	public State getCurrentState() {
 		switch (GameState.current) {
-			case MENU ->   { return menu;   }
+			case MENU ->   {  return menu;   }
 			case PLAYING -> { return playing; }
 		}
 		return null;
-	}
-
-	public Menu getMenu() {
-		return menu;
 	}
 
 	public Playing getPlaying() {

@@ -1,7 +1,7 @@
 package entities.items;
 
 import entities.Matter;
-import levels.Level;
+import game.Game;
 
 /**
  * Written by Nicholas Cercos
@@ -16,8 +16,8 @@ public class Gold extends Matter {
 	 * @param x The initial x-location.
 	 * @param y The initial y-location.
 	 */
-	public Gold(Level level, double x, double y) {
-		super(level, x, y, 9, 5, 3, 11);
+	public Gold(Game game, double x, double y) {
+		super(game, x, y, 9, 5, 3, 11);
 	}
 
 	@Override

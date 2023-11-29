@@ -1,7 +1,6 @@
 package entities;
 
 import game.Game;
-import levels.Level;
 
 /**
  * Written by Nicholas Cercos
@@ -9,14 +8,12 @@ import levels.Level;
  **/
 public abstract class Matter extends Entity {
 
-	private final Level level;
 	private final int tileX, tileY;
 
-	public Matter(Level level, double x, double y, double w, double h, double xHitboxOffset, double yHitboxOffset) {
-		super(x, y, w * Game.SCALE, h * Game.SCALE, xHitboxOffset, yHitboxOffset);
+	public Matter(Game game, double x, double y, double w, double h, double xHitboxOffset, double yHitboxOffset) {
+		super(game, x, y, w * Game.SCALE, h * Game.SCALE, xHitboxOffset, yHitboxOffset);
 		this.x = x + xDrawOffset;
 		this.y = y + yDrawOffset;
-		this.level = level;
 
 		tileX = (int)(x / Game.TILES_SIZE);
 		tileY = (int)(y / Game.TILES_SIZE);
@@ -30,10 +27,6 @@ public abstract class Matter extends Entity {
 
 	public int getTileY() {
 		return tileY;
-	}
-
-	public Level getLevel() {
-		return level;
 	}
 
 	public enum Type {

@@ -22,6 +22,7 @@ import static game.Game.*;
  **/
 public class Level {
 
+	private final Game game;
 	private final LevelManager levelManager;
 
 	private final int id;
@@ -38,6 +39,7 @@ public class Level {
 
 	public Level(LevelManager levelManager, int id, LevelStyle style, Map<LevelLayer, int[][]> data) {
 		this.levelManager = levelManager;
+		this.game = levelManager.getGame();
 		this.id = id;
 		this.style = style;
 		this.data = data;
@@ -68,12 +70,13 @@ public class Level {
 
 		// Tiles
 		for(LevelLayer layer : LevelLayer.values()) {
-			if(layer.isEntityDrawnHere()) levelManager.getGame().getPlaying().getPlayer().draw(g, this);
+			if(layer.isMobSpawn())
+				game.getPlaying().drawMobs(g);
 			drawLayer(g, layer);
 		}
 
-		items.forEach(i -> i.draw(g, this));
-		traps.forEach(i -> i.draw(g, this));
+		items.forEach(i -> i.draw(g));
+		traps.forEach(i -> i.draw(g));
 	}
 
 	/**
@@ -131,8 +134,8 @@ public class Level {
 				int index = itemData[h][w];
 				if(index < 0)continue;
 				int x = w * TILES_SIZE, y = h * TILES_SIZE;
-				addItem(index == 0 ? new Gold(this, x, y)    :
-						    index == 4 ? new Diamond(this, x, y) : null);
+				addItem(index == 0 ? new Gold(game, x, y)    :
+						    index == 4 ? new Diamond(game, x, y) : null);
 			}
 		}
 	}
@@ -167,7 +170,7 @@ public class Level {
 				int index = trapData[h][w];
 				if(!Matter.Type.isTrap(index))continue;
 				int x = w * TILES_SIZE, y = h * TILES_SIZE;
-				traps.add(new ThornFence(this, x, y, index == Matter.Type.THORN_FENCE_LEFT.getTileID()));
+				traps.add(new ThornFence(game, x, y, index == Matter.Type.THORN_FENCE_LEFT.getTileID()));
 			}
 		}
 	}

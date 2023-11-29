@@ -13,8 +13,8 @@ public abstract class Button extends Entity {
 	protected boolean mouseOver, mousePressed;
 	protected int currentIndex;
 
-	public Button(int x, int y, int w, int h, int xDrawOffset, int yDrawOffset) {
-		super(x, y, w, h, xDrawOffset, yDrawOffset);
+	public Button(int x, int y, int w, int h) {
+		super(x, y, w, h);
 	}
 
 	/**

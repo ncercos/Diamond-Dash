@@ -23,7 +23,7 @@ public class UtilButton extends Button {
 	private static final int SIZE = (int) (DEFAULT_SIZE * Game.SCALE) / 2;
 
 	public UtilButton(int x, int y, Type type) {
-		super(x, y, SIZE, SIZE, 0, 0);
+		super(x, y, SIZE, SIZE);
 		this.type = type;
 		loadButtons();
 	}

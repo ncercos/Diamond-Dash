@@ -27,7 +27,7 @@ public class MenuButton extends Button {
 	private static final int X_CENTER_OFFSET = WIDTH / 2;
 
 	public MenuButton(int x, int y, int rowIndex, GameState state) {
-		super(x - X_CENTER_OFFSET, y, WIDTH, HEIGHT, 0, 0);
+		super(x - X_CENTER_OFFSET, y, WIDTH, HEIGHT);
 		this.rowIndex = rowIndex;
 		this.state = state;
 		loadSprites();

@@ -1,7 +1,7 @@
 package entities.items;
 
 import entities.Matter;
-import levels.Level;
+import game.Game;
 
 /**
  * Written by Nicholas Cercos
@@ -16,8 +16,8 @@ public class Diamond extends Matter {
 	 * @param x The initial x-location.
 	 * @param y The initial y-location.
 	 */
-	public Diamond(Level level, double x, double y) {
-		super(level, x, y, 8, 7, 4, 5);
+	public Diamond(Game game, double x, double y) {
+		super(game, x, y, 8, 7, 4, 5);
 	}
 
 	@Override

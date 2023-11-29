@@ -1,7 +1,7 @@
 package entities.traps;
 
 import entities.Matter;
-import levels.Level;
+import game.Game;
 
 /**
  * Written by Nicholas Cercos
@@ -9,8 +9,8 @@ import levels.Level;
  **/
 public class ThornFence extends Matter {
 
-	public ThornFence(Level level, double x, double y, boolean facesLeft) {
-		super(level,
+	public ThornFence(Game game, double x, double y, boolean facesLeft) {
+		super(game,
 				x, y,
 				facesLeft ? 12 : 15,
 				facesLeft ? 7 : 9,

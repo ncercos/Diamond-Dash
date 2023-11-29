@@ -16,6 +16,8 @@ import java.util.Map;
  **/
 public abstract class Entity {
 
+	protected Game game;
+
 	/* Location & Size */
 	protected double x, y;
 	protected final double w, h;
@@ -24,7 +26,7 @@ public abstract class Entity {
 	/* Physics */
 	private static final double GRAVITY = 0.15 * Game.SCALE;
 	private static final double MAX_FALL_VELOCITY = 3.0 * Game.SCALE;
-	private double vx, vy;
+	protected double vx, vy;
 	protected boolean moving, inAir = true;
 
 	/* Settings */
@@ -39,7 +41,8 @@ public abstract class Entity {
 	private double flipX = 0;
 	private int flipW = 1;
 
-	public Entity(String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset) {
+	public Entity(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset) {
+		this.game = game;
 		this.name = name;
 		this.x = x;
 		this.y = y;
@@ -53,7 +56,8 @@ public abstract class Entity {
 		loadAllAnimations(spriteWidth);
 	}
 
-	public Entity(double x, double y, double w, double h, double xDrawOffset, double yDrawOffset) {
+	public Entity(Game game, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset) {
+		this.game = game;
 		this.x = x;
 		this.y = y;
 		this.w = w;
@@ -65,25 +69,29 @@ public abstract class Entity {
 		currentPose = null;
 	}
 
+	public Entity(double x, double y, double w, double h) {
+		this(null, x, y, w, h, 0, 0);
+	}
+
 	/**
 	 * Draws to the screen.
 	 *
 	 * @param g The graphics context.
 	 */
-	public void draw(Graphics g, Level level) {
-		//drawHitbox(g, level == null ? 0 : level.getOffsetX());
-		if(animations == null || currentPose == null || level == null)return;
+	public void draw(Graphics g) {
+		//drawHitbox(g);
+		if(animations == null || currentPose == null || game == null)return;
 
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
-		int px = (int)(x - level.getOffsetX() + flipX);
+		int px = (int)(x - getLevel().getOffsetX() + flipX);
 		int width  = (int) ((spriteWidth * Game.SCALE) * flipW);
 		int height = (int)  (spriteWidth * Game.SCALE);
 
 		if(animation.isCycleCompleted() && !currentPose.isRepeated())
 			currentPose = moving ? Pose.RUN : inAir ? Pose.JUMP : Pose.IDLE;
 
-		g.drawImage(animation.getCurrentImage(level.getLevelManager().getGame().getPlaying()),
+		g.drawImage(animation.getCurrentImage(getLevel().getLevelManager().getGame().getPlaying()),
 				(int)(px - xDrawOffset), (int) (y - yDrawOffset), width, height, null);
 	}
 
@@ -93,6 +101,11 @@ public abstract class Entity {
 	 */
 	public void update() {
 		moving = false;
+		if (isIdling()) setCurrentPose(Pose.IDLE);
+	}
+
+	public Level getLevel() {
+		return game.getPlaying().getLevelManager().getCurrentLevel();
 	}
 
 	// Movement
@@ -101,14 +114,15 @@ public abstract class Entity {
 	 * Modifies the position of the rectangle
 	 * by its given velocity.
 	 */
-	public void move(Level level) {
+	public void move() {
 		if(!moving && !inAir)return;
+		if(game == null)return;
 
-		if(!inAir && !isOnTile(level))
+		if(!inAir && !isOnTile())
 			inAir = true;
 
 		if(inAir) {
-			if(canMoveTo(x, y + vy, level)) {
+			if(canMoveTo(x, y + vy)) {
 				y += vy;
 				if(vy < MAX_FALL_VELOCITY)
 					vy += GRAVITY;
@@ -117,28 +131,24 @@ public abstract class Entity {
 				if(vy > 0) stopFalling();
 				else vy = GRAVITY;
 			}
-			updateXPos(level);
-		} else updateXPos(level);
+			updateXPos();
+		} else updateXPos();
 	}
 
 	/**
 	 * Updates the current x-position to a location
 	 * based on the constraints of the level.
-	 *
-	 * @param level The current level.
 	 */
-	private void updateXPos(Level level) {
-		if(canMoveTo(x + vx, y, level)) x += vx;
-		else x = getXPosNextToTile();
-		applyFrictionWithFloor();
+	private void updateXPos() {
+		if(canMoveTo(x + vx, y)) setX(x + vx);
+		else setX(getXPosNextToTile());
 	}
 
 	/**
 	 * @return The x-coordinate closest to an adjacent tile, horizontally.
 	 */
-	private double getXPosNextToTile() {
-		int currentTileIndex = (int) (x / Game.TILES_SIZE);
-		int tileXPos = currentTileIndex * Game.TILES_SIZE;
+	protected double getXPosNextToTile() {
+		int tileXPos = getTileX() * Game.TILES_SIZE;
 		if(vx > 0) { /* moving to the right */
 			int xOffset = (int)(Game.TILES_SIZE - w);
 			return tileXPos + xOffset - 1;
@@ -149,8 +159,7 @@ public abstract class Entity {
 	 * @return The y-coordinate closest to an adjacent tile, vertically.
 	 */
 	private double getYPosAboveOrUnderTile() {
-		int currentTileIndex = (int) (y / Game.TILES_SIZE);
-		int tileYPos = currentTileIndex * Game.TILES_SIZE;
+		int tileYPos = getTileY() * Game.TILES_SIZE;
 		if(vy > 0) { /* falling */
 			int yOffset = (int)(Game.TILES_SIZE - h);
 			return tileYPos + yOffset - 1;
@@ -217,6 +226,29 @@ public abstract class Entity {
 		vy = 0;
 	}
 
+	public void setX(double x) {
+		this.x = x;
+		applyFrictionWithFloor();
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public double getX() {
+		return x;
+	}
+
+	/**
+	 * Modifies the x value by the x-velocity to determine
+	 * an entity's kinetic energy on the x-axis.
+	 *
+	 * @return The value of x + vx.
+	 */
+	public double getKineticX() {
+		return x + vx;
+	}
+
 	// Collision
 
 	/**
@@ -225,14 +257,13 @@ public abstract class Entity {
 	 *
 	 * @param x 	  The new x-coordinate.
 	 * @param y 	  The new y-coordinate.
-	 * @param level The current level.
 	 * @return True if the move is possible, otherwise, false.
 	 */
-	public boolean canMoveTo(double x, double y, Level level) {
-		if(!level.isSolid(x, y))
-			if(!level.isSolid(x + w, y + h))
-				if(!level.isSolid(x + w, y))
-					return !level.isSolid(x, y + h);
+	public boolean canMoveTo(double x, double y) {
+		if(!getLevel().isSolid(x, y))
+			if(!getLevel().isSolid(x + w, y + h))
+				if(!getLevel().isSolid(x + w, y))
+					return !getLevel().isSolid(x, y + h);
 		return false;
 	}
 
@@ -240,13 +271,26 @@ public abstract class Entity {
 	 * Determines if this rectangle is standing on
 	 * a solid tile.
 	 *
-	 * @param level The current level.
 	 * @return True if tile below is solid.
 	 */
-	private boolean isOnTile(Level level) {
-		if(!level.isSolid(x, y + h + 1))
-			return level.isSolid(x + w, y + h + 1);
+	public boolean isOnTile() {
+		if(!getLevel().isSolid(x, y + h + 1))
+			return getLevel().isSolid(x + w, y + h + 1);
 		return true;
+	}
+
+	/**
+	 * @return The level tile at the current x-location.
+	 */
+	public int getTileX() {
+		return (int) (x / Game.TILES_SIZE);
+	}
+
+	/**
+	 * @return The level tile at the current y-location.
+	 */
+	public int getTileY() {
+		return (int) (y / Game.TILES_SIZE);
 	}
 
 	/**
@@ -280,10 +324,10 @@ public abstract class Entity {
 	/**
 	 * Draw the hitbox for debugging.
 	 *
-	 * @param g           The graphics context.
-	 * @param levelOffset The x-draw offset of the current level.
+	 * @param g The graphics context.
 	 */
-	protected void drawHitbox(Graphics g, int levelOffset) {
+	protected void drawHitbox(Graphics g) {
+		int levelOffset = game == null ? 0 : game.getPlaying().getLevelManager().getCurrentLevel().getOffsetX();
 		g.setColor(Color.PINK);
 		g.drawRect((int)x - levelOffset, (int)y, (int)w, (int)h);
 	}

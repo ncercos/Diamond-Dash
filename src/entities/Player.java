@@ -11,13 +11,22 @@ import sprites.Pose;
  **/
 public class Player extends Entity {
 
-	private final Game game;
 	private boolean[] pressing;
 	private boolean[] clicking;
 
-	public Player(Game game, double x, double y, double w, double h, int spriteWidth) {
-		super("player", x, y, w, h, spriteWidth, 10, 18.5);
-		this.game = game;
+	/**
+	 * Constructs a player entity.
+	 * 11w & 13h is the size of the hitbox (hb).
+	 * Draw Offset is where the hb starts within sprite.
+	 */
+	public Player(Game game, double x, double y) {
+		super(game, "player", x, y,
+				11 * Game.SCALE,
+				13 * Game.SCALE,
+				32,
+				10,
+				18.5);
+
 		initPressing();
 		initClicking();
 	}
@@ -43,12 +52,11 @@ public class Player extends Entity {
 			if(clicking[Input.ATTACK] && !isRolling())
 				setCurrentPose(Pose.ATTACK);
 		}
-		if (isIdling()) setCurrentPose(Pose.IDLE);
 
-		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
-		move(level);
+		move();
 		checkCloseToLevelBorder();
 
+		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
 		for(Matter item : level.getItems()) {
 			if(overlaps(item)) {
 				level.removeItem(item);

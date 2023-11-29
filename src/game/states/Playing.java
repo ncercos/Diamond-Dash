@@ -1,6 +1,7 @@
 package game.states;
 
 import entities.Player;
+import entities.enemies.Goblin;
 import game.Game;
 import inputs.Input;
 import levels.LevelManager;
@@ -10,8 +11,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import static game.Game.SCALE;
-
 /**
  * Written by Nicholas Cercos
  * Created on Nov 27 2023
@@ -20,6 +19,7 @@ public class Playing extends State {
 
 	// Entities
 	private final Player player;
+	private final Goblin goblin;
 
 	// Levels
 	private final LevelManager levelManager;
@@ -32,8 +32,28 @@ public class Playing extends State {
 		super(game);
 		paused = false;
 		levelManager = new LevelManager(game);
-		player = new Player(game, 0, 0, 11 * SCALE, 13 * SCALE, 32);
+		player = new Player(game, 0, 0);
+		goblin = new Goblin(game, 50, 0);
 		pauseOverlay = new PauseOverlay(this);
+	}
+
+	/**
+	 * Renders all mobile entities that will spawn
+	 * on the set "mob" layer.
+	 *
+	 * @param g The graphics context.
+	 */
+	public void drawMobs(Graphics g) {
+		goblin.draw(g);
+		player.draw(g);
+	}
+
+	/**
+	 * Updates all mobile entities in the world.
+	 */
+	private void updateMobs() {
+		player.update();
+		goblin.update();
 	}
 
 	/**
@@ -49,7 +69,7 @@ public class Playing extends State {
 	@Override
 	public void update() {
 		if(paused) pauseOverlay.update();
-		else player.update();
+		else updateMobs();
 	}
 
 	@Override

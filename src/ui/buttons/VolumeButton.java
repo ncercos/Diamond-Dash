@@ -31,7 +31,7 @@ public class VolumeButton extends Button {
 	private static final int SLIDER_CENTER = SLIDER_WIDTH / 2;
 
 	public VolumeButton(int sX, int y) {
-		super(sX + SLIDER_CENTER - BUTTON_CENTER, y, BUTTON_WIDTH, BUTTON_HEIGHT, 0, 0);
+		super(sX + SLIDER_CENTER - BUTTON_CENTER, y, BUTTON_WIDTH, BUTTON_HEIGHT);
 		this.sX = sX;
 		bX   = (int)x + BUTTON_CENTER;
 		minX =  sX + (BUTTON_WIDTH / 2);
@@ -68,7 +68,6 @@ public class VolumeButton extends Button {
 
 	@Override
 	public void draw(Graphics g) {
-		drawHitbox(g, 0);
 		g.drawImage(slider, sX, (int) y, SLIDER_WIDTH, (int) h, null);
 		g.drawImage(buttons[currentIndex], bX - (int) w / 2, (int) y, (int) w, (int) h, null);
 	}
