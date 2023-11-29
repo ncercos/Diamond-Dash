@@ -89,15 +89,15 @@ public class LevelManager {
 
 		// Animated tiles
 		animations.put(LevelLayer.ITEMS, new TileAnimations(ImageIO.read(new File(TILE_DIRECTORY + "items.png")), 4,
-				new int[] {110, 															// gold
-										25 																// diamond
+				new int[] {65, 	// gold
+									 15		// diamond
 		}));
 		animations.put(LevelLayer.WATER, new TileAnimations(ImageIO.read(new File(TILE_DIRECTORY + "water.png")), 4,
-				new int[] {150, 30, 15, 										  // still, some, many bubbles
-						       95,           											// main water flow
-						       22, 22, 22, 22, 22, 22, 22, 				// water fall lush rock
-									 22, 22, 22, 22, 22, 								// split water, split water crash, water crack, water leak, water leak crash
-						       22, 22, 22, 22, 22, 22, 22, 				// water fall dry rock
+				new int[] {80, 30, 15, 										    // still, some, many bubbles
+						       30,           											// main water flow
+						       7, 7, 7, 7, 7, 7, 7, 							// water fall lush rock
+									 7, 7, 7, 7, 7, 										// split water, split water crash, water crack, water leak, water leak crash
+						       7, 7, 7, 7, 7, 7, 7, 							// water fall dry rock
 						       0, 0}));
 	}
 
