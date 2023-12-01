@@ -14,6 +14,9 @@ public class Player extends Entity {
 	private boolean[] pressing;
 	private boolean[] clicking;
 
+	private final int MAX_ENERGY = 100;
+	private int energy = MAX_ENERGY;
+
 	/**
 	 * Constructs a player entity.
 	 * 11w & 13h is the size of the hitbox (hb).
@@ -115,5 +118,43 @@ public class Player extends Entity {
 
 	public void initClicking() {
 		clicking = new boolean[4];
+	}
+
+	@Override
+	public void modifyHealth(int health) {
+		super.modifyHealth(health);
+		if(health == 0) {
+			// TODO: End the game
+		}
+	}
+
+	/**
+	 * Sets the energy.
+	 * Value cannot be higher than pre-defined max energy.
+	 *
+	 * @param energy The amount of energy to be given.
+	 */
+	public void setEnergy(int energy) {
+		if(energy > MAX_ENERGY) energy = MAX_ENERGY;
+		this.energy = energy;
+	}
+
+	/**
+	 * Adds or removes energy.
+	 *
+	 * @param energy The amount to be added / subtracted.
+	 */
+	public void modifyEnergy(int energy) {
+		this.energy += energy;
+		if(energy > MAX_ENERGY) this.energy = MAX_ENERGY;
+		else if(energy <= 0)    this.energy = 0;
+	}
+
+	public int getEnergy() {
+		return energy;
+	}
+
+	public int getMaxEnergy() {
+		return MAX_ENERGY;
 	}
 }

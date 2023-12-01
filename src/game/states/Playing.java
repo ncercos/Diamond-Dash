@@ -5,6 +5,7 @@ import entities.enemies.Goblin;
 import game.Game;
 import inputs.Input;
 import levels.LevelManager;
+import ui.HudOverlay;
 import ui.PauseOverlay;
 
 import java.awt.*;
@@ -28,6 +29,9 @@ public class Playing extends State {
 	private boolean paused;
 	private final PauseOverlay pauseOverlay;
 
+	// HUD
+	private final HudOverlay hudOverlay;
+
 	public Playing(Game game) {
 		super(game);
 		paused = false;
@@ -35,6 +39,7 @@ public class Playing extends State {
 		player = new Player(game, 0, 0);
 		goblin = new Goblin(game, 50, 0);
 		pauseOverlay = new PauseOverlay(this);
+		hudOverlay = new HudOverlay(player);
 	}
 
 	/**
@@ -69,12 +74,16 @@ public class Playing extends State {
 	@Override
 	public void update() {
 		if(paused) pauseOverlay.update();
-		else updateMobs();
+		else {
+			updateMobs();
+			hudOverlay.update();
+		}
 	}
 
 	@Override
 	public void draw(Graphics g) {
 		levelManager.draw(g);
+		hudOverlay.draw(g);
 		if(paused) pauseOverlay.draw(g);
 	}
 

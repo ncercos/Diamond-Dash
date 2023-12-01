@@ -31,7 +31,7 @@ public abstract class Entity {
 
 	/* Settings */
 	private final String name;
-	private final int MAX_HEALTH = 10;
+	private final int MAX_HEALTH = 100;
 	private int health = MAX_HEALTH;
 
 	/* Sprites & Animations */
@@ -412,7 +412,22 @@ public abstract class Entity {
 		this.health = health;
 	}
 
+	/**
+	 * Adds or removes health.
+	 *
+	 * @param health The amount to be added / subtracted.
+	 */
+	public void modifyHealth(int health) {
+		this.health += health;
+		if(health > MAX_HEALTH) this.health = MAX_HEALTH;
+		else if(health <= 0)    this.health = 0;
+	}
+
 	public int getHealth() {
 		return health;
+	}
+
+	public int getMaxHealth() {
+		return MAX_HEALTH;
 	}
 }

@@ -34,11 +34,24 @@ public abstract class Hostile extends Entity {
 		}
 	}
 
+	/**
+	 * Sets the attack distance for a hostile mob.
+	 * The sight distance will always be 3x more than attack.
+	 *
+	 * @param attackDistance The new distance the entity will attack within.
+	 */
 	public void setAttackDistance(int attackDistance) {
 		this.attackDistance = attackDistance;
 		this.sightDistance = attackDistance * 3;
 	}
 
+	/**
+	 * Determines if a hostile mob has line of sight
+	 * to a player.
+	 *
+	 * @param player The player object.
+	 * @return True if player within range and accessible.
+	 */
 	protected boolean isInSight(Player player) {
 		if(player.getTileY() == tileY) {
 			if(getDistanceFrom(player) <= sightDistance)
@@ -51,6 +64,13 @@ public abstract class Hostile extends Entity {
 		return getDistanceFrom(player) <= attackDistance;
 	}
 
+	/**
+	 * Checks the bottom left and right corners of a player
+	 * and determines if that tile is solid.
+	 *
+	 * @param player The player object.
+	 * @return True if the path between a player and enemy is not obstructed.
+	 */
 	private boolean isWalkable(Player player) {
 		int tileX = getTileX();
 		int pTileX;
@@ -63,6 +83,14 @@ public abstract class Hostile extends Entity {
 		else 							 return isPathClear(pTileX, tileX);
 	}
 
+	/**
+	 * Checks all tiles between two points and
+	 * determines if they are solid.
+	 *
+	 * @param xStart The starting x-tile.
+	 * @param xEnd   The ending x-tile.
+	 * @return True if there are no obstructions, otherwise, false.
+	 */
 	private boolean isPathClear(int xStart, int xEnd) {
 		for(int i = 0; i < xEnd - xStart; i++) {
 			if(getLevel().isSolid(xStart + i, tileY))
@@ -73,6 +101,13 @@ public abstract class Hostile extends Entity {
 		return true;
 	}
 
+	/**
+	 * Finds the distance between a hostile mob
+	 * and a player.
+	 *
+	 * @param player The player object.
+	 * @return An integer distance. (will never be negative)
+	 */
 	private int getDistanceFrom(Player player) {
 		return (int) Math.abs(player.getX() - x);
 	}

@@ -48,6 +48,12 @@ public class Goblin extends Hostile {
 		}
 	}
 
+	/**
+	 * Faces the goblin in the correct direction
+	 * based on the location of the player.
+	 *
+	 * @param player The player object.
+	 */
 	private void turnTowards(Player player) {
 		facingLeft = player.getX() < x;
 	}
