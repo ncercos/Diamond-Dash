@@ -1,6 +1,7 @@
 package entities;
 
 import game.Game;
+import levels.LevelLayer;
 
 import java.awt.*;
 
@@ -19,8 +20,9 @@ public abstract class Hostile extends Entity {
 		super(game, name, x, y, w, h, spriteWidth, xDrawOffset, yDrawOffset);
 		attackBox = new AttackBox();
 		attackDelay = 0;
-		setAttackDistance(Game.TILES_SIZE * 2);
+		setAttackDistance((int)w);
 		setMaxHealth(maxHealth);
+		System.out.println(attackDistance);
 	}
 
 	@Override
@@ -35,7 +37,7 @@ public abstract class Hostile extends Entity {
 	@Override
 	public void draw(Graphics g) {
 		super.draw(g);
-		attackBox.draw(g);
+		//attackBox.draw(g);
 	}
 
 	@Override
@@ -127,10 +129,10 @@ public abstract class Hostile extends Entity {
 	 * @return True if there are no obstructions, otherwise, false.
 	 */
 	private boolean isPathClear(int xStart, int xEnd) {
-		for(int i = 0; i < xEnd - xStart; i++) {
-			if(getLevel().isSolid(xStart + i, tileY))
+		for (int i = 0; i < xEnd - xStart; i++) {
+			if (getLevel().isSolid(xStart + i, tileY, false))
 				return false;
-			if(!getLevel().isSolid(xStart + i, tileY + 1))
+			if (!getLevel().isSolid(xStart + i, tileY + 1, false))
 				return false;
 		}
 		return true;
@@ -143,7 +145,7 @@ public abstract class Hostile extends Entity {
 	 * @param player The player object.
 	 * @return An integer distance. (will never be negative)
 	 */
-	protected int getDistanceFrom(Player player) {
-		return (int) Math.abs(player.getX() - x);
+	protected double getDistanceFrom(Player player) {
+		return Math.abs(player.getX() - x);
 	}
 }

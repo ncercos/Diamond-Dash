@@ -185,14 +185,21 @@ public class Level {
 	 *
 	 * @param px The x-position.
 	 * @param py The y-position.
+	 * @param calcTile Is the tile-position provided or should it be calculated.
 	 * @return True if the tile is solid, otherwise, false.
 	 */
-	public boolean isSolid(double px, double py) {
+	public boolean isSolid(double px, double py, boolean calcTile) {
 		int x = (int)px;  int y = (int)py;
-		if(x < 0 || x >= (getWidth() * TILES_SIZE)) return true;
-		if(y < 0 || y >= Game.GAME_HEIGHT) return true;
-		int index = getTileIndex(LevelLayer.FOREGROUND, x / Game.TILES_SIZE, y / Game.TILES_SIZE);
+		if(calcTile) {
+			if(x < 0 || x >= (getWidth() * TILES_SIZE)) return true;
+			if(y < 0 || y >= Game.GAME_HEIGHT) return true;
+		}
+		int index = getTileIndex(LevelLayer.FOREGROUND, calcTile ? x / Game.TILES_SIZE : x, calcTile ? y / Game.TILES_SIZE : y);
 		return !getStyle().isNonSolid(index);
+	}
+
+	public boolean isSolid(double px, double py) {
+		return isSolid(px, py, true);
 	}
 
 	/**

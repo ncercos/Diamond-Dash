@@ -89,7 +89,7 @@ public class Player extends Entity {
 	@Override
 	public void draw(Graphics g) {
 		super.draw(g);
-		attackBox.draw(g);
+		//attackBox.draw(g);
 	}
 
 	@Override
