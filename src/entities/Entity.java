@@ -43,6 +43,7 @@ public abstract class Entity {
 	private int spriteWidth;
 	private double flipX = 0;
 	private int flipW = 1;
+	protected int attackPoseIndex;
 
 	public Entity(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset) {
 		this.game = game;
@@ -56,6 +57,7 @@ public abstract class Entity {
 		this.yDrawOffset = yDrawOffset * Game.SCALE;
 		animations = new HashMap<>();
 		currentPose = Pose.IDLE;
+		attackPoseIndex = 0;
 		loadAllAnimations(spriteWidth);
 	}
 
@@ -475,7 +477,9 @@ public abstract class Entity {
 	 * @param entity The entity being attacked.
 	 */
 	public void attack(Entity entity) {
-		if(isHurt() || isDying())return;
+		if(getCurrentAnimation().getCurrentIndex() != attackPoseIndex)return;
+		if(entity.isHurt() || entity.isDying())return;
+
 		entity.modifyHealth(-attackDamage);
 		if(entity.getHealth() <= 0)
 			entity.setCurrentPose(Pose.DIE);
@@ -487,6 +491,13 @@ public abstract class Entity {
 	 */
 	public boolean isActive() {
 		return active;
+	}
+
+	/**
+	 * @return The index within the attack animation in which damage will take place.
+	 */
+	public int getAttackPoseIndex() {
+		return attackPoseIndex;
 	}
 
 	public AttackBox getAttackBox() {

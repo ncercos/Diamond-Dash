@@ -99,6 +99,10 @@ public class Animation {
 		return cycleCompleted;
 	}
 
+	public int getCurrentIndex() {
+		return current;
+	}
+
 	public Image[] getImages() {
 		return images;
 	}

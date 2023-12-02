@@ -21,6 +21,7 @@ public class Goblin extends Hostile {
 				21,
 				10);
 		attackDamage = 15;
+		attackPoseIndex = 3;
 		scared = false;
 	}
 

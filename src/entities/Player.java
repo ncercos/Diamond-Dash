@@ -32,6 +32,7 @@ public class Player extends Entity {
 				13,
 				18.5);
 		attackDamage = 5;
+		attackPoseIndex = 3;
 		attackBox = new AttackBox();
 		resetBinds();
 	}

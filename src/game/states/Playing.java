@@ -22,6 +22,8 @@ import java.util.List;
  **/
 public class Playing extends State {
 
+	// HURT RED COLOR - e12a2a
+
 	// Entities
 	private final Player player;
 	private final List<Hostile> enemies;
@@ -88,18 +90,14 @@ public class Playing extends State {
 			updateMobs();
 			hudOverlay.update();
 
-			// Player attacks enemy
-			if(player.isAttacking() && player.getCurrentAnimation().isCycleCompleted()) {
-				for(Hostile e : enemies) {
-					if(player.getAttackBox().overlaps(e)) {
-						player.attack(e);
-						return;
-					}
-				}
+			// Combat between mobs
+			for(Hostile e : enemies) {
+				if(player.isAttacking() && player.getAttackBox().overlaps(e))
+					player.attack(e);
+
+				if(e.isAttacking() && e.getAttackBox().overlaps(player) && !player.isRolling())
+					e.attack(player);
 			}
-
-			// Enemy attacks player
-
 		}
 	}
 
