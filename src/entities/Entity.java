@@ -31,8 +31,11 @@ public abstract class Entity {
 
 	/* Settings */
 	private final String name;
-	private final int MAX_HEALTH = 100;
-	private int health = MAX_HEALTH;
+	protected int maxHealth = 100;
+	private int health = maxHealth;
+	protected int attackDamage;
+	protected AttackBox attackBox = null;
+	protected boolean active = true;
 
 	/* Sprites & Animations */
 	private final Map<Pose, Animation> animations;
@@ -80,7 +83,7 @@ public abstract class Entity {
 	 */
 	public void draw(Graphics g) {
 		//drawHitbox(g);
-		if(animations == null || currentPose == null || game == null)return;
+		if(animations == null || currentPose == null || game == null || !active)return;
 
 		Animation animation = getCurrentAnimation();
 		if(animation == null)return;
@@ -100,8 +103,10 @@ public abstract class Entity {
 	 * per game draw.
 	 */
 	public void update() {
+		if(!active)return;
 		moving = false;
-		if (isIdling()) setCurrentPose(Pose.IDLE);
+		if(isDying() && getCurrentAnimation().isCycleCompleted()) active = false;
+		else if (isIdling()) setCurrentPose(Pose.IDLE);
 	}
 
 	public Level getLevel() {
@@ -249,6 +254,13 @@ public abstract class Entity {
 		return x + vx;
 	}
 
+	/**
+	 * @return True if the player is facing left, false if facing right.
+	 */
+	public boolean isFacingLeft() {
+		return flipW == -1;
+	}
+
 	// Collision
 
 	/**
@@ -382,7 +394,7 @@ public abstract class Entity {
 	 * @return True if the entity is not moving or in an action state.
 	 */
 	public boolean isIdling() {
-		return !moving && !inAir && !isRolling() && !isAttacking();
+		return !moving && !inAir && !isRolling() && !isAttacking() && !isDying();
 	}
 
 	/**
@@ -399,6 +411,13 @@ public abstract class Entity {
 		return currentPose.equals(Pose.ATTACK);
 	}
 
+	/**
+	 * @return True if the entity is dying.
+	 */
+	public boolean isDying() {
+		return currentPose.equals(Pose.DIE);
+	}
+
 	// Settings
 
 	/**
@@ -408,19 +427,29 @@ public abstract class Entity {
 	 * @param health The amount of health to be given.
 	 */
 	public void setHealth(int health) {
-		if(health > MAX_HEALTH) health = MAX_HEALTH;
+		if(health > maxHealth) health = maxHealth;
 		this.health = health;
+	}
+
+	/**
+	 * Sets a new value for the max health.
+	 *
+	 * @param health The new integer value to represent max health.
+	 */
+	public void setMaxHealth(int health) {
+		this.maxHealth = health;
+		this.health = maxHealth;
 	}
 
 	/**
 	 * Adds or removes health.
 	 *
-	 * @param health The amount to be added / subtracted.
+	 * @param value The amount to be added / subtracted.
 	 */
-	public void modifyHealth(int health) {
-		this.health += health;
-		if(health > MAX_HEALTH) this.health = MAX_HEALTH;
-		else if(health <= 0)    this.health = 0;
+	public void modifyHealth(int value) {
+		this.health += value;
+		if(health > maxHealth) health = maxHealth;
+		else if(health <= 0)   health = 0;
 	}
 
 	public int getHealth() {
@@ -428,6 +457,59 @@ public abstract class Entity {
 	}
 
 	public int getMaxHealth() {
-		return MAX_HEALTH;
+		return maxHealth;
+	}
+
+	// Damage
+
+	/**
+	 * Attacks an entity and damages them.
+	 *
+	 * @param entity The entity being attacked.
+	 */
+	public void attack(Entity entity) {
+		entity.modifyHealth(-attackDamage);
+		if(entity.getHealth() <= 0)
+			entity.setCurrentPose(Pose.DIE);
+	}
+
+	/**
+	 * @return True if the entity is alive.
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+	public AttackBox getAttackBox() {
+		return attackBox;
+	}
+
+	/**
+	 * An entity's hitbox for when they are attacking.
+	 * It's in front of wherever the host entity is facing.
+	 */
+	public class AttackBox extends Entity {
+
+		private final Entity host;
+
+		public AttackBox() {
+			super(Entity.this.x, Entity.this.y, Entity.this.w, Entity.this.h);
+			this.host = Entity.this;
+		}
+
+		@Override
+		public void draw(Graphics g) {
+			drawHitbox(g);
+		}
+
+		/**
+		 * Updates the location of the hitbox relative to the host entity location.
+		 */
+		public void update() {
+			if(host.isFacingLeft())
+				   x = (host.getX() - host.getWidth() - (host.getWidth() / 2)) - host.getLevel().getOffsetX();
+			else x = (host.getX() + host.getWidth() + (host.getWidth() / 2)) - host.getLevel().getOffsetX();
+			y = host.getY();
+		}
 	}
 }

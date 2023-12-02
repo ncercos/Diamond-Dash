@@ -14,16 +14,19 @@ public class Goblin extends Hostile {
 	private boolean facingLeft;
 	public Goblin(Game game, double x, double y) {
 		super(game, "goblin", x, y,
-				11 * Game.SCALE,
+				8 * Game.SCALE,
 				11 * Game.SCALE,
 				32,
-				10,
-				21);
+				12,
+				21,
+				10);
+		attackDamage = 15;
 	}
 
 	@Override
 	public void update() {
 		super.update();
+		if(isDying())return;
 		Player player = game.getPlaying().getPlayer();
 
 		if(isInSight(player)) {

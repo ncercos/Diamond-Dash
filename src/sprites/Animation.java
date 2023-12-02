@@ -21,10 +21,13 @@ public class Animation {
 	private int current, delay;
 	private boolean cycleCompleted;
 
+	private final Pose pose;
+
 	public Animation(String name, int size, int duration) {
 		this.size = size;
 		this.duration = duration;
 		delay = duration;
+		pose = Pose.getPose(name.split("/")[1]); /* splits the entity name/pose */
 
 		try {
 			images = loadImages(name);
@@ -37,6 +40,7 @@ public class Animation {
 		this.images = images;
 		this.duration = duration;
 		delay = duration;
+		pose = null;
 	}
 
 	/**
@@ -80,7 +84,8 @@ public class Animation {
 		if(delay == 0) {
 			current++;
 			if(current == images.length) {
-				current = 0;
+				current = pose != null && pose.equals(Pose.DIE) ? (images.length - 1) : 0;
+				if(pose != null && pose.equals(Pose.DIE))System.out.println(current);
 				cycleCompleted = true;
 			}
 			delay = duration;

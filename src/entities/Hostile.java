@@ -2,6 +2,8 @@ package entities;
 
 import game.Game;
 
+import java.awt.*;
+
 /**
  * Written by Nicholas Cercos
  * Created on Nov 29 2023
@@ -12,15 +14,24 @@ public abstract class Hostile extends Entity {
 	private int attackDistance;
 	private int sightDistance;
 
-	public Hostile(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset) {
+	public Hostile(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
 		super(game, name, x, y, w, h, spriteWidth, xDrawOffset, yDrawOffset);
-		setAttackDistance(Game.TILES_SIZE / 2);
+		attackBox = new AttackBox();
+		setAttackDistance(Game.TILES_SIZE + (Game.TILES_SIZE / 2));
+		setMaxHealth(maxHealth);
 	}
 
 	@Override
 	public void update() {
 		super.update();
 		drop();
+		attackBox.update();
+	}
+
+	@Override
+	public void draw(Graphics g) {
+		super.draw(g);
+		attackBox.draw(g);
 	}
 
 	/**
@@ -52,7 +63,7 @@ public abstract class Hostile extends Entity {
 	 * @param player The player object.
 	 * @return True if player within range and accessible.
 	 */
-	protected boolean isInSight(Player player) {
+	public boolean isInSight(Player player) {
 		if(player.getTileY() == tileY) {
 			if(getDistanceFrom(player) <= sightDistance)
 				return isWalkable(player);
@@ -60,7 +71,7 @@ public abstract class Hostile extends Entity {
 		return false;
 	}
 
-	protected boolean isInAttackRange(Player player) {
+	public boolean isInAttackRange(Player player) {
 		return getDistanceFrom(player) <= attackDistance;
 	}
 

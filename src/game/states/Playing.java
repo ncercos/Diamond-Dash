@@ -1,5 +1,6 @@
 package game.states;
 
+import entities.Hostile;
 import entities.Player;
 import entities.enemies.Goblin;
 import game.Game;
@@ -11,6 +12,9 @@ import ui.PauseOverlay;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Written by Nicholas Cercos
@@ -20,7 +24,7 @@ public class Playing extends State {
 
 	// Entities
 	private final Player player;
-	private final Goblin goblin;
+	private final List<Hostile> enemies;
 
 	// Levels
 	private final LevelManager levelManager;
@@ -37,9 +41,10 @@ public class Playing extends State {
 		paused = false;
 		levelManager = new LevelManager(game);
 		player = new Player(game, 0, 0);
-		goblin = new Goblin(game, 50, 0);
 		pauseOverlay = new PauseOverlay(this);
 		hudOverlay = new HudOverlay(player);
+		enemies = new ArrayList<>();
+		enemies.add(new Goblin(game, 50, 0));
 	}
 
 	/**
@@ -49,7 +54,7 @@ public class Playing extends State {
 	 * @param g The graphics context.
 	 */
 	public void drawMobs(Graphics g) {
-		goblin.draw(g);
+		enemies.forEach(e -> e.draw(g));
 		player.draw(g);
 	}
 
@@ -57,8 +62,14 @@ public class Playing extends State {
 	 * Updates all mobile entities in the world.
 	 */
 	private void updateMobs() {
+		Iterator<Hostile> it = enemies.iterator();
+		while(it.hasNext()) {
+			Hostile enemy = it.next();
+			if(enemy.isActive())
+				enemy.update();
+			else it.remove();
+		}
 		player.update();
-		goblin.update();
 	}
 
 	/**
@@ -66,8 +77,7 @@ public class Playing extends State {
 	 * All key's pressed will be reset to prevent sticky keys.
 	 */
 	public void togglePause() {
-		player.initPressing();
-		player.initClicking();
+		player.resetBinds();
 		paused = !paused;
 	}
 
@@ -77,6 +87,19 @@ public class Playing extends State {
 		else {
 			updateMobs();
 			hudOverlay.update();
+
+			// Player attacks enemy
+			if(player.isAttacking() && player.getCurrentAnimation().isCycleCompleted()) {
+				for(Hostile e : enemies) {
+					if(player.getAttackBox().overlaps(e)) {
+						player.attack(e);
+						return;
+					}
+				}
+			}
+
+			// Enemy attacks player
+
 		}
 	}
 

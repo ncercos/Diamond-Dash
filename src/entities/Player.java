@@ -5,6 +5,8 @@ import inputs.Input;
 import levels.Level;
 import sprites.Pose;
 
+import java.awt.*;
+
 /**
  * Written by Nicholas Cercos
  * Created on Oct 04 2023
@@ -29,9 +31,9 @@ public class Player extends Entity {
 				32,
 				13,
 				18.5);
-
-		initPressing();
-		initClicking();
+		attackDamage = 5;
+		attackBox = new AttackBox();
+		resetBinds();
 	}
 
 	/**
@@ -45,7 +47,7 @@ public class Player extends Entity {
 		super.update();
 
 		double speed = 1.65;
-		if(!isAttacking()) {
+		if(!isAttacking() && !isDying()) {
 			if (pressing[Input.LT]) goLT(speed);
 			if (pressing[Input.RT]) goRT(speed);
 			if (pressing[Input.UP]) goUP(speed * 2.15);
@@ -58,6 +60,7 @@ public class Player extends Entity {
 
 		move();
 		checkCloseToLevelBorder();
+		attackBox.update();
 
 		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
 		for(Matter item : level.getItems()) {
@@ -74,6 +77,31 @@ public class Player extends Entity {
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void draw(Graphics g) {
+		super.draw(g);
+		attackBox.draw(g);
+	}
+
+	@Override
+	public void modifyHealth(int health) {
+		super.modifyHealth(health);
+		if(health == 0) {
+			// TODO: End the game
+		}
+	}
+
+	/**
+	 * Adds or removes energy.
+	 *
+	 * @param energy The amount to be added / subtracted.
+	 */
+	public void modifyEnergy(int energy) {
+		this.energy += energy;
+		if(energy > MAX_ENERGY) this.energy = MAX_ENERGY;
+		else if(energy <= 0)    this.energy = 0;
 	}
 
 	/**
@@ -93,6 +121,14 @@ public class Player extends Entity {
 	}
 
 	/**
+	 * Initializes key and mouse bindings.
+	 */
+	public void resetBinds() {
+		pressing = new boolean[1024];
+		clicking = new boolean[4];
+	}
+
+	/**
 	 * Updates the value for a key interaction.
 	 *
 	 * @param keyCode The code of the interacted key.
@@ -100,10 +136,6 @@ public class Player extends Entity {
 	 */
 	public void setPressing(int keyCode, boolean value) {
 		pressing[keyCode] = value;
-	}
-
-	public void initPressing() {
-		 pressing = new boolean[1024];
 	}
 
 	/**
@@ -114,40 +146,6 @@ public class Player extends Entity {
 	 */
 	public void setClicking(int buttonCode, boolean value) {
 		clicking[buttonCode] = value;
-	}
-
-	public void initClicking() {
-		clicking = new boolean[4];
-	}
-
-	@Override
-	public void modifyHealth(int health) {
-		super.modifyHealth(health);
-		if(health == 0) {
-			// TODO: End the game
-		}
-	}
-
-	/**
-	 * Sets the energy.
-	 * Value cannot be higher than pre-defined max energy.
-	 *
-	 * @param energy The amount of energy to be given.
-	 */
-	public void setEnergy(int energy) {
-		if(energy > MAX_ENERGY) energy = MAX_ENERGY;
-		this.energy = energy;
-	}
-
-	/**
-	 * Adds or removes energy.
-	 *
-	 * @param energy The amount to be added / subtracted.
-	 */
-	public void modifyEnergy(int energy) {
-		this.energy += energy;
-		if(energy > MAX_ENERGY) this.energy = MAX_ENERGY;
-		else if(energy <= 0)    this.energy = 0;
 	}
 
 	public int getEnergy() {
