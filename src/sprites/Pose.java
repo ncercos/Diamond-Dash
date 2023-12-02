@@ -11,6 +11,7 @@ public enum Pose {
 	JUMP,
 	ROLL(false, 3),
 	ATTACK(false, 6),
+	HURT(false, 3),
 	DIE(false, 8);
 
 	private final boolean repeated;

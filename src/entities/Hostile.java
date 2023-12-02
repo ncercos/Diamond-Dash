@@ -11,12 +11,14 @@ import java.awt.*;
 public abstract class Hostile extends Entity {
 
 	private int tileY;
-	private int attackDistance;
+	protected int attackDistance;
 	private int sightDistance;
+	protected int attackDelay;
 
 	public Hostile(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
 		super(game, name, x, y, w, h, spriteWidth, xDrawOffset, yDrawOffset);
 		attackBox = new AttackBox();
+		attackDelay = 0;
 		setAttackDistance(Game.TILES_SIZE + (Game.TILES_SIZE / 2));
 		setMaxHealth(maxHealth);
 	}
@@ -26,12 +28,20 @@ public abstract class Hostile extends Entity {
 		super.update();
 		drop();
 		attackBox.update();
+		if(attackDelay > 0)
+			attackDelay--;
 	}
 
 	@Override
 	public void draw(Graphics g) {
 		super.draw(g);
 		attackBox.draw(g);
+	}
+
+	@Override
+	public void attack(Entity entity) {
+		super.attack(entity);
+		resetAttackDelay();
 	}
 
 	/**
@@ -54,6 +64,17 @@ public abstract class Hostile extends Entity {
 	public void setAttackDistance(int attackDistance) {
 		this.attackDistance = attackDistance;
 		this.sightDistance = attackDistance * 3;
+	}
+
+	/**
+	 * Resets the attack delay so that the enemy has to wait in-between attacks.
+	 */
+	public void resetAttackDelay() {
+		attackDelay = 60;
+	}
+
+	public boolean isAbleToAttack() {
+		return attackDelay <= 0;
 	}
 
 	/**
@@ -119,7 +140,7 @@ public abstract class Hostile extends Entity {
 	 * @param player The player object.
 	 * @return An integer distance. (will never be negative)
 	 */
-	private int getDistanceFrom(Player player) {
+	protected int getDistanceFrom(Player player) {
 		return (int) Math.abs(player.getX() - x);
 	}
 }

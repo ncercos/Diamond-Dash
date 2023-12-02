@@ -85,7 +85,6 @@ public class Animation {
 			current++;
 			if(current == images.length) {
 				current = pose != null && pose.equals(Pose.DIE) ? (images.length - 1) : 0;
-				if(pose != null && pose.equals(Pose.DIE))System.out.println(current);
 				cycleCompleted = true;
 			}
 			delay = duration;

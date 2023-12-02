@@ -394,7 +394,7 @@ public abstract class Entity {
 	 * @return True if the entity is not moving or in an action state.
 	 */
 	public boolean isIdling() {
-		return !moving && !inAir && !isRolling() && !isAttacking() && !isDying();
+		return !moving && !inAir && !isRolling() && !isAttacking() && !isHurt() && !isDying();
 	}
 
 	/**
@@ -409,6 +409,13 @@ public abstract class Entity {
 	 */
 	public boolean isAttacking() {
 		return currentPose.equals(Pose.ATTACK);
+	}
+
+	/**
+	 * @return True if the entity was hit and is hurt.
+	 */
+	public boolean isHurt() {
+		return currentPose.equals(Pose.HURT);
 	}
 
 	/**
@@ -468,9 +475,11 @@ public abstract class Entity {
 	 * @param entity The entity being attacked.
 	 */
 	public void attack(Entity entity) {
+		if(isHurt() || isDying())return;
 		entity.modifyHealth(-attackDamage);
 		if(entity.getHealth() <= 0)
 			entity.setCurrentPose(Pose.DIE);
+		else entity.setCurrentPose(Pose.HURT);
 	}
 
 	/**
