@@ -17,7 +17,8 @@ public class Player extends Entity {
 	private boolean[] clicking;
 
 	private final int MAX_ENERGY = 100;
-	private int energy = MAX_ENERGY;
+	private double energy = MAX_ENERGY;
+	private final int ENERGY_CONSUMPTION = 40;
 
 	/**
 	 * Constructs a player entity.
@@ -47,16 +48,21 @@ public class Player extends Entity {
 	public void update() {
 		super.update();
 
+		replenishEnergy();
+
 		double speed = 1.65;
 		if(!isAttacking() && !isDying()) {
 			if (pressing[Input.LT]) goLT(speed);
 			if (pressing[Input.RT]) goRT(speed);
 			if (pressing[Input.UP]) goUP(speed * 2.15);
 
-			if (pressing[Input.ROLL] && !isRolling())
+			if (pressing[Input.ROLL] && !isRolling() && isEnergetic()) {
 				setCurrentPose(Pose.ROLL);
-			if(clicking[Input.ATTACK] && !isRolling())
+				consumeEnergy();
+			} else if(clicking[Input.ATTACK] && !isRolling() && isEnergetic()) {
 				setCurrentPose(Pose.ATTACK);
+				consumeEnergy();
+			}
 		}
 
 		move();
@@ -87,22 +93,36 @@ public class Player extends Entity {
 	}
 
 	@Override
-	public void modifyHealth(int health) {
-		super.modifyHealth(health);
-		if(health == 0) {
+	public void modifyHealth(int value) {
+		super.modifyHealth(value);
+		if(getHealth() == 0) {
 			// TODO: End the game
 		}
 	}
 
 	/**
-	 * Adds or removes energy.
-	 *
-	 * @param energy The amount to be added / subtracted.
+	 * Consumes energy for power moves (attack & roll).
 	 */
-	public void modifyEnergy(int energy) {
-		this.energy += energy;
-		if(energy > MAX_ENERGY) this.energy = MAX_ENERGY;
-		else if(energy <= 0)    this.energy = 0;
+	public void consumeEnergy() {
+		energy -= ENERGY_CONSUMPTION;
+		if(energy <= 0)
+			energy = 0;
+	}
+
+	/**
+	 * Replenishes energy after a power move.
+	 */
+	public void replenishEnergy() {
+		if(energy >= MAX_ENERGY)return;
+		if(!getCurrentAnimation().isCycleCompleted())return;
+		energy += 0.5;
+	}
+
+	/**
+	 * @return True if the player has enough energy to perform a power move.
+	 */
+	public boolean isEnergetic() {
+		return energy >= ENERGY_CONSUMPTION;
 	}
 
 	/**
@@ -149,7 +169,7 @@ public class Player extends Entity {
 		clicking[buttonCode] = value;
 	}
 
-	public int getEnergy() {
+	public double getEnergy() {
 		return energy;
 	}
 

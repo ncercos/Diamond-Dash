@@ -19,7 +19,7 @@ public abstract class Hostile extends Entity {
 		super(game, name, x, y, w, h, spriteWidth, xDrawOffset, yDrawOffset);
 		attackBox = new AttackBox();
 		attackDelay = 0;
-		setAttackDistance(Game.TILES_SIZE + (Game.TILES_SIZE / 2));
+		setAttackDistance(Game.TILES_SIZE * 2);
 		setMaxHealth(maxHealth);
 	}
 
@@ -39,9 +39,12 @@ public abstract class Hostile extends Entity {
 	}
 
 	@Override
-	public void attack(Entity entity) {
-		super.attack(entity);
-		resetAttackDelay();
+	public boolean attack(Entity entity) {
+		if(super.attack(entity)) {
+			resetAttackDelay();
+			return true;
+		}
+		return false;
 	}
 
 	/**

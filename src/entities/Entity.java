@@ -30,7 +30,7 @@ public abstract class Entity {
 	protected boolean moving, inAir = true;
 
 	/* Settings */
-	private final String name;
+	protected final String name;
 	protected int maxHealth = 100;
 	private int health = maxHealth;
 	protected int attackDamage;
@@ -476,14 +476,16 @@ public abstract class Entity {
 	 *
 	 * @param entity The entity being attacked.
 	 */
-	public void attack(Entity entity) {
-		if(getCurrentAnimation().getCurrentIndex() != attackPoseIndex)return;
-		if(entity.isHurt() || entity.isDying())return;
+	public boolean attack(Entity entity) {
+		if(animations != null && getCurrentAnimation().getCurrentIndex() != attackPoseIndex)return false;
+		if(currentPose != null && (entity.isHurt() || entity.isDying()))return false;
 
+		System.out.println(name + " attacked " + entity.name);
 		entity.modifyHealth(-attackDamage);
 		if(entity.getHealth() <= 0)
 			entity.setCurrentPose(Pose.DIE);
 		else entity.setCurrentPose(Pose.HURT);
+		return true;
 	}
 
 	/**
@@ -491,13 +493,6 @@ public abstract class Entity {
 	 */
 	public boolean isActive() {
 		return active;
-	}
-
-	/**
-	 * @return The index within the attack animation in which damage will take place.
-	 */
-	public int getAttackPoseIndex() {
-		return attackPoseIndex;
 	}
 
 	public AttackBox getAttackBox() {

@@ -1,5 +1,6 @@
 package levels;
 
+import entities.Entity;
 import entities.Matter;
 import entities.items.Diamond;
 import entities.items.Gold;
@@ -69,8 +70,8 @@ public class Level {
 		drawBackground(g, background, largeMountain, mountainShadow, smallMountain, offsetX);
 
 		// Tiles
-		for(LevelLayer layer : LevelLayer.values()) {
-			if(layer.isMobSpawn())
+		for (LevelLayer layer : LevelLayer.values()) {
+			if (layer.isMobSpawn())
 				game.getPlaying().drawMobs(g);
 			drawLayer(g, layer);
 		}

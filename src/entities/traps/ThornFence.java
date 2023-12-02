@@ -1,6 +1,7 @@
 package entities.traps;
 
 import entities.Matter;
+import entities.Player;
 import game.Game;
 
 /**
@@ -15,10 +16,13 @@ public class ThornFence extends Matter {
 				facesLeft ? 12 : 15,
 				facesLeft ? 7 : 9,
 				facesLeft ? 4 : 0, 0);
+		attackDamage = 100;
 	}
 
 	@Override
 	public void onCollide() {
-		// TODO: Damage the player
+		Player player = game.getPlaying().getPlayer();
+		if(player.isDying() || !player.isActive())return;
+		attack(game.getPlaying().getPlayer());
 	}
 }
