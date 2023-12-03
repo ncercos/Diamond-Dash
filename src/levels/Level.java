@@ -1,16 +1,21 @@
 package levels;
 
-import entities.Entity;
-import entities.Matter;
-import entities.items.Diamond;
-import entities.items.Gold;
-import entities.traps.ThornFence;
+import entities.Hostile;
+import entities.Player;
+import entities.enemies.Goblin;
+import game.states.Playing;
+import matter.Matter;
+import matter.items.Diamond;
+import matter.items.Gold;
+import matter.traps.ThornFence;
 import game.Game;
 import sprites.Animation;
+import utils.Location;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,7 +33,7 @@ public class Level {
 
 	private final int id;
 	private final LevelStyle style;
-	private final Map<LevelLayer, int[][]> data;
+	private Map<LevelLayer, int[][]> data;
 
 	private int offsetX;
 	private final int maxTilesOffset;
@@ -36,7 +41,10 @@ public class Level {
 	public final int RT_BORDER = (int) (0.8 * Game.GAME_WIDTH);
 
 	private final BufferedImage background, largeMountain, smallMountain, mountainShadow;
-	private final List<Matter> items, traps;
+	private List<Matter> items, traps;
+	private List<Hostile> enemies;
+
+	private Location spawn;
 
 	public Level(LevelManager levelManager, int id, LevelStyle style, Map<LevelLayer, int[][]> data) {
 		this.levelManager = levelManager;
@@ -54,10 +62,45 @@ public class Level {
 		smallMountain  = levelManager.getMountainImage(style, false, foggy);
 		mountainShadow = levelManager.getMountainShadowImage(style);
 
-		items = new ArrayList<>();
-		traps = new ArrayList<>();
+		initialize();
+	}
+
+	/**
+	 * Sets all level attributes and details to their default values.
+	 */
+	private void initialize() {
+		items   = new ArrayList<>();
+		traps   = new ArrayList<>();
+		enemies = new ArrayList<>();
+		offsetX = 0;
 		loadAllItems();
 		loadAllTraps();
+		loadMobSpawns();
+	}
+
+	/**
+	 * Updates all enemies in the level.
+	 */
+	public void update() {
+		Iterator<Hostile> it = enemies.iterator();
+		while(it.hasNext()) {
+			Hostile enemy = it.next();
+			if(enemy.isActive())
+				enemy.update();
+			else it.remove();
+		}
+	}
+
+	/**
+	 * Re-initializes level values & reloads tile data.
+	 */
+	public void reset() {
+		data = levelManager.loadLevelData(id);
+		initialize();
+		loadMobSpawns();
+		Player player = game.getPlaying().getPlayer();
+		player.reset();
+		if(spawn != null) player.teleport(spawn);
 	}
 
 	/**
@@ -71,11 +114,16 @@ public class Level {
 
 		// Tiles
 		for (LevelLayer layer : LevelLayer.values()) {
-			if (layer.isMobSpawn())
-				game.getPlaying().drawMobs(g);
+			if(layer.equals(LevelLayer.SPAWNS))continue;
+
+			if (layer.isMobSpawn()) {
+				enemies.forEach(e -> e.draw(g));
+				game.getPlaying().getPlayer().draw(g);
+			}
 			drawLayer(g, layer);
 		}
 
+		// Matter
 		items.forEach(i -> i.draw(g));
 		traps.forEach(i -> i.draw(g));
 	}
@@ -122,6 +170,31 @@ public class Level {
 				g.drawImage(animation != null ? animation.getCurrentImage(levelManager.getGame().getPlaying()) : image, x, y, TILES_SIZE, TILES_SIZE, null);
 			}
 		}
+	}
+
+
+	/**
+	 * Loads the main spawn point & all enemy
+	 * spawns for this level.
+	 */
+	private void loadMobSpawns() {
+		int[][] itemData = data.get(LevelLayer.SPAWNS);
+		for(int h = 0; h < itemData.length; h++) {
+			for(int w = 0; w < itemData[h].length; w++) {
+				int index = itemData[h][w];
+				if(index < 0)continue;
+				int x = w * TILES_SIZE, y = h * TILES_SIZE;
+
+				switch (index) {
+					case 0 -> spawn = new Location(x, y);
+					case 1 -> enemies.add(new Goblin(game, x, y));
+				}
+			}
+		}
+	}
+
+	public Location getSpawn() {
+		return spawn;
 	}
 
 	/**
@@ -178,6 +251,10 @@ public class Level {
 
 	public List<Matter> getTraps() {
 		return traps;
+	}
+
+	public List<Hostile> getEnemies() {
+		return enemies;
 	}
 
 	/**

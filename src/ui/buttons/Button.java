@@ -1,6 +1,6 @@
 package ui.buttons;
 
-import entities.Entity;
+import utils.Hitbox;
 
 import java.awt.*;
 
@@ -8,7 +8,7 @@ import java.awt.*;
  * Written by Nicholas Cercos
  * Created on Nov 27 2023
  **/
-public abstract class Button extends Entity {
+public abstract class Button extends Hitbox {
 
 	protected boolean mouseOver, mousePressed;
 	protected int currentIndex;
@@ -40,10 +40,6 @@ public abstract class Button extends Entity {
 	public void reset() {
 		mouseOver = false;
 		mousePressed = false;
-	}
-
-	public boolean isMouseOver() {
-		return mouseOver;
 	}
 
 	public void setMouseOver(boolean mouseOver) {

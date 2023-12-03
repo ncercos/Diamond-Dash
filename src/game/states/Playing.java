@@ -2,9 +2,9 @@ package game.states;
 
 import entities.Hostile;
 import entities.Player;
-import entities.enemies.Goblin;
 import game.Game;
 import inputs.Input;
+import levels.Level;
 import levels.LevelManager;
 import ui.HudOverlay;
 import ui.PauseOverlay;
@@ -12,9 +12,6 @@ import ui.PauseOverlay;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Written by Nicholas Cercos
@@ -22,56 +19,20 @@ import java.util.List;
  **/
 public class Playing extends State {
 
-	// HURT RED COLOR - e12a2a
-
-	// Entities
 	private final Player player;
-	private final List<Hostile> enemies;
-
-	// Levels
 	private final LevelManager levelManager;
-
-	// Paused
-	private boolean paused;
 	private final PauseOverlay pauseOverlay;
-
-	// HUD
 	private final HudOverlay hudOverlay;
+
+	private boolean paused;
 
 	public Playing(Game game) {
 		super(game);
 		paused = false;
 		levelManager = new LevelManager(game);
-		player = new Player(game, 0, 0);
+		player = new Player(game, levelManager.getCurrentLevel().getSpawn());
 		pauseOverlay = new PauseOverlay(this);
 		hudOverlay = new HudOverlay(player);
-		enemies = new ArrayList<>();
-		enemies.add(new Goblin(game, 50, 0));
-	}
-
-	/**
-	 * Renders all mobile entities that will spawn
-	 * on the set "mob" layer.
-	 *
-	 * @param g The graphics context.
-	 */
-	public void drawMobs(Graphics g) {
-		enemies.forEach(e -> e.draw(g));
-		player.draw(g);
-	}
-
-	/**
-	 * Updates all mobile entities in the world.
-	 */
-	private void updateMobs() {
-		Iterator<Hostile> it = enemies.iterator();
-		while(it.hasNext()) {
-			Hostile enemy = it.next();
-			if(enemy.isActive())
-				enemy.update();
-			else it.remove();
-		}
-		player.update();
 	}
 
 	/**
@@ -87,11 +48,13 @@ public class Playing extends State {
 	public void update() {
 		if(paused) pauseOverlay.update();
 		else {
-			updateMobs();
+			Level level = levelManager.getCurrentLevel();
+			level.update();
+			player.update();
 			hudOverlay.update();
 
 			// Combat between mobs
-			for(Hostile e : enemies) {
+			for(Hostile e : level.getEnemies()) {
 				if(player.isAttacking() && player.getAttackBox().overlaps(e))
 					player.attack(e);
 

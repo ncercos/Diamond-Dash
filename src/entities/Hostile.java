@@ -1,7 +1,6 @@
 package entities;
 
 import game.Game;
-import levels.LevelLayer;
 
 import java.awt.*;
 
@@ -17,19 +16,17 @@ public abstract class Hostile extends Entity {
 	protected int attackDelay;
 
 	public Hostile(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
-		super(game, name, x, y, w, h, spriteWidth, xDrawOffset, yDrawOffset);
-		attackBox = new AttackBox();
+		super(game, name, x, y, w, h, spriteWidth, xDrawOffset, yDrawOffset, maxHealth);
 		attackDelay = 0;
 		setAttackDistance((int)w);
 		setMaxHealth(maxHealth);
-		System.out.println(attackDistance);
+		reset();
 	}
 
 	@Override
 	public void update() {
 		super.update();
 		drop();
-		attackBox.update();
 		if(attackDelay > 0)
 			attackDelay--;
 	}
@@ -37,7 +34,13 @@ public abstract class Hostile extends Entity {
 	@Override
 	public void draw(Graphics g) {
 		super.draw(g);
-		//attackBox.draw(g);
+		attackBox.draw(g);
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		flipW = -1;
 	}
 
 	@Override

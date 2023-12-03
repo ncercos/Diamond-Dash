@@ -3,7 +3,9 @@ package entities;
 import game.Game;
 import inputs.Input;
 import levels.Level;
+import matter.Matter;
 import sprites.Pose;
+import utils.Location;
 
 import java.awt.*;
 
@@ -25,16 +27,16 @@ public class Player extends Entity {
 	 * 11w & 13h is the size of the hitbox (hb).
 	 * Draw Offset is where the hb starts within sprite.
 	 */
-	public Player(Game game, double x, double y) {
-		super(game, "player", x, y,
+	public Player(Game game, Location location) {
+		super(game, "player", location.getX(), location.getY(),
 				6 * Game.SCALE,
 				13 * Game.SCALE,
 				32,
 				13,
-				18.5);
+				18.5,
+				100);
 		attackDamage = 5;
 		attackPoseIndex = 3;
-		attackBox = new AttackBox();
 		resetBinds();
 	}
 
@@ -67,7 +69,6 @@ public class Player extends Entity {
 
 		move();
 		checkCloseToLevelBorder();
-		attackBox.update();
 
 		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
 		for(Matter item : level.getItems()) {
@@ -90,6 +91,12 @@ public class Player extends Entity {
 	public void draw(Graphics g) {
 		super.draw(g);
 		//attackBox.draw(g);
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		energy = MAX_ENERGY;
 	}
 
 	@Override

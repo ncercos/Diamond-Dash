@@ -4,6 +4,8 @@ import game.Game;
 import levels.Level;
 import sprites.Animation;
 import sprites.Pose;
+import utils.Hitbox;
+import utils.Location;
 
 import java.awt.*;
 import java.io.File;
@@ -14,14 +16,10 @@ import java.util.Map;
  * Written by Nicholas Cercos
  * Created on Oct 04 2023
  **/
-public abstract class Entity {
+public abstract class Entity extends Hitbox {
 
 	protected Game game;
-
-	/* Location & Size */
-	protected double x, y;
-	protected final double w, h;
-	protected final double xDrawOffset, yDrawOffset;
+	protected final String name;
 
 	/* Physics */
 	private static final double GRAVITY = 0.15 * Game.SCALE;
@@ -29,53 +27,34 @@ public abstract class Entity {
 	protected double vx, vy;
 	protected boolean moving, inAir = true;
 
-	/* Settings */
-	protected final String name;
-	protected int maxHealth = 100;
+	/* Health */
+	protected int maxHealth;
 	private int health = maxHealth;
+
+	/* Damage */
 	protected int attackDamage;
-	protected AttackBox attackBox = null;
-	protected boolean active = true;
+	protected Hitbox attackBox;
+	protected boolean active;
+	protected int attackPoseIndex;
 
 	/* Sprites & Animations */
 	private final Map<Pose, Animation> animations;
 	protected Pose currentPose;
-	private int spriteWidth;
-	private double flipX = 0;
-	private int flipW = 1;
-	protected int attackPoseIndex;
+	private final int spriteWidth;
+	private double flipX;
+	protected int flipW;
 
-	public Entity(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset) {
+	public Entity(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
+		super(x, y, w, h, xDrawOffset, yDrawOffset);
 		this.game = game;
 		this.name = name;
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
 		this.spriteWidth = spriteWidth;
-		this.xDrawOffset = xDrawOffset * Game.SCALE;
-		this.yDrawOffset = yDrawOffset * Game.SCALE;
+		this.maxHealth = maxHealth;
 		animations = new HashMap<>();
-		currentPose = Pose.IDLE;
+		attackBox = new Hitbox(x, y, w, h);
 		attackPoseIndex = 0;
 		loadAllAnimations(spriteWidth);
-	}
-
-	public Entity(Game game, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset) {
-		this.game = game;
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
-		this.xDrawOffset = xDrawOffset * Game.SCALE;
-		this.yDrawOffset = yDrawOffset * Game.SCALE;
-		name = null;
-		animations = null;
-		currentPose = null;
-	}
-
-	public Entity(double x, double y, double w, double h) {
-		this(null, x, y, w, h, 0, 0);
+		reset();
 	}
 
 	/**
@@ -84,12 +63,13 @@ public abstract class Entity {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g) {
-		//drawHitbox(g);
-		if(animations == null || currentPose == null || game == null || !active)return;
+		int lvlOffset = getLevel().getOffsetX();
+		super.draw(g, lvlOffset);
+		attackBox.draw(g, lvlOffset);
 
 		Animation animation = getCurrentAnimation();
-		if(animation == null)return;
-		int px = (int)(x - getLevel().getOffsetX() + flipX);
+		if(!active || animation == null)return;
+		int px = (int)(x - lvlOffset + flipX);
 		int width  = (int) ((spriteWidth * Game.SCALE) * flipW);
 		int height = (int)  (spriteWidth * Game.SCALE);
 
@@ -107,8 +87,22 @@ public abstract class Entity {
 	public void update() {
 		if(!active)return;
 		moving = false;
+		updateAttackBox();
 		if(isDying() && getCurrentAnimation().isCycleCompleted()) active = false;
 		else if (isIdling()) setCurrentPose(Pose.IDLE);
+	}
+
+	/**
+	 * Resets player health & poses.
+	 */
+	public void reset() {
+		active = true;
+		inAir = true;
+		moving = true;
+		health = maxHealth;
+		currentPose = Pose.IDLE;
+		flipX = 0;
+		flipW = 1;
 	}
 
 	public Level getLevel() {
@@ -238,14 +232,6 @@ public abstract class Entity {
 		applyFrictionWithFloor();
 	}
 
-	public double getY() {
-		return y;
-	}
-
-	public double getX() {
-		return x;
-	}
-
 	/**
 	 * Modifies the x value by the x-velocity to determine
 	 * an entity's kinetic energy on the x-axis.
@@ -261,6 +247,12 @@ public abstract class Entity {
 	 */
 	public boolean isFacingLeft() {
 		return flipW == -1;
+	}
+
+	@Override
+	public void teleport(Location location) {
+		super.teleport(location);
+		applyFrictionWithFloor();
 	}
 
 	// Collision
@@ -305,53 +297,6 @@ public abstract class Entity {
 	 */
 	public int getTileY() {
 		return (int) (y / Game.TILES_SIZE);
-	}
-
-	/**
-	 * Determines if two entity hitboxes are overlapping.
-	 *
-	 * @param e The other entity in question.
-	 * @return True if both entities are colliding.
-	 */
-	public boolean overlaps(Entity e) {
-		return (x     <= e.x + e.w) &&
-				   (x + w >= e.x      ) &&
-				   (y     <= e.y + e.h) &&
-				   (y + h >= e.y      );
-	}
-
-	/**
-	 * Checks if the location of a mouse is within
-	 * the constraints of the hitbox.
-	 *
-	 * @param mx The x-coordinate.
-	 * @param my The y-coordinate.
-	 * @return True if within the point is within hitbox.
-	 */
-	public boolean contains(int mx, int my) {
-		return (mx >= x  )   &&
-					 (mx <= x+w)   &&
-					 (my >= y  )   &&
-					 (my <= y+h);
-	}
-
-	/**
-	 * Draw the hitbox for debugging.
-	 *
-	 * @param g The graphics context.
-	 */
-	protected void drawHitbox(Graphics g) {
-		int levelOffset = game == null ? 0 : game.getPlaying().getLevelManager().getCurrentLevel().getOffsetX();
-		g.setColor(Color.PINK);
-		g.drawRect((int)x - levelOffset, (int)y, (int)w, (int)h);
-	}
-
-	public double getWidth() {
-		return w;
-	}
-
-	public double getHeight() {
-		return h;
 	}
 
 	// Animations
@@ -427,7 +372,7 @@ public abstract class Entity {
 		return currentPose.equals(Pose.DIE);
 	}
 
-	// Settings
+	// Health
 
 	/**
 	 * Sets the health.
@@ -472,6 +417,16 @@ public abstract class Entity {
 	// Damage
 
 	/**
+	 * Updates the location of the hitbox relative to the host entity location.
+	 */
+	public void updateAttackBox() {
+		double xPos = isFacingLeft() ?
+				((x - w - (w / 2))) :
+				((x + w + (w / 2)));
+		attackBox.teleport(new Location(xPos, y));
+	}
+
+	/**
 	 * Attacks an entity and damages them.
 	 *
 	 * @param entity The entity being attacked.
@@ -481,11 +436,20 @@ public abstract class Entity {
 		if(currentPose != null && (entity.isHurt() || entity.isDying()))return false;
 
 		System.out.println(name + " attacked " + entity.name);
-		entity.modifyHealth(-attackDamage);
-		if(entity.getHealth() <= 0)
-			entity.setCurrentPose(Pose.DIE);
-		else entity.setCurrentPose(Pose.HURT);
+		entity.damage(attackDamage);
 		return true;
+	}
+
+	/**
+	 * Damage the entity.
+	 *
+	 * @param damage The amount of damage to be taken.
+	 */
+	public void damage(int damage) {
+		modifyHealth(-damage);
+		if(getHealth() <= 0)
+			   setCurrentPose(Pose.DIE);
+		else setCurrentPose(Pose.HURT);
 	}
 
 	/**
@@ -495,36 +459,7 @@ public abstract class Entity {
 		return active;
 	}
 
-	public AttackBox getAttackBox() {
+	public Hitbox getAttackBox() {
 		return attackBox;
-	}
-
-	/**
-	 * An entity's hitbox for when they are attacking.
-	 * It's in front of wherever the host entity is facing.
-	 */
-	public class AttackBox extends Entity {
-
-		private final Entity host;
-
-		public AttackBox() {
-			super(Entity.this.x, Entity.this.y, Entity.this.w, Entity.this.h);
-			this.host = Entity.this;
-		}
-
-		@Override
-		public void draw(Graphics g) {
-			drawHitbox(g);
-		}
-
-		/**
-		 * Updates the location of the hitbox relative to the host entity location.
-		 */
-		public void update() {
-			if(host.isFacingLeft())
-				   x = (host.getX() - host.getWidth() - (host.getWidth() / 2)) - host.getLevel().getOffsetX();
-			else x = (host.getX() + host.getWidth() + (host.getWidth() / 2)) - host.getLevel().getOffsetX();
-			y = host.getY();
-		}
 	}
 }

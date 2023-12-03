@@ -23,6 +23,7 @@ public class Main {
 				boolean outOfBounds = count > WIDTH;
 				if (outOfBounds) {
 					count = 1;
+					builder.deleteCharAt(builder.length() - 1);
 					builder.append(";");
 				}
 				builder.append(tilesIndex[i].trim()).append(",");

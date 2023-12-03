@@ -1,17 +1,20 @@
-package entities;
+package matter;
 
 import game.Game;
+import utils.Hitbox;
 
 /**
  * Written by Nicholas Cercos
  * Created on Nov 21 2023
  **/
-public abstract class Matter extends Entity {
+public abstract class Matter extends Hitbox {
 
+	protected final Game game;
 	private final int tileX, tileY;
 
-	public Matter(Game game, double x, double y, double w, double h, double xHitboxOffset, double yHitboxOffset) {
-		super(game, x, y, w * Game.SCALE, h * Game.SCALE, xHitboxOffset, yHitboxOffset);
+	public Matter(Game game, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset) {
+		super(x, y, w * Game.SCALE, h * Game.SCALE, xDrawOffset, yDrawOffset);
+		this.game = game;
 		this.x = x + xDrawOffset;
 		this.y = y + yDrawOffset;
 

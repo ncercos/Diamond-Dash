@@ -139,11 +139,13 @@ public class PauseOverlay {
 				if(button.isMousePressed()) {
 					if(button instanceof SoundButton sb) sb.setMuted(!sb.isMuted());
 					else if(button instanceof UtilButton ub) {
-						if(ub.getType().equals(UtilButton.Type.HOME))
+						if(ub.getType().equals(UtilButton.Type.HOME)) {
+							playing.getLevelManager().getCurrentLevel().reset();
 							GameState.current = GameState.MENU;
-						else if(ub.getType().equals(UtilButton.Type.REPLAY))
-							System.out.println("replay level");
-						else if(ub.getType().equals(UtilButton.Type.START))
+						} else if(ub.getType().equals(UtilButton.Type.REPLAY)) {
+							playing.getLevelManager().getCurrentLevel().reset();
+							playing.togglePause();
+						} else if(ub.getType().equals(UtilButton.Type.START))
 							playing.togglePause();
 					}
 					break;

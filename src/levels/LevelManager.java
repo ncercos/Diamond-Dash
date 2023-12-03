@@ -255,11 +255,22 @@ public class LevelManager {
 	 * @throws IOException If the image cannot be accessed/found.
 	 */
 	private Level loadLevel(int id, LevelStyle style) throws IOException {
+		return new Level(this, id, style, loadLevelData(id));
+	}
+
+	/**
+	 * Determines all tile information for a level based on the
+	 * tile index given within each level's properties file.
+	 *
+	 * @param id The level number.
+	 * @return A map consisting of a key layer with tile index values.
+	 */
+	public Map<LevelLayer, int[][]> loadLevelData(int id) {
 		Properties levelProperties = getLevelPropertyFile(RESOURCE_URL + "levels/" + id);
 		Map<LevelLayer, int[][]> data = new HashMap<>();
 		for(LevelLayer layer : LevelLayer.values())
 			data.put(layer, parseLevelData(levelProperties, layer));
-		return new Level(this, id, style, data);
+		return data;
 	}
 
 	/**

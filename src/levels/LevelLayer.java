@@ -11,7 +11,8 @@ public enum LevelLayer {
 	ITEMS,
 	FLORA(true),
 	FOREGROUND,
-	WATER;
+	WATER,
+	SPAWNS;
 
 	private final boolean mobSpawn;
 
