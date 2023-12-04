@@ -3,7 +3,6 @@ package entities;
 import game.Game;
 import inputs.Input;
 import levels.Level;
-import matter.Matter;
 import sprites.Pose;
 import utils.Location;
 
@@ -69,28 +68,11 @@ public class Player extends Entity {
 
 		move();
 		checkCloseToLevelBorder();
-
-		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
-		for(Matter item : level.getItems()) {
-			if(overlaps(item)) {
-				level.removeItem(item);
-				item.onCollide();
-				break;
-			}
-		}
-
-		for(Matter trap : level.getTraps()) {
-			if(overlaps(trap)) {
-				trap.onCollide();
-				break;
-			}
-		}
 	}
 
 	@Override
 	public void draw(Graphics g) {
 		super.draw(g);
-		//attackBox.draw(g);
 	}
 
 	@Override

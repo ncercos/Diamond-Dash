@@ -4,7 +4,10 @@ import entities.Hostile;
 import entities.Player;
 import entities.enemies.Goblin;
 import game.states.Playing;
+import matter.Item;
 import matter.Matter;
+import matter.Trap;
+import matter.containers.Crate;
 import matter.items.Diamond;
 import matter.items.Gold;
 import matter.traps.ThornFence;
@@ -41,7 +44,9 @@ public class Level {
 	public final int RT_BORDER = (int) (0.8 * Game.GAME_WIDTH);
 
 	private final BufferedImage background, largeMountain, smallMountain, mountainShadow;
-	private List<Matter> items, traps;
+	private List<Item> items;
+	private List<Trap> traps;
+	private List<Matter> containers;
 	private List<Hostile> enemies;
 
 	private Location spawn;
@@ -69,12 +74,14 @@ public class Level {
 	 * Sets all level attributes and details to their default values.
 	 */
 	private void initialize() {
-		items   = new ArrayList<>();
-		traps   = new ArrayList<>();
-		enemies = new ArrayList<>();
+		items      = new ArrayList<>();
+		traps      = new ArrayList<>();
+		containers = new ArrayList<>();
+		enemies    = new ArrayList<>();
 		offsetX = 0;
 		loadAllItems();
 		loadAllTraps();
+		loadAllContainers();
 		loadMobSpawns();
 	}
 
@@ -82,6 +89,15 @@ public class Level {
 	 * Updates all enemies in the level.
 	 */
 	public void update() {
+		for(int i = 0; i < items.size(); i++)
+			items.get(i).update();
+
+		for(int i = 0; i < traps.size(); i++)
+			traps.get(i).update();
+
+		for(int i = 0; i < containers.size(); i++)
+			containers.get(i).update();
+
 		Iterator<Hostile> it = enemies.iterator();
 		while(it.hasNext()) {
 			Hostile enemy = it.next();
@@ -95,9 +111,9 @@ public class Level {
 	 * Re-initializes level values & reloads tile data.
 	 */
 	public void reset() {
+		levelManager.resetTileAnimations();
 		data = levelManager.loadLevelData(id);
 		initialize();
-		loadMobSpawns();
 		Player player = game.getPlaying().getPlayer();
 		player.reset();
 		if(spawn != null) player.teleport(spawn);
@@ -172,7 +188,6 @@ public class Level {
 		}
 	}
 
-
 	/**
 	 * Loads the main spawn point & all enemy
 	 * spawns for this level.
@@ -193,10 +208,6 @@ public class Level {
 		}
 	}
 
-	public Location getSpawn() {
-		return spawn;
-	}
-
 	/**
 	 * Loads a hitbox for all items in the level and
 	 * saves it to memory for collision.
@@ -208,29 +219,13 @@ public class Level {
 				int index = itemData[h][w];
 				if(index < 0)continue;
 				int x = w * TILES_SIZE, y = h * TILES_SIZE;
-				addItem(index == 0 ? new Gold(game, x, y)    :
-						    index == 4 ? new Diamond(game, x, y) : null);
+
+				switch(index) {
+					case 0 -> items.add(new Gold(game, x, y));
+					case 4 -> items.add(new Diamond(game, x, y));
+				}
 			}
 		}
-	}
-
-	/**
-	 * Removes an item from the level.
-	 *
-	 * @param item The item that will be removed.
-	 */
-	public void removeItem(Matter item) {
-		items.remove(item);
-		data.get(LevelLayer.ITEMS)[item.getTileY()][item.getTileX()] = -1;
-	}
-
-	private void addItem(Matter item) {
-		if(item == null)return;
-		items.add(item);
-	}
-
-	public List<Matter> getItems() {
-		return items;
 	}
 
 	/**
@@ -244,17 +239,48 @@ public class Level {
 				int index = trapData[h][w];
 				if(!Matter.Type.isTrap(index))continue;
 				int x = w * TILES_SIZE, y = h * TILES_SIZE;
-				traps.add(new ThornFence(game, x, y, index == Matter.Type.THORN_FENCE_LEFT.getTileID()));
+				traps.add(new ThornFence(game, x, y, index ==
+						Matter.Type.THORN_FENCE_LEFT.getTileID()));
 			}
 		}
 	}
 
-	public List<Matter> getTraps() {
-		return traps;
+	/**
+	 * Loads a hitbox for all items in the level and
+	 * saves it to memory for collision.
+	 */
+	private void loadAllContainers() {
+		int[][] itemData = data.get(LevelLayer.CONTAINERS);
+		for(int h = 0; h < itemData.length; h++) {
+			for(int w = 0; w < itemData[h].length; w++) {
+				int index = itemData[h][w];
+				if(index < 0)continue;
+				int x = w * TILES_SIZE, y = h * TILES_SIZE;
+
+				if (index == 0)
+					containers.add(new Crate(game, x, y));
+			}
+		}
 	}
 
-	public List<Hostile> getEnemies() {
-		return enemies;
+	public void removeItem(Item item) {
+		items.removeIf(i -> i == item);
+		removeTile(LevelLayer.ITEMS, item);
+	}
+
+	public void removeContainer(Matter container) {
+		containers.removeIf(i -> i == container);
+		removeTile(LevelLayer.CONTAINERS, container);
+	}
+
+	/**
+	 * Removes a tile from a specific layer of the map.
+	 *
+	 * @param layer  The layer to edit.
+	 * @param matter The object being removed.
+	 */
+	private void removeTile(LevelLayer layer, Matter matter) {
+		data.get(layer)[matter.getTileY()][matter.getTileX()] = -1;
 	}
 
 	/**
@@ -321,5 +347,13 @@ public class Level {
 
 	public LevelManager getLevelManager() {
 		return levelManager;
+	}
+
+	public Location getSpawn() {
+		return spawn;
+	}
+
+	public List<Hostile> getEnemies() {
+		return enemies;
 	}
 }

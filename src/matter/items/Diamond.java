@@ -1,13 +1,13 @@
 package matter.items;
 
-import matter.Matter;
 import game.Game;
+import matter.Item;
 
 /**
  * Written by Nicholas Cercos
  * Created on Nov 21 2023
  **/
-public class Diamond extends Matter {
+public class Diamond extends Item {
 
 	/**
 	 * Create a Diamond item with an adjusted hitbox.
@@ -19,8 +19,5 @@ public class Diamond extends Matter {
 	public Diamond(Game game, double x, double y) {
 		super(game, x, y, 8, 7, 4, 5);
 	}
-
-	@Override
-	public void onCollide() {}
 
 }

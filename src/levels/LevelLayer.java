@@ -8,6 +8,7 @@ public enum LevelLayer {
 
 	MIDGROUND,
 	DECOR,
+	CONTAINERS,
 	ITEMS,
 	FLORA(true),
 	FOREGROUND,

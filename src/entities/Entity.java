@@ -331,7 +331,7 @@ public abstract class Entity extends Hitbox {
 			String poseName = s.getName().split("\\.")[0];
 			Pose pose = Pose.getPose(poseName);
 			if(pose == null)continue;
-			animations.put(pose, new Animation(name + "/" + pose.getName(), spriteWidth, pose.getDuration()));
+			animations.put(pose, new Animation(name + "/" + pose.getName(), spriteWidth, pose.getDuration()).setRepeatable(pose.isRepeated()));
 			poses.add(pose);
 		}
 	}
@@ -345,7 +345,7 @@ public abstract class Entity extends Hitbox {
 		if(!poses.contains(pose))return;
 		currentPose = pose;
 		if(!pose.isRepeated())
-			getCurrentAnimation().resetAnimation();
+			getCurrentAnimation().reset();
 	}
 
 	/**
@@ -489,6 +489,10 @@ public abstract class Entity extends Hitbox {
 	 */
 	public boolean isActive() {
 		return active;
+	}
+
+	public int getAttackPoseIndex() {
+		return attackPoseIndex;
 	}
 
 	public Hitbox getAttackBox() {

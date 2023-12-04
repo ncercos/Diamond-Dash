@@ -20,14 +20,12 @@ public class Animation {
 	private final int duration;
 	private int current, delay;
 	private boolean cycleCompleted;
-
-	private final Pose pose;
+	private boolean frozen = false, repeatable = true;
 
 	public Animation(String name, int size, int duration) {
 		this.size = size;
 		this.duration = duration;
 		delay = duration;
-		pose = Pose.getPose(name.split("/")[1]); /* splits the entity name/pose */
 
 		try {
 			images = loadImages(name);
@@ -36,17 +34,17 @@ public class Animation {
 		}
 	}
 
-	public Animation(Image[] images, int duration) {
+	public Animation(Image[] images, int duration, boolean frozen) {
 		this.images = images;
 		this.duration = duration;
+		this.frozen = frozen;
 		delay = duration;
-		pose = null;
 	}
 
 	/**
 	 * Starts animation from the beginning.
 	 */
-	public void resetAnimation() {
+	public void reset() {
 		this.current = 0;
 		this.delay = duration;
 		cycleCompleted = false;
@@ -80,11 +78,13 @@ public class Animation {
 	 */
 	public Image getCurrentImage(Playing playing) {
 		if(images == null) return null;
+		if(frozen) return getStaticImage();
+
 		if(!playing.isPaused()) delay--;
 		if(delay == 0) {
 			current++;
 			if(current == images.length) {
-				current = pose != null && pose.equals(Pose.DIE) ? (images.length - 1) : 0;
+				current = repeatable ? 0 : (images.length - 1);
 				cycleCompleted = true;
 			}
 			delay = duration;
@@ -93,10 +93,30 @@ public class Animation {
 	}
 
 	/**
+	 * @return True if the animation cycles continuously.
+	 */
+	public boolean isRepeatable() {
+		return repeatable;
+	}
+
+	public Animation setRepeatable(boolean repeatable) {
+		this.repeatable = repeatable;
+		return this;
+	}
+
+	/**
 	 * @return True if all animation sprites have been shown at least once.
 	 */
 	public boolean isCycleCompleted() {
 		return cycleCompleted;
+	}
+
+	public boolean isFrozen() {
+		return frozen;
+	}
+
+	public void setFrozen(boolean frozen) {
+		this.frozen = frozen;
 	}
 
 	public int getCurrentIndex() {

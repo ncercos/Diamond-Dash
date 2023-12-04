@@ -3,19 +3,16 @@ package levels;
 import game.Game;
 import sprites.Animation;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import static game.Game.*;
+import static game.Game.RESOURCE_URL;
+import static game.Game.TILES_DEFAULT_SIZE;
 
 /**
  * Written by Nicholas Cercos
@@ -30,7 +27,6 @@ public class LevelManager {
 	private Level currentLevel;
 
 	public int MAX_TILES_PER_SHEET;
-
 	private final Map<LevelLayer, TileAnimations> animations;
 
 	public LevelManager(Game game) {
@@ -64,41 +60,74 @@ public class LevelManager {
 	 * @throws IOException If the image could not be accessed/found.
 	 */
 	public void loadAllLevelResources() throws IOException {
-		final String TILE_DIRECTORY = RESOURCE_URL + "tiles/";
 
 		for(LevelStyle style : LevelStyle.values()) {
 			// Load background
-			String backgroundDirectory = Game.RESOURCE_URL + "backgrounds/" + style.getName() + "/";
-			backgrounds.put(style, new BufferedImage[] {
-					ImageIO.read(new File(backgroundDirectory + "sky.png")),
-					ImageIO.read(new File(backgroundDirectory + "shadow.png")),
-					ImageIO.read(new File(backgroundDirectory + "mountains_fog_large.png")),
-					ImageIO.read(new File(backgroundDirectory + "mountains_large.png")),
-					ImageIO.read(new File(backgroundDirectory + "mountains_fog_small.png")),
-					ImageIO.read(new File(backgroundDirectory + "mountains_small.png"))
-			});
+			loadBackground(style);
+
 
 			// Load tiles
-			BufferedImage tileSheet = ImageIO.read(new File(TILE_DIRECTORY + style.getFileName()));
+			final String TILE_DIRECTORY = "tiles/";
+			BufferedImage tileSheet = Game.loadSprite(TILE_DIRECTORY + style.getFileName());
+			if(tileSheet == null)return;
+
 			MAX_TILES_PER_SHEET = (tileSheet.getWidth() / TILES_DEFAULT_SIZE) * (tileSheet.getHeight() / TILES_DEFAULT_SIZE);
 			foregroundTiles.put(style, importTiles(tileSheet));
-			decorTiles = importTiles(ImageIO.read(new File(TILE_DIRECTORY + "decor.png")));
-			midGroundTiles = importTiles(ImageIO.read(new File(TILE_DIRECTORY + "midground.png")));
-			floraTiles = importTiles(ImageIO.read(new File(TILE_DIRECTORY + "flora.png")));
+			decorTiles     = loadLayerTiles(LevelLayer.DECOR);
+			midGroundTiles = loadLayerTiles(LevelLayer.MIDGROUND);
+			floraTiles     = loadLayerTiles(LevelLayer.FLORA);
 		}
 
 		// Animated tiles
-		animations.put(LevelLayer.ITEMS, new TileAnimations(ImageIO.read(new File(TILE_DIRECTORY + "items.png")), 4,
-				new int[] {65, 	// gold
-									 15		// diamond
-		}));
-		animations.put(LevelLayer.WATER, new TileAnimations(ImageIO.read(new File(TILE_DIRECTORY + "water.png")), 4,
-				new int[] {80, 30, 15, 										    // still, some, many bubbles
-						       30,           											// main water flow
-						       7, 7, 7, 7, 7, 7, 7, 							// water fall lush rock
-									 7, 7, 7, 7, 7, 										// split water, split water crash, water crack, water leak, water leak crash
-						       7, 7, 7, 7, 7, 7, 7, 							// water fall dry rock
-						       0, 0}));
+		addLayerAnimations(LevelLayer.ITEMS, 4, false,
+				65, 																// gold
+								15																	// diamond
+				 );
+
+		addLayerAnimations(LevelLayer.WATER, 4, false,
+				80, 30, 15, 										    // still, some, many bubbles
+								30,           											// main water flow
+								7, 7, 7, 7, 7, 7, 7, 							  // water fall lush rock
+								7, 7, 7, 7, 7, 										  // split water, split water crash, water crack, water leak, water leak crash
+								7, 7, 7, 7, 7, 7, 7, 							  // water fall dry rock
+								0, 0);
+
+		addLayerAnimations(LevelLayer.CONTAINERS, 7, true,
+				4); 																// wooden box
+	}
+
+	/**
+	 * Loads all images needed to create the background of a style.
+	 *
+	 * @param style The style of background.
+	 */
+	private void loadBackground(LevelStyle style) {
+		String[] files = new String[] { "sky", "shadow", "mountains_fog_large", "mountains_large", "mountains_fog_small", "mountains_small" };
+		BufferedImage[] images = new BufferedImage[files.length];
+
+		for(int i = 0; i < files.length; i++)
+			images[i] = Game.loadSprite("backgrounds/" + style.getName() + "/" + files[i] + ".png");
+
+		backgrounds.put(style, images);
+	}
+
+	private Image[] loadLayerTiles(LevelLayer layer) {
+		return importTiles(Game.loadSprite("tiles/" + layer.getName() + ".png"));
+	}
+
+	private void addLayerAnimations(LevelLayer layer, int count, boolean frozen, int... duration) {
+		animations.put(layer, new TileAnimations(Game.loadSprite("tiles/" + layer.getName() + ".png"), count, frozen, duration));
+	}
+
+	/**
+	 * Resets all tile animations back to their default.
+	 */
+	public void resetTileAnimations() {
+		for(LevelLayer layer : LevelLayer.values()) {
+			TileAnimations ta  = animations.get(layer);
+			if(ta == null)continue;
+			ta.reset();
+		}
 	}
 
 	/**
@@ -310,6 +339,7 @@ public class LevelManager {
 	class TileAnimations {
 
 		Map<Integer, Animation> animations;
+		boolean frozen;
 
 		/**
 		 * Used to initialize animated tile sheets.
@@ -318,18 +348,29 @@ public class LevelManager {
 		 * @param count   	The number of images per animation.
 		 * @param duration 	An array of durations for each animation.
 		 */
-		public TileAnimations(BufferedImage sprite, int count, int[] duration) {
+		public TileAnimations(BufferedImage sprite, int count, boolean frozen, int... duration) {
 			this.animations = new HashMap<>();
+			this.frozen = frozen;
 
 			Image[] allAnimations = importTiles(sprite);
 
 			for(int i = 0; i < allAnimations.length; i += count) {
 				Image[] groupedAnimations = new Image[count];
 				System.arraycopy(allAnimations, i, groupedAnimations, 0, count);
-				Animation animation = new Animation(groupedAnimations, duration[animations.size()]);
+				Animation animation = new Animation(groupedAnimations, duration[animations.size()], frozen);
 				int index = animations.size() * animation.getImages().length;
 				animations.put(index, animation);
 			}
+		}
+
+		/**
+		 * Resets the frozen state of an animation.
+		 */
+		public void reset() {
+			animations.forEach((k,v) -> {
+				v.reset();
+				v.setFrozen(frozen);
+			});
 		}
 
 		public Map<Integer, Animation> getAnimations() {

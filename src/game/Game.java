@@ -4,7 +4,11 @@ import game.states.Playing;
 import game.states.Menu;
 import game.states.State;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Written by Nicholas Cercos
@@ -38,6 +42,21 @@ public class Game implements Runnable {
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();
 		init();
+	}
+
+	/**
+	 * Loads any sprite within the game's resource directory.
+	 *
+	 * @param path The path starting from the res folder.
+	 * @return An image, if it exists, otherwise null.
+	 */
+	public static BufferedImage loadSprite(String path) {
+		try {
+			return ImageIO.read(new File(Game.RESOURCE_URL + path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**

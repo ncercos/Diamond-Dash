@@ -1,6 +1,8 @@
 package matter;
 
 import game.Game;
+import game.states.Playing;
+import levels.LevelLayer;
 import utils.Hitbox;
 
 /**
@@ -11,6 +13,7 @@ public abstract class Matter extends Hitbox {
 
 	protected final Game game;
 	private final int tileX, tileY;
+	private int tileIndex;
 
 	public Matter(Game game, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset) {
 		super(x, y, w * Game.SCALE, h * Game.SCALE, xDrawOffset, yDrawOffset);
@@ -20,9 +23,24 @@ public abstract class Matter extends Hitbox {
 
 		tileX = (int)(x / Game.TILES_SIZE);
 		tileY = (int)(y / Game.TILES_SIZE);
+		tileIndex = -2;
 	}
 
-	public abstract void onCollide();
+	public void update() {}
+
+	public void onCollide() {}
+
+	/**
+	 * Finds a tile index within a specific layer.
+	 *
+	 * @param layer The layer to look through.
+	 * @return An index for a tile on the sprite sheet.
+	 */
+	public int getTileIndex(LevelLayer layer) {
+		if(tileIndex == -2)
+			tileIndex = game.getPlaying().getLevelManager().getCurrentLevel().getTileIndex(layer, tileX, tileY);
+		return tileIndex;
+	}
 
 	public int getTileX() {
 		return tileX;

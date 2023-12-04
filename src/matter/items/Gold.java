@@ -1,13 +1,13 @@
 package matter.items;
 
-import matter.Matter;
 import game.Game;
+import matter.Item;
 
 /**
  * Written by Nicholas Cercos
  * Created on Nov 21 2023
  **/
-public class Gold extends Matter {
+public class Gold extends Item {
 
 	/**
 	 * Create a Gold item with an adjusted hitbox.
@@ -19,8 +19,5 @@ public class Gold extends Matter {
 	public Gold(Game game, double x, double y) {
 		super(game, x, y, 9, 5, 3, 11);
 	}
-
-	@Override
-	public void onCollide() {}
 
 }
