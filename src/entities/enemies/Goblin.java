@@ -28,7 +28,7 @@ public class Goblin extends Hostile {
 	@Override
 	public void update() {
 		super.update();
-		if(isDying() || isHurt())return;
+		if(isDying() || isHurt() || inAir)return;
 		Player player = game.getPlaying().getPlayer();
 
 		// Attack a player, if possible.
@@ -57,7 +57,7 @@ public class Goblin extends Hostile {
 
 			if (canMoveTo(getKineticX(), y)) {
 				if (getLevel().isSolid(getKineticX() + (facingLeft ? 0 : w), y + h + 1)) {
-					setX(getKineticX());
+					move();
 					return;
 				}
 			}

@@ -10,7 +10,9 @@ import utils.Location;
 import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Written by Nicholas Cercos
@@ -18,7 +20,7 @@ import java.util.Map;
  **/
 public abstract class Entity extends Hitbox {
 
-	protected Game game;
+	protected final Game game;
 	protected final String name;
 
 	/* Physics */
@@ -39,6 +41,7 @@ public abstract class Entity extends Hitbox {
 
 	/* Sprites & Animations */
 	private final Map<Pose, Animation> animations;
+	private final Set<Pose> poses;
 	protected Pose currentPose;
 	private final int spriteWidth;
 	private double flipX;
@@ -51,6 +54,7 @@ public abstract class Entity extends Hitbox {
 		this.spriteWidth = spriteWidth;
 		this.maxHealth = maxHealth;
 		animations = new HashMap<>();
+		poses = new HashSet<>();
 		attackBox = new Hitbox(x, y, w, h);
 		attackPoseIndex = 0;
 		loadAllAnimations(spriteWidth);
@@ -117,7 +121,6 @@ public abstract class Entity extends Hitbox {
 	 */
 	public void move() {
 		if(!moving && !inAir)return;
-		if(game == null)return;
 
 		if(!inAir && !isOnTile())
 			inAir = true;
@@ -132,8 +135,9 @@ public abstract class Entity extends Hitbox {
 				if(vy > 0) stopFalling();
 				else vy = GRAVITY;
 			}
-			updateXPos();
-		} else updateXPos();
+		}
+
+		updateXPos();
 	}
 
 	/**
@@ -198,7 +202,8 @@ public abstract class Entity extends Hitbox {
 		vy = (int) (-dy * Game.SCALE);
 		moving = true;
 		inAir = true;
-		if(!isRolling() && !isAttacking()) setCurrentPose(Pose.JUMP);
+		if(!isRolling() && !isAttacking())
+			setCurrentPose(Pose.JUMP);
 	}
 
 	/**
@@ -240,6 +245,16 @@ public abstract class Entity extends Hitbox {
 	 */
 	public double getKineticX() {
 		return x + vx;
+	}
+
+	/**
+	 * Modifies the y value by the y-velocity to determine
+	 * an entity's kinetic energy on the y-axis.
+	 *
+	 * @return The value of y + vy.
+	 */
+	public double getKineticY() {
+		return y + vy;
 	}
 
 	/**
@@ -316,6 +331,7 @@ public abstract class Entity extends Hitbox {
 			Pose pose = Pose.getPose(poseName);
 			if(pose == null)continue;
 			animations.put(pose, new Animation(name + "/" + pose.getName(), spriteWidth, pose.getDuration()));
+			poses.add(pose);
 		}
 	}
 
@@ -325,6 +341,7 @@ public abstract class Entity extends Hitbox {
 	 * @param pose The new animation pose.
 	 */
 	public void setCurrentPose(Pose pose) {
+		if(!poses.contains(pose))return;
 		currentPose = pose;
 		if(!pose.isRepeated())
 			getCurrentAnimation().resetAnimation();
@@ -447,9 +464,18 @@ public abstract class Entity extends Hitbox {
 	 */
 	public void damage(int damage) {
 		modifyHealth(-damage);
+
+		// Apply pose
 		if(getHealth() <= 0)
-			   setCurrentPose(Pose.DIE);
+			setCurrentPose(Pose.DIE);
 		else setCurrentPose(Pose.HURT);
+
+		// Apply knockback
+		int kb = (int) (2 * Game.SCALE);
+		if (!isFacingLeft())
+			   vx = -kb * Game.SCALE;
+		else vx =  kb * Game.SCALE;
+		updateXPos();
 	}
 
 	/**
