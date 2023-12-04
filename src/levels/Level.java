@@ -4,6 +4,7 @@ import entities.Hostile;
 import entities.Player;
 import entities.enemies.Goblin;
 import game.states.Playing;
+import matter.Container;
 import matter.Item;
 import matter.Matter;
 import matter.Trap;
@@ -46,7 +47,7 @@ public class Level {
 	private final BufferedImage background, largeMountain, smallMountain, mountainShadow;
 	private List<Item> items;
 	private List<Trap> traps;
-	private List<Matter> containers;
+	private List<Container> containers;
 	private List<Hostile> enemies;
 
 	private Location spawn;
@@ -268,7 +269,7 @@ public class Level {
 		removeTile(LevelLayer.ITEMS, item);
 	}
 
-	public void removeContainer(Matter container) {
+	public void removeContainer(Container container) {
 		containers.removeIf(i -> i == container);
 		removeTile(LevelLayer.CONTAINERS, container);
 	}
