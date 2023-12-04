@@ -95,7 +95,7 @@ public abstract class Hostile extends Entity {
 	public boolean isInSight(Player player) {
 		if(player.getTileY() == tileY) {
 			if(getDistanceFrom(player) <= sightDistance)
-				return isWalkable(player) && player.isActive();
+				return isWalkable(player) && player.isActive() && !player.isDying();
 		}
 		return false;
 	}

@@ -18,7 +18,7 @@ public class Goblin extends Hostile {
 				11 * Game.SCALE,
 				32,
 				12,
-				21,
+				20.5,
 				10);
 		attackDamage = 15;
 		attackPoseIndex = 3;

@@ -38,6 +38,7 @@ public abstract class Entity extends Hitbox {
 	protected Hitbox attackBox;
 	protected boolean active;
 	protected int attackPoseIndex;
+	protected Entity attacker = null;
 
 	/* Sprites & Animations */
 	private final Map<Pose, Animation> animations;
@@ -453,6 +454,7 @@ public abstract class Entity extends Hitbox {
 		if(currentPose != null && (entity.isHurt() || entity.isDying()))return false;
 
 		System.out.println(name + " attacked " + entity.name);
+		entity.attacker = this;
 		entity.damage(attackDamage);
 		return true;
 	}
@@ -470,12 +472,16 @@ public abstract class Entity extends Hitbox {
 			setCurrentPose(Pose.DIE);
 		else setCurrentPose(Pose.HURT);
 
+		boolean facingLeft = attacker == null ? isFacingLeft() : !attacker.isFacingLeft();
+
 		// Apply knockback
 		int kb = (int) (2 * Game.SCALE);
-		if (!isFacingLeft())
+		if (!facingLeft)
 			   vx = -kb * Game.SCALE;
 		else vx =  kb * Game.SCALE;
 		updateXPos();
+
+		attacker = null;
 	}
 
 	/**
