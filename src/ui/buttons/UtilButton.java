@@ -1,6 +1,7 @@
 package ui.buttons;
 
 import game.Game;
+import ui.Button;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,10 +23,14 @@ public class UtilButton extends Button {
 	private static final int DEFAULT_SIZE = 56;
 	private static final int SIZE = (int) (DEFAULT_SIZE * Game.SCALE) / 2;
 
-	public UtilButton(int x, int y, Type type) {
-		super(x, y, SIZE, SIZE);
+	public UtilButton(int x, int y, double size, Type type) {
+		super(x, y, (int) (SIZE * size), (int) (SIZE * size));
 		this.type = type;
 		loadButtons();
+	}
+
+	public UtilButton(int x, int y, Type type) {
+		this(x, y, 1, type);
 	}
 
 	/**

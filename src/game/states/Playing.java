@@ -6,8 +6,10 @@ import game.Game;
 import inputs.Input;
 import levels.Level;
 import levels.LevelManager;
-import ui.HudOverlay;
-import ui.PauseOverlay;
+import ui.Overlay;
+import ui.overlays.DeadOverlay;
+import ui.overlays.HudOverlay;
+import ui.overlays.PauseOverlay;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -21,18 +23,20 @@ public class Playing extends State {
 
 	private final Player player;
 	private final LevelManager levelManager;
-	private final PauseOverlay pauseOverlay;
-	private final HudOverlay hudOverlay;
 
 	private boolean paused;
+	private final Overlay[] overlays;
 
 	public Playing(Game game) {
 		super(game);
 		paused = false;
 		levelManager = new LevelManager(game);
 		player = new Player(game, levelManager.getCurrentLevel().getSpawn());
-		pauseOverlay = new PauseOverlay(this);
-		hudOverlay = new HudOverlay(player);
+		overlays = new Overlay[] {
+				new PauseOverlay(this),
+				new HudOverlay(this),
+				new DeadOverlay(this)
+		};
 	}
 
 	/**
@@ -46,29 +50,29 @@ public class Playing extends State {
 
 	@Override
 	public void update() {
-		if(paused) pauseOverlay.update();
-		else {
-			Level level = levelManager.getCurrentLevel();
-			level.update();
-			player.update();
-			hudOverlay.update();
+		for(Overlay overlay : overlays)
+			overlay.update();
 
-			// Combat between mobs
-			for(Hostile e : level.getEnemies()) {
-				if(player.isAttacking() && player.getAttackBox().overlaps(e))
-					player.attack(e);
+		if(paused)return;
+		Level level = levelManager.getCurrentLevel();
+		level.update();
+		player.update();
 
-				if(e.isAttacking() && e.getAttackBox().overlaps(player) && !player.isRolling())
-					e.attack(player);
-			}
+		// Combat between mobs
+		for(Hostile e : level.getEnemies()) {
+			if(player.isAttacking() && player.getAttackBox().overlaps(e))
+				player.attack(e);
+
+			if(e.isAttacking() && e.getAttackBox().overlaps(player) && !player.isRolling())
+				e.attack(player);
 		}
 	}
 
 	@Override
 	public void draw(Graphics g) {
 		levelManager.draw(g);
-		hudOverlay.draw(g);
-		if(paused) pauseOverlay.draw(g);
+		for(Overlay overlay : overlays)
+			overlay.draw(g);
 	}
 
 	@Override
@@ -78,7 +82,7 @@ public class Playing extends State {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == Input.ESC) togglePause();
+		if(player.isActive() && e.getKeyCode() == Input.ESC) togglePause();
 		if(paused)return;
 		player.setPressing(e.getKeyCode(), true);
 	}
@@ -94,26 +98,32 @@ public class Playing extends State {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(paused) pauseOverlay.mousePressed(e);
-		else player.setClicking(e.getButton(), true);
+		for(Overlay overlay : overlays)
+			overlay.mousePressed(e);
+
+		if(!paused)
+			player.setClicking(e.getButton(), true);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if(paused) pauseOverlay.mouseReleased(e);
-		else player.setClicking(e.getButton(), false);
+		for(Overlay overlay : overlays)
+			overlay.mouseReleased(e);
+
+		if(!paused)
+			player.setClicking(e.getButton(), false);
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if(!paused)return;
-		pauseOverlay.mouseMoved(e);
+		for(Overlay overlay : overlays)
+			overlay.mouseMoved(e);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(!paused)return;
-		pauseOverlay.mouseDragged(e);
+		for(Overlay overlay : overlays)
+			overlay.mouseDragged(e);
 	}
 
 	public Player getPlayer() {

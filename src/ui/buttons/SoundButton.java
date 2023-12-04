@@ -1,6 +1,7 @@
 package ui.buttons;
 
 import game.Game;
+import ui.Button;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

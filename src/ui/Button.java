@@ -1,4 +1,4 @@
-package ui.buttons;
+package ui;
 
 import utils.Hitbox;
 

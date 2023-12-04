@@ -1,7 +1,9 @@
-package ui;
+package ui.overlays;
 
 import entities.Player;
 import game.Game;
+import game.states.Playing;
+import ui.Overlay;
 
 import java.awt.*;
 
@@ -9,16 +11,7 @@ import java.awt.*;
  * Written by Nicholas Cercos
  * Created on Dec 01 2023
  **/
-public class HudOverlay {
-
-	private final Player player;
-	private final Image hudImg;
-
-	// Hud Dimensions
-	private final int HUD_WIDTH = (int) (96 * Game.SCALE);
-	private final int HUD_HEIGHT = (int) (29 * Game.SCALE);
-	private final int HUD_X = (int) (5 * Game.SCALE);
-	private final int HUD_Y = (int) (5 * Game.SCALE);
+public class HudOverlay extends Overlay {
 
 	// Health Bar Dimensions
 	private final int HEALTH_WIDTH = (int) (75 * Game.SCALE);
@@ -34,17 +27,25 @@ public class HudOverlay {
 	private final int ENERGY_START_Y = (int) (17 * Game.SCALE);
 	private int currentEnergyWidth;
 
-	public HudOverlay(Player player) {
-		this.player = player;
-		this.hudImg = Toolkit.getDefaultToolkit().getImage(Game.RESOURCE_URL + "ui/hud.png");
-		this.currentHealthWidth = HEALTH_WIDTH;
+	public HudOverlay(Playing playing) {
+		super(playing, "hud",
+				(int) (5 * Game.SCALE),
+				(int) (1 * Game.SCALE));
+		currentHealthWidth = HEALTH_WIDTH;
+	}
+
+	@Override
+	public boolean isActive() {
+		return true;
 	}
 
 	/**
 	 * Updates the bar width that will be rendered to display
 	 * the current health and energy.
 	 */
+	@Override
 	public void update() {
+		Player player = playing.getPlayer();
 		currentHealthWidth = (int) ((player.getHealth() / (float) player.getMaxHealth()) * HEALTH_WIDTH);
 		currentEnergyWidth = (int) ((player.getEnergy() / (float) player.getMaxEnergy()) * ENERGY_WIDTH);
 	}
@@ -55,15 +56,16 @@ public class HudOverlay {
 	 *
 	 * @param g The graphics context.
 	 */
+	@Override
 	public void draw(Graphics g) {
-		g.drawImage(hudImg, HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT, null);
+		super.draw(g);
 
 		// Health Bar
 		g.setColor(Color.RED);
-		g.fillRect(HEALTH_START_X + HUD_X, HEALTH_START_Y + HUD_Y, currentHealthWidth, HEALTH_HEIGHT);
+		g.fillRect(HEALTH_START_X + x, HEALTH_START_Y + y, currentHealthWidth, HEALTH_HEIGHT);
 
 		// Energy Bar
 		g.setColor(Color.YELLOW);
-		g.fillRect(ENERGY_START_X + HUD_X, ENERGY_START_Y + HUD_Y, currentEnergyWidth, ENERGY_HEIGHT);
+		g.fillRect(ENERGY_START_X + x, ENERGY_START_Y + y, currentEnergyWidth, ENERGY_HEIGHT);
 	}
 }
