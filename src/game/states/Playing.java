@@ -78,6 +78,7 @@ public class Playing extends State {
 	@Override
 	public void lostFocus() {
 		player.resetVelocity();
+		player.resetBinds();
 	}
 
 	@Override

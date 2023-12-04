@@ -118,8 +118,15 @@ public class Player extends Entity {
 
 	/**
 	 * Replenishes energy after a power move.
+	 * Bar will completely drain when dead.
 	 */
 	public void replenishEnergy() {
+		if(isDying() || !active) {
+			if(energy > 0)
+				energy -= 1;
+			return;
+		}
+
 		if(energy >= MAX_ENERGY)return;
 		if(!getCurrentAnimation().isCycleCompleted())return;
 		energy += 0.5;
