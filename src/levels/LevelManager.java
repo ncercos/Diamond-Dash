@@ -113,17 +113,6 @@ public class LevelManager {
 	}
 
 	/**
-	 * Resets all tile animations back to their default.
-	 */
-	public void resetTileAnimations() {
-		for(LevelLayer layer : LevelLayer.values()) {
-			TileAnimations ta  = animations.get(layer);
-			if(ta == null)continue;
-			ta.reset();
-		}
-	}
-
-	/**
 	 * Takes a sprite sheet and cuts out each tile and places
 	 * them in an array.
 	 *
@@ -354,16 +343,6 @@ public class LevelManager {
 				int index = animations.size() * animation.getImages().length;
 				animations.put(index, animation);
 			}
-		}
-
-		/**
-		 * Resets the frozen state of an animation.
-		 */
-		public void reset() {
-			animations.forEach((k,v) -> {
-				v.reset();
-				v.setFrozen(frozen);
-			});
 		}
 
 		public Map<Integer, Animation> getAnimations() {

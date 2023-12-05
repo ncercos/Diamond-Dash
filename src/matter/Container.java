@@ -2,9 +2,6 @@ package matter;
 
 import entities.Player;
 import game.Game;
-import sprites.Animation;
-
-import java.awt.*;
 
 /**
  * Written by Nicholas Cercos
@@ -12,28 +9,17 @@ import java.awt.*;
  **/
 public abstract class Container extends Matter {
 
-	protected Animation animation;
 	private final static int DEFAULT_SPRITE_SIZE = 16;
 
 	public Container(Game game, String name, double x, double y) {
-		super(game, x, y, DEFAULT_SPRITE_SIZE, DEFAULT_SPRITE_SIZE, 0, 0);
-		animation = new Animation("containers/" + name, DEFAULT_SPRITE_SIZE, 4)
-				.setFrozen(true)
-				.setRepeatable(false);
-		debug = false;
-	}
+		super(game, "containers/" + name, x, y,
+				DEFAULT_SPRITE_SIZE,
+				DEFAULT_SPRITE_SIZE,
+				0, 0,
+				DEFAULT_SPRITE_SIZE, 4);
 
-	@Override
-	public void draw(Graphics g) {
-		int lvlOffset = game.getPlaying().getLevelManager().getCurrentLevel().getOffsetX();
-		super.draw(g, lvlOffset);
-		if(animation == null)return;
-
-		// Draw image if animation exists.
-		int SPRITE_SIZE = (int) (DEFAULT_SPRITE_SIZE * Game.SCALE);
-		int cx = (int)(x - lvlOffset);
-		g.drawImage(animation.getCurrentImage(game.getPlaying()), (int)(cx - xDrawOffset),
-				(int)(y - yDrawOffset), SPRITE_SIZE, SPRITE_SIZE, null);
+		animation.setFrozen(true)
+						 .setRepeatable(false);
 	}
 
 	/**

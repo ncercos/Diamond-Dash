@@ -107,7 +107,6 @@ public class Level {
 	 * Re-initializes level values & reloads tile data.
 	 */
 	public void reset() {
-		levelManager.resetTileAnimations();
 		data = levelManager.loadLevelData(id);
 		initialize();
 		Player player = game.getPlaying().getPlayer();
@@ -213,10 +212,10 @@ public class Level {
 		for(int h = 0; h < trapData.length; h++) {
 			for(int w = 0; w < trapData[h].length; w++) {
 				int index = trapData[h][w];
-				if(!Matter.Tile.isType(LevelLayer.FLORA, index))continue;
-				int x = w * TILES_SIZE, y = h * TILES_SIZE;
-				traps.add(new ThornFence(game, x, y, index ==
-						Matter.Tile.THORN_FENCE_LEFT.getTileID()));
+				if(index == 71 || index == 79) {
+					int x = w * TILES_SIZE, y = h * TILES_SIZE;
+					traps.add(new ThornFence(game, x, y, index == 71));
+				}
 			}
 		}
 	}
