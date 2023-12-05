@@ -1,6 +1,7 @@
 package levels;
 
 import game.Game;
+import matter.Container;
 import sprites.Animation;
 
 import java.awt.*;
@@ -79,11 +80,6 @@ public class LevelManager {
 		}
 
 		// Animated tiles
-		addLayerAnimations(LevelLayer.ITEMS, 4, false,
-				65, 																// gold
-								15																	// diamond
-				 );
-
 		addLayerAnimations(LevelLayer.WATER, 4, false,
 				80, 30, 15, 										    // still, some, many bubbles
 								30,           											// main water flow
@@ -91,9 +87,6 @@ public class LevelManager {
 								7, 7, 7, 7, 7, 										  // split water, split water crash, water crack, water leak, water leak crash
 								7, 7, 7, 7, 7, 7, 7, 							  // water fall dry rock
 								0, 0);
-
-		addLayerAnimations(LevelLayer.CONTAINERS, 7, true,
-				4); 																// wooden box
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package matter.items;
 
+import entities.Player;
 import game.Game;
 import matter.Item;
 
@@ -9,15 +10,14 @@ import matter.Item;
  **/
 public class Diamond extends Item {
 
-	/**
-	 * Create a Diamond item with an adjusted hitbox.
-	 * The rectangle has an offset specific to the sprite.
-	 *
-	 * @param x The initial x-location.
-	 * @param y The initial y-location.
-	 */
 	public Diamond(Game game, double x, double y) {
-		super(game, x, y, 8, 7, 4, 5);
+		super(game, "diamond", x, y, 8, 7, 3, 4, 10);
 	}
 
+	@Override
+	public boolean onCollide() {
+		Player player = game.getPlaying().getPlayer();
+		player.foundDiamond();
+		return true;
+	}
 }

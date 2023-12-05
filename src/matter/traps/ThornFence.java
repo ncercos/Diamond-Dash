@@ -19,7 +19,8 @@ public class ThornFence extends Trap {
 	}
 
 	@Override
-	public void onCollide() {
+	public boolean onCollide() {
 		damage(game.getPlaying().getPlayer());
+		return true;
 	}
 }

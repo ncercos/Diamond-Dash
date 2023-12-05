@@ -93,12 +93,11 @@ public class Animation {
 	}
 
 	/**
-	 * @return True if the animation cycles continuously.
+	 * Sets the number of cycles for an animation.
+	 *
+	 * @param repeatable Should the animation cycle continuously?
+	 * @return This animation object.
 	 */
-	public boolean isRepeatable() {
-		return repeatable;
-	}
-
 	public Animation setRepeatable(boolean repeatable) {
 		this.repeatable = repeatable;
 		return this;
@@ -115,8 +114,9 @@ public class Animation {
 		return frozen;
 	}
 
-	public void setFrozen(boolean frozen) {
+	public Animation setFrozen(boolean frozen) {
 		this.frozen = frozen;
+		return this;
 	}
 
 	public int getCurrentIndex() {

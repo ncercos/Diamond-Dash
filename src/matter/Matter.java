@@ -1,7 +1,6 @@
 package matter;
 
 import game.Game;
-import game.states.Playing;
 import levels.LevelLayer;
 import utils.Hitbox;
 
@@ -12,76 +11,44 @@ import utils.Hitbox;
 public abstract class Matter extends Hitbox {
 
 	protected final Game game;
-	private final int tileX, tileY;
-	private int tileIndex;
 
 	public Matter(Game game, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset) {
 		super(x, y, w * Game.SCALE, h * Game.SCALE, xDrawOffset, yDrawOffset);
 		this.game = game;
 		this.x = x + xDrawOffset;
 		this.y = y + yDrawOffset;
-
-		tileX = (int)(x / Game.TILES_SIZE);
-		tileY = (int)(y / Game.TILES_SIZE);
-		tileIndex = -2;
 	}
 
 	public void update() {}
 
-	public void onCollide() {}
-
-	/**
-	 * Finds a tile index within a specific layer.
-	 *
-	 * @param layer The layer to look through.
-	 * @return An index for a tile on the sprite sheet.
-	 */
-	public int getTileIndex(LevelLayer layer) {
-		if(tileIndex == -2)
-			tileIndex = game.getPlaying().getLevelManager().getCurrentLevel().getTileIndex(layer, tileX, tileY);
-		return tileIndex;
+	public boolean onCollide() {
+		return false;
 	}
 
-	public int getTileX() {
-		return tileX;
-	}
-
-	public int getTileY() {
-		return tileY;
-	}
-
-	public enum Type {
-
-		// Items
-		GOLD(0),
-		DIAMOND(4),
+	public enum Tile {
 
 		// Traps
-		THORN_FENCE_LEFT(71, true),
-		THORN_FENCE_RIGHT(79, true);
+		THORN_FENCE_LEFT  (71, LevelLayer.FLORA),
+		THORN_FENCE_RIGHT (79, LevelLayer.FLORA);
 
 		private final int tileID;
-		private final boolean trap;
+		private final LevelLayer layer;
 
-		Type(int tileID) {
+		Tile(int tileID, LevelLayer layer) {
 			this.tileID = tileID;
-			this.trap = false;
-		}
-
-		Type(int tileID, boolean trap) {
-			this.tileID = tileID;
-			this.trap = trap;
+			this.layer = layer;
 		}
 
 		/**
-		 * Determines if a specific matter tile is a trap.
+		 * Determines if a specific matter tile is of a specific group / layer.
 		 *
+		 * @param layer  The layer in which this tile is found.
 		 * @param index The index of the tile.
-		 * @return True if the tile index is a trap tile.
+		 * @return True if the tile index is of the given layer.
 		 */
-		public static boolean isTrap(int index) {
-			for(Type type : values()) {
-				if(type.isTrap() && type.getTileID() == index)
+		public static boolean isType(LevelLayer layer, int index) {
+			for(Tile tile : values()) {
+				if(tile.getLayer().equals(layer) && tile.getTileID() == index)
 					return true;
 			}
 			return false;
@@ -91,8 +58,8 @@ public abstract class Matter extends Hitbox {
 			return tileID;
 		}
 
-		public boolean isTrap() {
-			return trap;
+		public LevelLayer getLayer() {
+			return layer;
 		}
 	}
 }

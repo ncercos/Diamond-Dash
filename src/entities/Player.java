@@ -21,6 +21,12 @@ public class Player extends Entity {
 	private double energy = MAX_ENERGY;
 	private final int ENERGY_CONSUMPTION = 40;
 
+	private boolean regenerating = false;
+	private boolean boosted = false;
+	private int boostedDuration;
+
+	private int diamonds = 0;
+
 	/**
 	 * Constructs a player entity.
 	 * 11w & 13h is the size of the hitbox (hb).
@@ -50,12 +56,16 @@ public class Player extends Entity {
 		super.update();
 
 		replenishEnergy();
+		regenerateHealth();
 
 		double speed = 1.65;
+		double xBoost = 0.75,
+				   yBoost = 0.3;
+
 		if(!isAttacking() && !isDying()) {
-			if (pressing[Input.LT]) goLT(speed);
-			if (pressing[Input.RT]) goRT(speed);
-			if (pressing[Input.UP]) goUP(speed * 2.15);
+			if (pressing[Input.LT]) goLT(speed + (boosted ? xBoost : 0));
+			if (pressing[Input.RT]) goRT(speed + (boosted ? xBoost : 0));
+			if (pressing[Input.UP]) goUP(speed * 2.15 + (boosted ? yBoost : 0));
 
 			if (pressing[Input.ROLL] && !isRolling() && isEnergetic()) {
 				setCurrentPose(Pose.ROLL);
@@ -79,6 +89,13 @@ public class Player extends Entity {
 	public void reset() {
 		super.reset();
 		energy = MAX_ENERGY;
+		boosted = false;
+		regenerating = false;
+		diamonds = 0;
+	}
+
+	public void foundDiamond() {
+		diamonds++;
 	}
 
 	@Override
@@ -93,6 +110,7 @@ public class Player extends Entity {
 	 * Consumes energy for power moves (attack & roll).
 	 */
 	public void consumeEnergy() {
+		if(boosted)return;
 		energy -= ENERGY_CONSUMPTION;
 		if(energy <= 0)
 			energy = 0;
@@ -109,16 +127,56 @@ public class Player extends Entity {
 			return;
 		}
 
+		if(boostedDuration > 0) boostedDuration--;
+		else boosted = false;
+
 		if(energy >= MAX_ENERGY)return;
-		if(!getCurrentAnimation().isCycleCompleted())return;
-		energy += 0.5;
+		if(!boosted && !getCurrentAnimation().isCycleCompleted())return;
+		energy += boosted ? 1 : 0.5;
+	}
+
+	/**
+	 * Regenerates health when medicine is picked up.
+	 */
+	public void regenerateHealth() {
+		if(isDying() || !active || !regenerating)return;
+		if(getHealth() >= getMaxHealth()) {
+			regenerating = false;
+			return;
+		}
+		modifyHealth(1);
 	}
 
 	/**
 	 * @return True if the player has enough energy to perform a power move.
 	 */
 	public boolean isEnergetic() {
-		return energy >= ENERGY_CONSUMPTION;
+		return boosted || energy >= ENERGY_CONSUMPTION;
+	}
+
+	public boolean isRegenerating() {
+		return regenerating;
+	}
+
+	public boolean isBoosted() {
+		return boosted;
+	}
+
+	public void setRegenerating(boolean regenerating) {
+		this.regenerating = regenerating;
+	}
+
+	public void setBoosted(boolean boosted) {
+		this.boosted = boosted;
+		boostedDuration = boosted ? 600 : 0;
+	}
+
+	public double getEnergy() {
+		return energy;
+	}
+
+	public int getMaxEnergy() {
+		return MAX_ENERGY;
 	}
 
 	/**
@@ -163,13 +221,5 @@ public class Player extends Entity {
 	 */
 	public void setClicking(int buttonCode, boolean value) {
 		clicking[buttonCode] = value;
-	}
-
-	public double getEnergy() {
-		return energy;
-	}
-
-	public int getMaxEnergy() {
-		return MAX_ENERGY;
 	}
 }

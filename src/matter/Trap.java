@@ -2,6 +2,7 @@ package matter;
 
 import entities.Entity;
 import game.Game;
+import game.states.Playing;
 
 /**
  * Written by Nicholas Cercos
@@ -14,6 +15,13 @@ public abstract class Trap extends Matter {
 	public Trap(Game game, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset, int damage) {
 		super(game, x, y, w, h, xDrawOffset, yDrawOffset);
 		this.damage = damage;
+	}
+
+	@Override
+	public void update() {
+		Playing playing = game.getPlaying();
+		if(!overlaps(playing.getPlayer()))return;
+		onCollide();
 	}
 
 	/**

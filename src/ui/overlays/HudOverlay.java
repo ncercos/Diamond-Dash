@@ -59,13 +59,14 @@ public class HudOverlay extends Overlay {
 	@Override
 	public void draw(Graphics g) {
 		super.draw(g);
+		Player player = playing.getPlayer();
 
 		// Health Bar
-		g.setColor(Color.RED);
+		g.setColor(player.isRegenerating() ? Color.PINK : Color.RED);
 		g.fillRect(HEALTH_START_X + x, HEALTH_START_Y + y, currentHealthWidth, HEALTH_HEIGHT);
 
 		// Energy Bar
-		g.setColor(Color.YELLOW);
+		g.setColor(player.isBoosted() ? new Color(255, 138, 17) : Color.YELLOW);
 		g.fillRect(ENERGY_START_X + x, ENERGY_START_Y + y, currentEnergyWidth, ENERGY_HEIGHT);
 	}
 }

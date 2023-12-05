@@ -8,31 +8,13 @@ public enum LevelLayer {
 
 	MIDGROUND,
 	DECOR,
-	CONTAINERS,
-	ITEMS,
-	FLORA(true),
+	FLORA,
+	SPAWNS,
 	FOREGROUND,
-	WATER,
-	SPAWNS;
-
-	private final boolean mobSpawn;
-
-	LevelLayer(boolean mobSpawn) {
-		this.mobSpawn = mobSpawn;
-	}
-
-	LevelLayer() {
-		this.mobSpawn = false;
-	}
+	WATER;
 
 	public String getName() {
 		return name().toLowerCase();
 	}
 
-	/**
-	 * @return True if this layer will be where mobs will be drawn.
-	 */
-	public boolean isMobSpawn() {
-		return mobSpawn;
-	}
 }

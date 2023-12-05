@@ -2,8 +2,9 @@ package matter;
 
 import entities.Player;
 import game.Game;
-import levels.LevelLayer;
 import sprites.Animation;
+
+import java.awt.*;
 
 /**
  * Written by Nicholas Cercos
@@ -11,25 +12,44 @@ import sprites.Animation;
  **/
 public abstract class Container extends Matter {
 
-	private Animation animation;
+	protected Animation animation;
+	private final static int DEFAULT_SPRITE_SIZE = 16;
 
-	public Container(Game game, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset) {
-		super(game, x, y, w, h, xDrawOffset, yDrawOffset);
+	public Container(Game game, String name, double x, double y) {
+		super(game, x, y, DEFAULT_SPRITE_SIZE, DEFAULT_SPRITE_SIZE, 0, 0);
+		animation = new Animation("containers/" + name, DEFAULT_SPRITE_SIZE, 4)
+				.setFrozen(true)
+				.setRepeatable(false);
+		debug = false;
+	}
+
+	@Override
+	public void draw(Graphics g) {
+		int lvlOffset = game.getPlaying().getLevelManager().getCurrentLevel().getOffsetX();
+		super.draw(g, lvlOffset);
+		if(animation == null)return;
+
+		// Draw image if animation exists.
+		int SPRITE_SIZE = (int) (DEFAULT_SPRITE_SIZE * Game.SCALE);
+		int cx = (int)(x - lvlOffset);
+		g.drawImage(animation.getCurrentImage(game.getPlaying()), (int)(cx - xDrawOffset),
+				(int)(y - yDrawOffset), SPRITE_SIZE, SPRITE_SIZE, null);
 	}
 
 	/**
 	 * Opens the container by starting its animation.
 	 */
 	public void open() {
-		getAnimation().setRepeatable(false);
-		getAnimation().setFrozen(false);
+		animation.setRepeatable(false);
+		animation.setFrozen(false);
 	}
 
 	/**
-	 * Removes the container tile from the world.
+	 * Removes the container from the world.
 	 */
 	public void remove() {
-		game.getPlaying().getLevelManager().getCurrentLevel().removeContainer(this);
+		game.getPlaying().getLevelManager().getCurrentLevel()
+				.destroyContainer(this);
 	}
 
 	/**
@@ -51,16 +71,5 @@ public abstract class Container extends Matter {
 		return
 				player.isRolling() &&
 				player.overlaps(this);
-	}
-
-	/**
-	 * @return The container's tile animation.
-	 */
-	public Animation getAnimation() {
-		if(animation == null) {
-			LevelLayer layer = LevelLayer.CONTAINERS;
-			animation = game.getPlaying().getLevelManager().getTileAnimation(layer, getTileIndex(layer));
-		}
-		return animation;
 	}
 }
