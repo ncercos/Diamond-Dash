@@ -1,8 +1,10 @@
 package game;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.io.File;
 
 /**
  * Written by Nicholas Cercos
@@ -14,6 +16,8 @@ public class GameWindow {
 
 	public GameWindow(GamePanel gamePanel) {
 		jframe = new JFrame();
+		jframe.setTitle("Diamond Dash");
+		jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(Game.RESOURCE_URL + "ui/icon.png"));
 		jframe.setSize(400, 400);
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.add(gamePanel);

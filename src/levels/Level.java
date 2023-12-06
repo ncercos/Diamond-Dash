@@ -5,15 +5,14 @@ import entities.Player;
 import entities.enemies.Flower;
 import entities.enemies.Goblin;
 import entities.enemies.Slime;
+import game.Game;
 import game.states.Playing;
-import matter.*;
 import matter.Container;
+import matter.Item;
+import matter.Trap;
 import matter.containers.Crate;
 import matter.items.Diamond;
-import matter.items.EnergyDrink;
-import matter.items.Medicine;
 import matter.traps.ThornFence;
-import game.Game;
 import sprites.Animation;
 import utils.Location;
 

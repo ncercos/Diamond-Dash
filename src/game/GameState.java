@@ -8,7 +8,6 @@ public enum GameState {
 
 	MENU,
 	PLAYING,
-	HELP,
 	QUIT;
 
 	public static GameState current = MENU;

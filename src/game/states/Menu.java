@@ -3,9 +3,12 @@ package game.states;
 import game.Game;
 import game.GameState;
 import levels.LevelStyle;
+import ui.Button;
 import ui.buttons.MenuButton;
+import ui.buttons.UtilButton;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -23,8 +26,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Menu extends State {
 
 	private BufferedImage menuImg;
-	private final Set<MenuButton> buttons;
 	private int mX, mY, mW, mH;
+
+	private final Set<MenuButton> buttons;
 
 	private final BufferedImage bgImg, lmImg, smImg, msImg;
 	private int bgOffsetX;
@@ -44,11 +48,11 @@ public class Menu extends State {
 
 	private void loadMenu() {
 		try {
-			menuImg = ImageIO.read(new File(Game.RESOURCE_URL + "ui/menu.png"));
-			mW = (int) (menuImg.getWidth() * Game.SCALE) / 2;
-			mH = (int) (menuImg.getHeight() * Game.SCALE) / 2;
+			menuImg = ImageIO.read(new File(Game.RESOURCE_URL + "ui/logo.png"));
+			mW = (int) (menuImg.getWidth() / 3 * Game.SCALE);
+			mH = (int) (menuImg.getHeight() / 3 * Game.SCALE);
 			mX = (Game.GAME_WIDTH / 2) - (mW / 2);
-			mY = (int) (30 * Game.SCALE);
+			mY = (int) (20 * Game.SCALE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -59,14 +63,15 @@ public class Menu extends State {
 	 * Each button will be placed 70px under the other. (adjusted to scale, ofc)
 	 */
 	private void loadButtons() {
-		int yPos = 82;
+		int xPos = 140;
 		for(int i = 0; i < GameState.values().length; i++) {
 			GameState state = GameState.values()[i];
 			if(state.equals(GameState.MENU))continue;
-			buttons.add(new MenuButton(Game.GAME_WIDTH / 2, (int) (yPos * Game.SCALE), i - 1, state));
-			yPos += 35;
+			buttons.add(new MenuButton((int)(xPos * Game.SCALE), (int) (120 * Game.SCALE), i - 1, state));
+			xPos += 100;
 		}
 	}
+
 
 	@Override
 	public void update() {
@@ -80,7 +85,8 @@ public class Menu extends State {
 		else if(bgOffsetX == 0 && !bgMoveLeft) bgMoveLeft = true;
 		bgOffsetX = bgMoveLeft ? (bgOffsetX + 1) : (bgOffsetX - 1);
 
-		game.getPlaying().getLevelManager().getCurrentLevel().drawBackground(g, bgImg, lmImg, msImg, smImg, bgOffsetX);
+		game.getPlaying().getLevelManager().getCurrentLevel()
+				.drawBackground(g, bgImg, lmImg, msImg, smImg, bgOffsetX);
 		g.drawImage(menuImg, mX, mY, mW, mH, null);
 		buttons.forEach(b -> b.draw(g));
 	}
@@ -99,7 +105,7 @@ public class Menu extends State {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		for(MenuButton b : buttons) {
+		for(Button b : buttons) {
 			if(b.contains(e.getX(), e.getY())) {
 				b.setMousePressed(true);
 				break;
@@ -121,14 +127,14 @@ public class Menu extends State {
 				break;
 			}
 		}
-		buttons.forEach(MenuButton::reset);
+		buttons.forEach(Button::reset);
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		buttons.forEach(b -> b.setMouseOver(false));
 
-		for(MenuButton b : buttons) {
+		for(Button b : buttons) {
 			if(b.contains(e.getX(), e.getY())) {
 				b.setMouseOver(true);
 				break;
