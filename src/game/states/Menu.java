@@ -67,7 +67,7 @@ public class Menu extends State {
 		for(int i = 0; i < GameState.values().length; i++) {
 			GameState state = GameState.values()[i];
 			if(state.equals(GameState.MENU))continue;
-			buttons.add(new MenuButton((int)(xPos * Game.SCALE), (int) (120 * Game.SCALE), i - 1, state));
+			buttons.add(new MenuButton((int)(xPos * Game.SCALE), (int) (115 * Game.SCALE), i - 1, state));
 			xPos += 100;
 		}
 	}
