@@ -2,8 +2,6 @@ package entities;
 
 import game.Game;
 
-import java.awt.*;
-
 /**
  * Written by Nicholas Cercos
  * Created on Nov 29 2023
@@ -29,18 +27,6 @@ public abstract class Hostile extends Entity {
 		drop();
 		if(attackDelay > 0)
 			attackDelay--;
-	}
-
-	@Override
-	public void draw(Graphics g) {
-		super.draw(g);
-		attackBox.draw(g);
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
-		flipW = -1;
 	}
 
 	@Override

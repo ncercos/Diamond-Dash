@@ -12,6 +12,7 @@ import sprites.Pose;
 public class Goblin extends Hostile {
 
 	private boolean facingLeft, scared;
+
 	public Goblin(Game game, double x, double y) {
 		super(game, "goblin", x, y,
 				8 * Game.SCALE,
@@ -63,6 +64,12 @@ public class Goblin extends Hostile {
 			}
 			facingLeft = !facingLeft;
 		}
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		flipW = -1;
 	}
 
 	/**

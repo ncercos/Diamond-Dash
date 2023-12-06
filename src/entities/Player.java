@@ -19,7 +19,7 @@ public class Player extends Entity {
 
 	private final int MAX_ENERGY = 100;
 	private double energy = MAX_ENERGY;
-	private final int ENERGY_CONSUMPTION = 40;
+	private final int ENERGY_CONSUMPTION = 25; /* 3 moves */
 
 	private boolean regenerating = false;
 	private boolean boosted = false;
@@ -54,6 +54,11 @@ public class Player extends Entity {
 	@Override
 	public void update() {
 		super.update();
+
+		if(isRolling()) {
+			if(isFacingLeft()) goLT(0.5 * Game.SCALE);
+			else 							 goRT(0.5 * Game.SCALE);
+		}
 
 		replenishEnergy();
 		regenerateHealth();

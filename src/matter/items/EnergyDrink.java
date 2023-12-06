@@ -10,6 +10,7 @@ import utils.Location;
  * Created on Dec 04 2023
  **/
 public class EnergyDrink extends Item {
+
 	public EnergyDrink(Game game, double x, double y) {
 		super(game, "energy_drink", x, y, 8, 13, 3, 1, 9);
 	}

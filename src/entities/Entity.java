@@ -1,5 +1,6 @@
 package entities;
 
+import entities.enemies.Flower;
 import game.Game;
 import levels.Level;
 import sprites.Animation;
@@ -39,6 +40,7 @@ public abstract class Entity extends Hitbox {
 	protected boolean active;
 	protected int attackPoseIndex;
 	protected Entity attacker = null;
+	protected boolean takesKnockback = true;
 
 	/* Sprites & Animations */
 	private final Map<Pose, Animation> animations;
@@ -91,6 +93,7 @@ public abstract class Entity extends Hitbox {
 	 */
 	public void update() {
 		if(!active)return;
+		if(debug) attackBox.setDebug(true);
 		moving = false;
 		updateAttackBox();
 		if(isDying() && getCurrentAnimation().isCycleCompleted()) active = false;
@@ -126,17 +129,8 @@ public abstract class Entity extends Hitbox {
 		if(!inAir && !isOnTile())
 			inAir = true;
 
-		if(inAir) {
-			if(canMoveTo(x, y + vy)) {
-				y += vy;
-				if(vy < MAX_FALL_VELOCITY)
-					vy += GRAVITY;
-			} else {
-				y = getYPosAboveOrUnderTile();
-				if(vy > 0) stopFalling();
-				else vy = GRAVITY;
-			}
-		}
+		if(inAir)
+			updateYPos();
 
 		updateXPos();
 	}
@@ -148,6 +142,22 @@ public abstract class Entity extends Hitbox {
 	private void updateXPos() {
 		if(canMoveTo(x + vx, y)) setX(x + vx);
 		else setX(getXPosNextToTile());
+	}
+
+	/**
+	 * Updates the current y-position to a location
+	 * based on the constraints of the level and physics.
+	 */
+	private void updateYPos() {
+		if(canMoveTo(x, y + vy)) {
+			y += vy;
+			if(vy < MAX_FALL_VELOCITY)
+				vy += GRAVITY;
+		} else {
+			y = getYPosAboveOrUnderTile();
+			if(vy > 0) stopFalling();
+			else vy = GRAVITY;
+		}
 	}
 
 	/**
@@ -342,7 +352,7 @@ public abstract class Entity extends Hitbox {
 	 * @param pose The new animation pose.
 	 */
 	public void setCurrentPose(Pose pose) {
-		if(!poses.contains(pose))return;
+		if(!poses.contains(pose) || isDying() || !active)return;
 		currentPose = pose;
 		if(!pose.isRepeated())
 			getCurrentAnimation().reset();
@@ -472,16 +482,36 @@ public abstract class Entity extends Hitbox {
 			setCurrentPose(Pose.DIE);
 		else setCurrentPose(Pose.HURT);
 
-		boolean facingLeft = attacker == null ? isFacingLeft() : !attacker.isFacingLeft();
 
 		// Apply knockback
-		int kb = (int) (2 * Game.SCALE);
-		if (!facingLeft)
-			   vx = -kb * Game.SCALE;
-		else vx =  kb * Game.SCALE;
-		updateXPos();
+		if(takesKnockback) {
+			if(attacker != null && attacker instanceof Flower)
+				knockbackY();
+			else knockbackX();
+		}
 
 		attacker = null;
+	}
+
+	/**
+	 * Knocks a player back on the x-dimension.
+	 */
+	private void knockbackX() {
+		boolean facingLeft = attacker == null ? isFacingLeft() : !attacker.isFacingLeft();
+		int kb = (int) (2 * Game.SCALE);
+		if (!facingLeft)
+			vx = -kb * Game.SCALE;
+		else vx = kb * Game.SCALE;
+		updateXPos();
+	}
+
+	/**
+	 * Knocks a player back on the y-dimension.
+	 */
+	private void knockbackY() {
+		vy = (-3 * Game.SCALE);
+		inAir = true;
+		updateYPos();
 	}
 
 	/**
