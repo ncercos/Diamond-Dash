@@ -1,7 +1,7 @@
 package matter;
 
 import entities.Player;
-import game.Game;
+import game.states.Playing;
 
 /**
  * Written by Nicholas Cercos
@@ -11,8 +11,8 @@ public abstract class Container extends Matter {
 
 	private final static int DEFAULT_SPRITE_SIZE = 16;
 
-	public Container(Game game, String name, double x, double y) {
-		super(game, "containers/" + name, x, y,
+	public Container(Playing playing, String name, double x, double y) {
+		super(playing, "containers/" + name, x, y,
 				DEFAULT_SPRITE_SIZE,
 				DEFAULT_SPRITE_SIZE,
 				0, 0,
@@ -34,7 +34,7 @@ public abstract class Container extends Matter {
 	 * Removes the container from the world.
 	 */
 	public void remove() {
-		game.getPlaying().getLevelManager().getCurrentLevel()
+		playing.getLevelManager().getCurrentLevel()
 				.destroyContainer(this);
 	}
 
@@ -42,7 +42,7 @@ public abstract class Container extends Matter {
 	 * @return True if the player is using an attack to open the container.
 	 */
 	public boolean isUsingAttack() {
-		Player player = game.getPlaying().getPlayer();
+		Player player = playing.getPlayer();
 		return
 				player.isAttacking() &&
 				player.getCurrentAnimation().getCurrentIndex() == player.getAttackPoseIndex() &&
@@ -53,7 +53,7 @@ public abstract class Container extends Matter {
 	 * @return True if the player is using a roll to open the container.
 	 */
 	public boolean isUsingRoll() {
-		Player player = game.getPlaying().getPlayer();
+		Player player = playing.getPlayer();
 		return
 				player.isRolling() &&
 				player.overlaps(this);

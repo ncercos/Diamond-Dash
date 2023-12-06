@@ -1,7 +1,8 @@
 package matter.items;
 
 import entities.Player;
-import game.Game;
+import game.states.Playing;
+import levels.Level;
 import matter.Item;
 
 /**
@@ -10,13 +11,14 @@ import matter.Item;
  **/
 public class Diamond extends Item {
 
-	public Diamond(Game game, double x, double y) {
-		super(game, "diamond", x, y, 8, 7, 3, 4, 10);
+	public Diamond(Playing playing, Level level, double x, double y) {
+		super(playing, "diamond", x, y, 8, 7, 3, 4, 10);
+		level.addDiamond();
 	}
 
 	@Override
 	public boolean onCollide() {
-		Player player = game.getPlaying().getPlayer();
+		Player player = playing.getPlayer();
 		player.foundDiamond();
 		return true;
 	}

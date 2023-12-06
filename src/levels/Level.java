@@ -5,6 +5,7 @@ import entities.Player;
 import entities.enemies.Flower;
 import entities.enemies.Goblin;
 import entities.enemies.Slime;
+import game.states.Playing;
 import matter.*;
 import matter.Container;
 import matter.containers.Crate;
@@ -32,7 +33,7 @@ import static game.Game.*;
  **/
 public class Level {
 
-	private final Game game;
+	private final Playing playing;
 	private final LevelManager levelManager;
 
 	private final int id;
@@ -51,10 +52,12 @@ public class Level {
 	private List<Hostile> enemies;
 
 	private Location spawn;
+	private int totalDiamonds;
+	private boolean complete;
 
 	public Level(LevelManager levelManager, int id, LevelStyle style, Map<LevelLayer, int[][]> data) {
 		this.levelManager = levelManager;
-		this.game = levelManager.getGame();
+		this.playing = levelManager.getPlaying();
 		this.id = id;
 		this.style = style;
 		this.data = data;
@@ -80,6 +83,7 @@ public class Level {
 		containers = new ArrayList<>();
 		enemies    = new ArrayList<>();
 		offsetX = 0;
+		totalDiamonds = 0;
 		loadSpawns();
 	}
 
@@ -111,7 +115,7 @@ public class Level {
 	public void reset() {
 		data = levelManager.loadLevelData(id);
 		initialize();
-		Player player = game.getPlaying().getPlayer();
+		Player player = playing.getPlayer();
 		player.reset();
 		if(spawn != null) player.teleport(spawn);
 	}
@@ -132,7 +136,7 @@ public class Level {
 				items.forEach(i -> i.draw(g));
 				traps.forEach(t -> t.draw(g));
 				enemies.forEach(e -> e.draw(g));
-				game.getPlaying().getPlayer().draw(g);
+				playing.getPlayer().draw(g);
 			} else drawLayer(g, layer);
 		}
 	}
@@ -176,7 +180,7 @@ public class Level {
 				Image image = levelManager.getTile(style, layer, index);
 				Animation animation = levelManager.getTileAnimation(layer, index);
 				if(image == null && animation == null) continue;
-				g.drawImage(animation != null ? animation.getCurrentImage(levelManager.getGame().getPlaying()) : image, x, y, TILES_SIZE, TILES_SIZE, null);
+				g.drawImage(animation != null ? animation.getCurrentImage(levelManager.getPlaying()) : image, x, y, TILES_SIZE, TILES_SIZE, null);
 			}
 		}
 	}
@@ -195,11 +199,11 @@ public class Level {
 
 				switch (index) {
 					case 0 -> spawn = new Location(x, y);
-					case 1 -> enemies.add(new Goblin(game, x, y));
-					case 2 -> enemies.add(new Slime(game, x, y));
-					case 3 -> enemies.add(new Flower(game, x, y));
-					case 4 -> containers.add(new Crate(game, x, y));
-					case 5 -> items.add(new Diamond(game, x, y));
+					case 1 -> enemies.add(new Goblin(playing, x, y));
+					case 2 -> enemies.add(new Slime(playing, x, y));
+					case 3 -> enemies.add(new Flower(playing, x, y));
+					case 4 -> containers.add(new Crate(playing, x, y));
+					case 5 -> items.add(new Diamond(playing, this, x, y));
 				}
 			}
 		}
@@ -218,7 +222,7 @@ public class Level {
 				int index = trapData[h][w];
 				if(index == 71 || index == 79) {
 					int x = w * TILES_SIZE, y = h * TILES_SIZE;
-					traps.add(new ThornFence(game, x, y, index == 71));
+					traps.add(new ThornFence(playing, x, y, index == 71));
 				}
 			}
 		}
@@ -249,6 +253,25 @@ public class Level {
 	 */
 	public void destroyContainer(Container container) {
 		containers.remove(container);
+	}
+
+	public void addDiamond() {
+		totalDiamonds++;
+	}
+
+	public int getTotalDiamonds() {
+		return totalDiamonds;
+	}
+
+	public boolean isComplete() {
+		return complete;
+	}
+
+	/**
+	 * Called when the player clears the map.
+	 */
+	public void complete() {
+		complete = true;
 	}
 
 	/**

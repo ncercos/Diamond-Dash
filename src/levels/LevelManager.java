@@ -1,6 +1,7 @@
 package levels;
 
 import game.Game;
+import game.states.Playing;
 import matter.Container;
 import sprites.Animation;
 
@@ -21,7 +22,7 @@ import static game.Game.TILES_DEFAULT_SIZE;
  **/
 public class LevelManager {
 
-	private final Game game;
+	private final Playing playing;
 	private final Map<LevelStyle, BufferedImage[]> backgrounds;
 	private final Map<LevelStyle, Image[]> foregroundTiles;
 	public Image[] midGroundTiles, floraTiles, decorTiles;
@@ -30,8 +31,8 @@ public class LevelManager {
 	public int MAX_TILES_PER_SHEET;
 	private final Map<LevelLayer, TileAnimations> animations;
 
-	public LevelManager(Game game) {
-		this.game = game;
+	public LevelManager(Playing playing) {
+		this.playing = playing;
 		this.foregroundTiles = new HashMap<>();
 		this.backgrounds = new HashMap<>();
 		this.animations = new HashMap<>();
@@ -314,8 +315,8 @@ public class LevelManager {
 		return currentLevel;
 	}
 
-	public Game getGame() {
-		return game;
+	public Playing getPlaying() {
+		return playing;
 	}
 
 	class TileAnimations {

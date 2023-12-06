@@ -1,6 +1,6 @@
 package matter.traps;
 
-import game.Game;
+import game.states.Playing;
 import matter.Trap;
 
 /**
@@ -9,8 +9,8 @@ import matter.Trap;
  **/
 public class ThornFence extends Trap {
 
-	public ThornFence(Game game, double x, double y, boolean facesLeft) {
-		super(game,
+	public ThornFence(Playing playing, double x, double y, boolean facesLeft) {
+		super(playing,
 				x, y,
 				facesLeft ? 12 : 15,
 				facesLeft ? 7 : 9,
@@ -20,7 +20,7 @@ public class ThornFence extends Trap {
 
 	@Override
 	public boolean onCollide() {
-		damage(game.getPlaying().getPlayer());
+		damage(playing.getPlayer());
 		return true;
 	}
 }

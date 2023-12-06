@@ -1,6 +1,7 @@
 package matter.containers;
 
 import game.Game;
+import game.states.Playing;
 import matter.Container;
 import matter.Item;
 import matter.items.EnergyDrink;
@@ -14,8 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
  **/
 public class Crate extends Container {
 
-	public Crate(Game game, double x, double y) {
-		super(game, "crate", x, y);
+	public Crate(Playing playing, double x, double y) {
+		super(playing, "crate", x, y);
 	}
 
 	@Override
@@ -26,7 +27,7 @@ public class Crate extends Container {
 		if(!animation.isFrozen())return;
 		if(isUsingAttack() || isUsingRoll()) {
 			open();
-			game.getPlaying().getLevelManager().getCurrentLevel()
+			playing.getLevelManager().getCurrentLevel()
 					.spawnItem(getRandomUtilityItem());
 		}
 	}
@@ -42,8 +43,8 @@ public class Crate extends Container {
 		int num = ThreadLocalRandom.current().nextInt(2) + 1;
 
 		switch (num) {
-			case 1 -> item = new Medicine   (game, getX(), getY());
-			case 2 -> item = new EnergyDrink(game, getX(), getY());
+			case 1 -> item = new Medicine   (playing, getX(), getY());
+			case 2 -> item = new EnergyDrink(playing, getX(), getY());
 		}
 		return item;
 	}

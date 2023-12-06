@@ -1,6 +1,7 @@
 package entities;
 
 import game.Game;
+import game.states.Playing;
 
 /**
  * Written by Nicholas Cercos
@@ -15,8 +16,8 @@ public abstract class Hostile extends Entity {
 
 	protected boolean facingLeft;
 
-	public Hostile(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
-		super(game, name, x, y, w * Game.SCALE, h * Game.SCALE,
+	public Hostile(Playing playing, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
+		super(playing, name, x, y, w * Game.SCALE, h * Game.SCALE,
 				spriteWidth, xDrawOffset, yDrawOffset, maxHealth);
 		attackDelay = 0;
 		setAttackDistance((int)w);

@@ -2,7 +2,7 @@ package entities.enemies;
 
 import entities.Hostile;
 import entities.Player;
-import game.Game;
+import game.states.Playing;
 import sprites.Pose;
 import utils.Location;
 
@@ -12,8 +12,8 @@ import utils.Location;
  **/
 public class Flower extends Hostile {
 
-	public Flower(Game game, double x, double y) {
-		super(game, "flower", x, y,
+	public Flower(Playing playing, double x, double y) {
+		super(playing, "flower", x, y,
 				10, 13,
 				32,
 				11, 18.5,
@@ -27,7 +27,7 @@ public class Flower extends Hostile {
 	public void update() {
 		super.update();
 		if(isDying() || isHurt() || inAir)return;
-		Player player = game.getPlaying().getPlayer();
+		Player player = playing.getPlayer();
 
 		if(!isAttacking() && isAbleToAttack() && isInAttackRange(player)) {
 			setCurrentPose(Pose.ATTACK);

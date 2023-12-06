@@ -7,6 +7,7 @@ import inputs.Input;
 import levels.Level;
 import levels.LevelManager;
 import ui.Overlay;
+import ui.overlays.CompleteOverlay;
 import ui.overlays.DeadOverlay;
 import ui.overlays.HudOverlay;
 import ui.overlays.PauseOverlay;
@@ -30,12 +31,13 @@ public class Playing extends State {
 	public Playing(Game game) {
 		super(game);
 		paused = false;
-		levelManager = new LevelManager(game);
-		player = new Player(game, levelManager.getCurrentLevel().getSpawn());
+		levelManager = new LevelManager(this);
+		player = new Player(this, levelManager.getCurrentLevel().getSpawn());
 		overlays = new Overlay[] {
 				new PauseOverlay(this),
 				new HudOverlay(this),
-				new DeadOverlay(this)
+				new DeadOverlay(this),
+				new CompleteOverlay(this)
 		};
 	}
 

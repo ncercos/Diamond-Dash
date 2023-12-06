@@ -2,6 +2,7 @@ package entities;
 
 import entities.enemies.Flower;
 import game.Game;
+import game.states.Playing;
 import levels.Level;
 import sprites.Animation;
 import sprites.Pose;
@@ -21,7 +22,7 @@ import java.util.Set;
  **/
 public abstract class Entity extends Hitbox {
 
-	protected final Game game;
+	protected final Playing playing;
 	protected final String name;
 
 	/* Physics */
@@ -50,9 +51,9 @@ public abstract class Entity extends Hitbox {
 	private double flipX;
 	protected int flipW;
 
-	public Entity(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
+	public Entity(Playing playing, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
 		super(x, y, w, h, xDrawOffset, yDrawOffset);
-		this.game = game;
+		this.playing = playing;
 		this.name = name;
 		this.spriteWidth = spriteWidth;
 		this.maxHealth = maxHealth;
@@ -83,7 +84,7 @@ public abstract class Entity extends Hitbox {
 		if(animation.isCycleCompleted() && !currentPose.isRepeated())
 			currentPose = moving ? Pose.RUN : inAir ? Pose.JUMP : Pose.IDLE;
 
-		g.drawImage(animation.getCurrentImage(getLevel().getLevelManager().getGame().getPlaying()),
+		g.drawImage(animation.getCurrentImage(getLevel().getLevelManager().getPlaying()),
 				(int)(px - xDrawOffset), (int) (y - yDrawOffset), width, height, null);
 	}
 
@@ -114,7 +115,7 @@ public abstract class Entity extends Hitbox {
 	}
 
 	public Level getLevel() {
-		return game.getPlaying().getLevelManager().getCurrentLevel();
+		return playing.getLevelManager().getCurrentLevel();
 	}
 
 	// Movement

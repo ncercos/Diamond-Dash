@@ -1,7 +1,6 @@
 package matter;
 
 import entities.Entity;
-import game.Game;
 import game.states.Playing;
 
 /**
@@ -12,14 +11,13 @@ public abstract class Trap extends Matter {
 
 	protected int damage;
 
-	public Trap(Game game, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset, int damage) {
-		super(game, x, y, w, h, xDrawOffset, yDrawOffset);
+	public Trap(Playing playing, double x, double y, double w, double h, double xDrawOffset, double yDrawOffset, int damage) {
+		super(playing, x, y, w, h, xDrawOffset, yDrawOffset);
 		this.damage = damage;
 	}
 
 	@Override
 	public void update() {
-		Playing playing = game.getPlaying();
 		if(!overlaps(playing.getPlayer()))return;
 		onCollide();
 	}

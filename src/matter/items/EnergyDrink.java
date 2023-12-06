@@ -2,6 +2,7 @@ package matter.items;
 
 import entities.Player;
 import game.Game;
+import game.states.Playing;
 import matter.Item;
 import utils.Location;
 
@@ -11,13 +12,13 @@ import utils.Location;
  **/
 public class EnergyDrink extends Item {
 
-	public EnergyDrink(Game game, double x, double y) {
-		super(game, "energy_drink", x, y, 8, 13, 3, 1, 9);
+	public EnergyDrink(Playing playing, double x, double y) {
+		super(playing, "energy_drink", x, y, 8, 13, 3, 1, 9);
 	}
 
 	@Override
 	public boolean onCollide() {
-		Player player = game.getPlaying().getPlayer();
+		Player player = playing.getPlayer();
 		if(player.isBoosted())return false;
 		player.setBoosted(true);
 		return true;

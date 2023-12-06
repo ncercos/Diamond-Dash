@@ -3,14 +3,15 @@ package entities.enemies;
 import entities.Hostile;
 import entities.Player;
 import game.Game;
+import game.states.Playing;
 
 /**
  * Written by Nicholas Cercos
  * Created on Dec 05 2023
  **/
 public class Slime extends Hostile {
-	public Slime(Game game, double x, double y) {
-		super(game, "slime", x, y,
+	public Slime(Playing playing, double x, double y) {
+		super(playing, "slime", x, y,
 				14, 11,
 				32,
 				9, 20,
@@ -24,10 +25,9 @@ public class Slime extends Hostile {
 	public void update() {
 		super.update();
 		if(isDying() || isHurt() || inAir)return;
-		Player player = game.getPlaying().getPlayer();
+		Player player = playing.getPlayer();
 
 		if(isInSight(player)) {
-
 			if(!isInAttackRange(player)) {
 				turnTowards(player);
 

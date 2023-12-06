@@ -3,6 +3,7 @@ package entities.enemies;
 import entities.Hostile;
 import entities.Player;
 import game.Game;
+import game.states.Playing;
 import sprites.Pose;
 
 /**
@@ -13,8 +14,8 @@ public class Goblin extends Hostile {
 
 	private boolean scared;
 
-	public Goblin(Game game, double x, double y) {
-		super(game, "goblin", x, y,
+	public Goblin(Playing playing, double x, double y) {
+		super(playing, "goblin", x, y,
 				8, 11,
 				32,
 				12, 20.5,
@@ -29,7 +30,7 @@ public class Goblin extends Hostile {
 	public void update() {
 		super.update();
 		if(isDying() || isHurt() || inAir)return;
-		Player player = game.getPlaying().getPlayer();
+		Player player = playing.getPlayer();
 
 		// Attack a player, if possible.
 		if(isInSight(player) && isAbleToAttack()) {

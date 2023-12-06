@@ -1,6 +1,7 @@
 package entities;
 
 import game.Game;
+import game.states.Playing;
 import inputs.Input;
 import levels.Level;
 import sprites.Pose;
@@ -32,8 +33,8 @@ public class Player extends Entity {
 	 * 11w & 13h is the size of the hitbox (hb).
 	 * Draw Offset is where the hb starts within sprite.
 	 */
-	public Player(Game game, Location location) {
-		super(game, "player", location.getX(), location.getY(),
+	public Player(Playing playing, Location location) {
+		super(playing, "player", location.getX(), location.getY(),
 				6 * Game.SCALE,
 				13 * Game.SCALE,
 				32,
@@ -67,7 +68,7 @@ public class Player extends Entity {
 		double xBoost = 0.75,
 				   yBoost = 0.3;
 
-		if(!isAttacking() && !isDying()) {
+		if(!isAttacking() && !isDying() && !getLevel().isComplete()) {
 			if (pressing[Input.LT]) goLT(speed + (boosted ? xBoost : 0));
 			if (pressing[Input.RT]) goRT(speed + (boosted ? xBoost : 0));
 			if (pressing[Input.UP]) goUP(speed * 2.15 + (boosted ? yBoost : 0));
@@ -101,14 +102,9 @@ public class Player extends Entity {
 
 	public void foundDiamond() {
 		diamonds++;
-	}
-
-	@Override
-	public void modifyHealth(int value) {
-		super.modifyHealth(value);
-		if(getHealth() == 0) {
-			// TODO: End the game
-		}
+		Level level = playing.getLevelManager().getCurrentLevel();
+		if(diamonds >= level.getTotalDiamonds())
+			level.complete();
 	}
 
 	/**
@@ -189,7 +185,7 @@ public class Player extends Entity {
 	 * extend (if possible) by offsetting the value that was traveled.
 	 */
 	private void checkCloseToLevelBorder() {
-		Level level = game.getPlaying().getLevelManager().getCurrentLevel();
+		Level level = playing.getLevelManager().getCurrentLevel();
 		if(level == null)return;
 		int currentXPos = (int)x;
 		int diff = currentXPos - level.getOffsetX();
