@@ -11,16 +11,14 @@ import sprites.Pose;
  **/
 public class Goblin extends Hostile {
 
-	private boolean facingLeft, scared;
+	private boolean scared;
 
 	public Goblin(Game game, double x, double y) {
 		super(game, "goblin", x, y,
-				8 * Game.SCALE,
-				11 * Game.SCALE,
+				8, 11,
 				32,
-				12,
-				20.5,
-				10);
+				12, 20.5,
+				15);
 		attackDamage = 15;
 		attackPoseIndex = 3;
 		scared = false;
@@ -64,21 +62,5 @@ public class Goblin extends Hostile {
 			}
 			facingLeft = !facingLeft;
 		}
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
-		flipW = -1;
-	}
-
-	/**
-	 * Faces the goblin in the correct direction
-	 * based on the location of the player.
-	 *
-	 * @param player The player object.
-	 */
-	private void turnTowards(Player player) {
-		facingLeft = player.getX() < x;
 	}
 }

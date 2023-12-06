@@ -14,12 +14,10 @@ public class Flower extends Hostile {
 
 	public Flower(Game game, double x, double y) {
 		super(game, "flower", x, y,
-				10 * Game.SCALE,
-				13 * Game.SCALE,
+				10, 13,
 				32,
-				11,
-				18.5,
-				15);
+				11, 18.5,
+				20);
 		attackDamage = 25;
 		attackPoseIndex = 4;
 		takesKnockback = false;

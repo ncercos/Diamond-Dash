@@ -10,11 +10,14 @@ public abstract class Hostile extends Entity {
 
 	private int tileY;
 	protected int attackDistance;
-	private int sightDistance;
+	protected int sightDistance;
 	protected int attackDelay;
 
+	protected boolean facingLeft;
+
 	public Hostile(Game game, String name, double x, double y, double w, double h, int spriteWidth, double xDrawOffset, double yDrawOffset, int maxHealth) {
-		super(game, name, x, y, w, h, spriteWidth, xDrawOffset, yDrawOffset, maxHealth);
+		super(game, name, x, y, w * Game.SCALE, h * Game.SCALE,
+				spriteWidth, xDrawOffset, yDrawOffset, maxHealth);
 		attackDelay = 0;
 		setAttackDistance((int)w);
 		setMaxHealth(maxHealth);
@@ -54,10 +57,15 @@ public abstract class Hostile extends Entity {
 	 * The sight distance will always be 3x more than attack.
 	 *
 	 * @param attackDistance The new distance the entity will attack within.
+	 * @param sightMulti     The multiplier to calculate sight distance from the attack distance.
 	 */
-	public void setAttackDistance(int attackDistance) {
+	public void setAttackDistance(int attackDistance, int sightMulti) {
 		this.attackDistance = attackDistance;
-		this.sightDistance = attackDistance * 3;
+		this.sightDistance = attackDistance * sightMulti;
+	}
+
+	public void setAttackDistance(int attackDistance) {
+		setAttackDistance(attackDistance, 3);
 	}
 
 	/**
@@ -136,5 +144,15 @@ public abstract class Hostile extends Entity {
 	 */
 	protected double getDistanceFrom(Player player) {
 		return Math.abs(player.getX() - x);
+	}
+
+	/**
+	 * Faces the goblin in the correct direction
+	 * based on the location of the player.
+	 *
+	 * @param player The player object.
+	 */
+	protected void turnTowards(Player player) {
+		facingLeft = player.getX() < x;
 	}
 }

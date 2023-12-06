@@ -4,6 +4,7 @@ import entities.Hostile;
 import entities.Player;
 import entities.enemies.Flower;
 import entities.enemies.Goblin;
+import entities.enemies.Slime;
 import matter.*;
 import matter.Container;
 import matter.containers.Crate;
@@ -195,6 +196,7 @@ public class Level {
 				switch (index) {
 					case 0 -> spawn = new Location(x, y);
 					case 1 -> enemies.add(new Goblin(game, x, y));
+					case 2 -> enemies.add(new Slime(game, x, y));
 					case 3 -> enemies.add(new Flower(game, x, y));
 					case 4 -> containers.add(new Crate(game, x, y));
 					case 5 -> items.add(new Diamond(game, x, y));
