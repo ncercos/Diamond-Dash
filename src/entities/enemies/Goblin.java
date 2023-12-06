@@ -22,6 +22,7 @@ public class Goblin extends Hostile {
 		attackDamage = 15;
 		attackPoseIndex = 3;
 		scared = false;
+		setAttackDistance(Game.TILES_SIZE / 2);
 	}
 
 	@Override
