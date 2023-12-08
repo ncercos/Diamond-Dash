@@ -83,6 +83,7 @@ public class Level {
 		enemies    = new ArrayList<>();
 		offsetX = 0;
 		totalDiamonds = 0;
+		complete = false;
 		loadSpawns();
 	}
 

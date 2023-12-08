@@ -25,11 +25,12 @@ import java.util.concurrent.ThreadLocalRandom;
  **/
 public class Menu extends State {
 
-	private BufferedImage menuImg;
-	private int mX, mY, mW, mH;
-
+	// Logo & Buttons
+	private BufferedImage logoImg;
+	private int x, y, w, h;
 	private final Set<MenuButton> buttons;
 
+	// Background
 	private final BufferedImage bgImg, lmImg, smImg, msImg;
 	private int bgOffsetX;
 	private boolean bgMoveLeft;
@@ -48,11 +49,11 @@ public class Menu extends State {
 
 	private void loadMenu() {
 		try {
-			menuImg = ImageIO.read(new File(Game.RESOURCE_URL + "ui/logo.png"));
-			mW = (int) (menuImg.getWidth() / 3 * Game.SCALE);
-			mH = (int) (menuImg.getHeight() / 3 * Game.SCALE);
-			mX = (Game.GAME_WIDTH / 2) - (mW / 2);
-			mY = (int) (20 * Game.SCALE);
+			logoImg = ImageIO.read(new File(Game.RESOURCE_URL + "ui/logo.png"));
+			w = (int) (logoImg.getWidth() / 3 * Game.SCALE);
+			h = (int) (logoImg.getHeight() / 3 * Game.SCALE);
+			x = (Game.GAME_WIDTH / 2) - (w / 2);
+			y = (int) (20 * Game.SCALE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -87,7 +88,7 @@ public class Menu extends State {
 
 		game.getPlaying().getLevelManager().getCurrentLevel()
 				.drawBackground(g, bgImg, lmImg, msImg, smImg, bgOffsetX);
-		g.drawImage(menuImg, mX, mY, mW, mH, null);
+		g.drawImage(logoImg, x, y, w, h, null);
 		buttons.forEach(b -> b.draw(g));
 	}
 

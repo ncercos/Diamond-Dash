@@ -57,8 +57,8 @@ public class Player extends Entity {
 		super.update();
 
 		if(isRolling()) {
-			if(isFacingLeft()) goLT(1);
-			else 							 goRT(1);
+			if(isFacingLeft()) goLT(2.5);
+			else 							 goRT(2.5);
 		}
 
 		replenishEnergy();

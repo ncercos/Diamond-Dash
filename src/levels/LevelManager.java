@@ -2,7 +2,6 @@ package levels;
 
 import game.Game;
 import game.states.Playing;
-import matter.Container;
 import sprites.Animation;
 
 import java.awt.*;
@@ -294,7 +293,6 @@ public class LevelManager {
 	 */
 	private int[][] parseLevelData(Properties properties, LevelLayer layer) {
 		String data = properties.getProperty(layer.getName());
-		int offset = Integer.parseInt(properties.getProperty(layer.getName() + "-offset"));
 		String[] rows = data.split(";");
 
 		int[][] levelData = null;
@@ -303,8 +301,7 @@ public class LevelManager {
 			for(int w = 0; w < columns.length; w++) {
 				if(levelData == null) levelData = new int[rows.length][columns.length];
 				int value = Integer.parseInt(columns[w].trim());
-				if(value > 0) value -= offset;
-				else if(value == 0 && !layer.equals(LevelLayer.FOREGROUND)) value = -1;
+				value = (value > 0 ? (value - 1) : -1);
 				levelData[h][w] = value;
 			}
 		}
