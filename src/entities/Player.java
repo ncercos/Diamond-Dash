@@ -4,6 +4,7 @@ import game.Game;
 import game.states.Playing;
 import inputs.Input;
 import levels.Level;
+import levels.LevelLayer;
 import sprites.Pose;
 import utils.Location;
 
@@ -84,6 +85,7 @@ public class Player extends Entity {
 
 		move();
 		checkCloseToLevelBorder();
+		checkInWater();
 	}
 
 	@Override
@@ -194,6 +196,28 @@ public class Player extends Entity {
 			level.addToOffsetX(diff - level.RT_BORDER);
 		else if(diff < level.LT_BORDER)
 			level.addToOffsetX(diff - level.LT_BORDER);
+	}
+
+	/**
+	 * Checks if player is standing in still water.
+	 * If they are, they will drown instantly.
+	 */
+	private void checkInWater() {
+		Level level = playing.getLevelManager().getCurrentLevel();
+		LevelLayer layer = LevelLayer.WATER;
+		if(level == null || isDying() || !active)return;
+
+		int yPos = (int) (y + h);
+		int indexLT = level.getTileIndex(layer, (int)x, yPos, true);
+		int indexRT = level.getTileIndex(layer, (int)(x + w), yPos, true);
+		int[] waterTiles = new int[] {0, 4, 8}; /* the still water tiles that will drown the player */
+
+		for(int wt : waterTiles) {
+			if(indexLT == wt || indexRT == wt) {
+				damage(100);
+				break;
+			}
+		}
 	}
 
 	/**

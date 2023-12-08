@@ -277,8 +277,8 @@ public class Level {
 	/**
 	 * Determines if a specific location contains a solid tile.
 	 *
-	 * @param px The x-position.
-	 * @param py The y-position.
+	 * @param px 			 The x-position.
+	 * @param py 			 The y-position.
 	 * @param calcTile Is the tile-position provided or should it be calculated.
 	 * @return True if the tile is solid, otherwise, false.
 	 */
@@ -288,7 +288,7 @@ public class Level {
 			if(x < 0 || x >= (getWidth() * TILES_SIZE)) return true;
 			if(y < 0 || y >= Game.GAME_HEIGHT) return true;
 		}
-		int index = getTileIndex(LevelLayer.FOREGROUND, calcTile ? x / Game.TILES_SIZE : x, calcTile ? y / Game.TILES_SIZE : y);
+		int index = getTileIndex(LevelLayer.FOREGROUND, x, y, calcTile);
 		return !getStyle().isNonSolid(index);
 	}
 
@@ -299,16 +299,21 @@ public class Level {
 	/**
 	 * Get the index of a tile at a specific location within a specific layer.
 	 *
-	 * @param x The x-coordinate.
-	 * @param y The y-coordinate.
+	 * @param x 			 The x-coordinate.
+	 * @param y 			 The y-coordinate.
+	 * @param calcTile Is the tile-position provided or should it be calculated.
 	 * @return An integer that determines which tile will be placed.
 	 */
-	public int getTileIndex(LevelLayer layer, int x, int y) {
+	public int getTileIndex(LevelLayer layer, int x, int y, boolean calcTile) {
 		int index = -1;
 		try {
-			index = data.get(layer)[y][x];
+			index = data.get(layer)[calcTile ? y / TILES_SIZE : y][calcTile ? x / TILES_SIZE : x];
 		} catch (ArrayIndexOutOfBoundsException ignored) {}
 		return index;
+	}
+
+	public int getTileIndex(LevelLayer layer, int x, int y) {
+		return getTileIndex(layer, x, y, false);
 	}
 
 	public void addToOffsetX(int value) {
