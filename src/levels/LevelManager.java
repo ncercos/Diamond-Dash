@@ -25,10 +25,12 @@ public class LevelManager {
 	private final Map<LevelStyle, BufferedImage[]> backgrounds;
 	private final Map<LevelStyle, Image[]> foregroundTiles;
 	public Image[] midGroundTiles, floraTiles, decorTiles;
-	private Level currentLevel;
 
 	public int MAX_TILES_PER_SHEET;
 	private final Map<LevelLayer, TileAnimations> animations;
+
+	private Level[] levels;
+	private int currentLevel;
 
 	public LevelManager(Playing playing) {
 		this.playing = playing;
@@ -37,8 +39,9 @@ public class LevelManager {
 		this.animations = new HashMap<>();
 
 		try {
-			loadAllLevelResources();
-			currentLevel = loadLevel(1, LevelStyle.LUSH);
+			loadResources();
+			loadLevels();
+			currentLevel = 1;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,8 +53,24 @@ public class LevelManager {
 	 * @param g The graphics context.
 	 */
 	public void draw(Graphics g) {
-		if(currentLevel == null)return;
-		currentLevel.draw(g);
+		getCurrentLevel().draw(g);
+	}
+
+	/**
+	 * Loads all levels for the game.
+	 *
+	 * @throws IOException If the directory or level file cannot be accessed/found.
+	 */
+	public void loadLevels() throws IOException {
+		levels = new Level[10];
+		File[] files = new File(RESOURCE_URL + "levels/").listFiles();
+		if(files == null)return;
+		for(int i = 0; i < files.length; i++) {
+			File file = files[i];
+			String[] fn = file.getName().split("\\.");
+			if(!fn[1].equals("properties"))break;
+			levels[i] = loadLevel(Integer.parseInt(fn[0]));
+		}
 	}
 
 	/**
@@ -60,7 +79,7 @@ public class LevelManager {
 	 *
 	 * @throws IOException If the image could not be accessed/found.
 	 */
-	public void loadAllLevelResources() throws IOException {
+	public void loadResources() throws IOException {
 
 		for(LevelStyle style : LevelStyle.values()) {
 			// Load background
@@ -80,7 +99,7 @@ public class LevelManager {
 		}
 
 		// Animated tiles
-		addLayerAnimations(LevelLayer.WATER, 4, false,
+		addLayerAnimations(LevelLayer.WATER, 4,
 				80, 30, 15, 										    // still, some, many bubbles
 								30,           											// main water flow
 								7, 7, 7, 7, 7, 7, 7, 							  // water fall lush rock
@@ -108,8 +127,8 @@ public class LevelManager {
 		return importTiles(Game.loadSprite("tiles/" + layer.getName() + ".png"));
 	}
 
-	private void addLayerAnimations(LevelLayer layer, int count, boolean frozen, int... duration) {
-		animations.put(layer, new TileAnimations(Game.loadSprite("tiles/" + layer.getName() + ".png"), count, frozen, duration));
+	private void addLayerAnimations(LevelLayer layer, int count, int... duration) {
+		animations.put(layer, new TileAnimations(Game.loadSprite("tiles/" + layer.getName() + ".png"), count, duration));
 	}
 
 	/**
@@ -258,14 +277,14 @@ public class LevelManager {
 	}
 
 	/**
-	 * Determine the tiles that will be used for a given level
-	 * based on the RED color value of the pixel within the
-	 * levels image and saves it to memory as a Level object.
+	 * Loads a level and all of its data.
 	 *
-	 * @return A Level object containing the tile type at a given x and y coordinate.
-	 * @throws IOException If the image cannot be accessed/found.
+	 * @param id The level number.
+	 * @return A level object filled with the provided data.
 	 */
-	private Level loadLevel(int id, LevelStyle style) throws IOException {
+	private Level loadLevel(int id) {
+		Properties levelProperties = getLevelPropertyFile(RESOURCE_URL + "levels/" + id);
+		LevelStyle style = LevelStyle.getStyle(levelProperties.getProperty("style"));
 		return new Level(this, id, style, loadLevelData(id));
 	}
 
@@ -308,8 +327,17 @@ public class LevelManager {
 		return levelData;
 	}
 
+	/**
+	 * Updates current level to the next.
+	 */
+	public void nextLevel() {
+		if(currentLevel == (levels.length - 1))
+			currentLevel = 0;
+		else currentLevel++;
+	}
+
 	public Level getCurrentLevel() {
-		return currentLevel;
+		return levels[currentLevel];
 	}
 
 	public Playing getPlaying() {
@@ -319,7 +347,6 @@ public class LevelManager {
 	class TileAnimations {
 
 		Map<Integer, Animation> animations;
-		boolean frozen;
 
 		/**
 		 * Used to initialize animated tile sheets.
@@ -328,16 +355,15 @@ public class LevelManager {
 		 * @param count   	The number of images per animation.
 		 * @param duration 	An array of durations for each animation.
 		 */
-		public TileAnimations(BufferedImage sprite, int count, boolean frozen, int... duration) {
+		public TileAnimations(BufferedImage sprite, int count, int... duration) {
 			this.animations = new HashMap<>();
-			this.frozen = frozen;
 
 			Image[] allAnimations = importTiles(sprite);
 
 			for(int i = 0; i < allAnimations.length; i += count) {
 				Image[] groupedAnimations = new Image[count];
 				System.arraycopy(allAnimations, i, groupedAnimations, 0, count);
-				Animation animation = new Animation(groupedAnimations, duration[animations.size()], frozen);
+				Animation animation = new Animation(groupedAnimations, duration[animations.size()], false);
 				int index = animations.size() * animation.getImages().length;
 				animations.put(index, animation);
 			}

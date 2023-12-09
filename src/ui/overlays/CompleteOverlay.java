@@ -1,8 +1,10 @@
 package ui.overlays;
 
+import entities.Player;
 import game.Game;
 import game.GameState;
 import game.states.Playing;
+import levels.LevelManager;
 import ui.Button;
 import ui.Overlay;
 import ui.buttons.UtilButton;
@@ -32,11 +34,15 @@ public class CompleteOverlay extends Overlay {
 	@Override
 	public void onButtonClick(Button button) {
 		if(!(button instanceof UtilButton ub))return;
+		LevelManager lm = playing.getLevelManager();
 		if(ub.getType().equals(UtilButton.Type.HOME)) {
-			playing.getLevelManager().getCurrentLevel().reset();
+			lm.getCurrentLevel().reset();
 			GameState.current = GameState.MENU;
 		} else if(ub.getType().equals(UtilButton.Type.START)) {
-			// TODO: Take them to the next level
+			Player player = playing.getPlayer();
+			lm.nextLevel();
+			player.reset();
+			player.teleport(lm.getCurrentLevel().getSpawn());
 		}
 	}
 }

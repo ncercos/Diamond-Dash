@@ -126,4 +126,8 @@ public class Animation {
 	public Image[] getImages() {
 		return images;
 	}
+
+	public int getDuration() {
+		return duration;
+	}
 }

@@ -352,4 +352,8 @@ public class Level {
 	public List<Hostile> getEnemies() {
 		return enemies;
 	}
+
+	public int getId() {
+		return id;
+	}
 }

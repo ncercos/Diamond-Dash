@@ -16,6 +16,19 @@ public enum LevelStyle {
 	}
 
 	/**
+	 * Find style based on name.
+	 *
+	 * @param name The name of the file.
+	 * @return A level style under the given name, if it exists.
+	 */
+	public static LevelStyle getStyle(String name) {
+		for(LevelStyle style : LevelStyle.values())
+			if(style.getName().equalsIgnoreCase(name))
+				return style;
+		return null;
+	}
+
+	/**
 	 * Checks if a tile's index is non-solid.
 	 *
 	 * @param index The index of the tile.
