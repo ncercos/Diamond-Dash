@@ -6,6 +6,7 @@ import matter.Container;
 import matter.Item;
 import matter.items.EnergyDrink;
 import matter.items.Medicine;
+import sounds.Sound;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -26,6 +27,7 @@ public class Crate extends Container {
 
 		if(!animation.isFrozen())return;
 		if(isUsingAttack() || isUsingRoll()) {
+			playing.getSoundManager().playSFX(Sound.CRATE_OPEN);
 			open();
 			playing.getLevelManager().getCurrentLevel()
 					.spawnItem(getRandomUtilityItem());

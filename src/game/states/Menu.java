@@ -119,7 +119,7 @@ public class Menu extends State {
 		for(MenuButton b : buttons) {
 			if(b.contains(e.getX(), e.getY())) {
 				if(b.isMousePressed()) {
-					b.applyState();
+					setState(b.getState());
 
 					if(b.getState().equals(GameState.PLAYING) &&
 							game.getPlaying().isPaused())

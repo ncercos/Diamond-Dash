@@ -3,6 +3,7 @@ package game;
 import game.states.Playing;
 import game.states.Menu;
 import game.states.State;
+import sounds.SoundManager;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -34,8 +35,10 @@ public class Game implements Runnable {
 
 	// Utils
 	public static final String RESOURCE_URL = "./res/";
+	private SoundManager soundManager;
 
 	public Game() {
+		soundManager = new SoundManager();
 		playing = new Playing(this);
 		menu = new Menu(this);
 		gamePanel = new GamePanel(this);
@@ -123,5 +126,9 @@ public class Game implements Runnable {
 
 	public Playing getPlaying() {
 		return playing;
+	}
+
+	public SoundManager getSoundManager() {
+		return soundManager;
 	}
 }

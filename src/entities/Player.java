@@ -5,6 +5,7 @@ import game.states.Playing;
 import inputs.Input;
 import levels.Level;
 import levels.LevelLayer;
+import sounds.Sound;
 import sprites.Pose;
 import utils.Location;
 
@@ -77,6 +78,7 @@ public class Player extends Entity {
 			if (pressing[Input.ROLL] && !isRolling() && isEnergetic()) {
 				setCurrentPose(Pose.ROLL);
 				consumeEnergy();
+				playing.getSoundManager().playSFX(Sound.ROLL);
 			} else if(clicking[Input.ATTACK] && !isRolling() && isEnergetic()) {
 				setCurrentPose(Pose.ATTACK);
 				consumeEnergy();
@@ -89,11 +91,6 @@ public class Player extends Entity {
 	}
 
 	@Override
-	public void draw(Graphics g) {
-		super.draw(g);
-	}
-
-	@Override
 	public void reset() {
 		super.reset();
 		energy = MAX_ENERGY;
@@ -102,11 +99,36 @@ public class Player extends Entity {
 		diamonds = 0;
 	}
 
+	@Override
+	public boolean attack(Entity entity) {
+		if(super.attack(entity)) {
+			playing.getSoundManager().playSFX(Sound.ATTACK);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void damage(int damage) {
+		super.damage(damage);
+		if(currentPose.equals(Pose.DIE)) {
+			playing.getSoundManager().stopSong();
+			playing.getSoundManager().playSFX(Sound.GAME_OVER);
+		}
+	}
+
+	/**
+	 * Called whenever a player finds a diamond. Handles the win check
+	 * when the player collects all the diamonds within the level.
+	 */
 	public void foundDiamond() {
 		diamonds++;
 		Level level = playing.getLevelManager().getCurrentLevel();
-		if(diamonds >= level.getTotalDiamonds())
+		if(diamonds >= level.getTotalDiamonds()) {
 			level.complete();
+			playing.getSoundManager().stopSong();
+			playing.getSoundManager().playSFX(Sound.LVL_COMPLETE);
+		}
 	}
 
 	/**
@@ -131,7 +153,10 @@ public class Player extends Entity {
 		}
 
 		if(boostedDuration > 0) boostedDuration--;
-		else boosted = false;
+		else if(boosted) {
+			boosted = false;
+			playing.getSoundManager().playSFX(Sound.DEBUFF);
+		}
 
 		if(energy >= MAX_ENERGY)return;
 		if(!boosted && !getCurrentAnimation().isCycleCompleted())return;
@@ -214,6 +239,7 @@ public class Player extends Entity {
 
 		for(int wt : waterTiles) {
 			if(indexLT == wt || indexRT == wt) {
+				if(active)playing.getSoundManager().playSFX(Sound.WATER);
 				damage(100);
 				break;
 			}

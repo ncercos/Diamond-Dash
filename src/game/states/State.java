@@ -1,6 +1,9 @@
 package game.states;
 
 import game.Game;
+import game.GameState;
+import sounds.Sound;
+import sounds.SoundManager;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -28,6 +31,20 @@ public abstract class State {
 	public abstract void mouseReleased(MouseEvent e);
 	public abstract void mouseMoved(MouseEvent e);
 	public abstract void mouseDragged(MouseEvent e);
+
+	/**
+	 * Sets the state of the game.
+	 *
+	 * @param state The new game state.
+	 */
+	public void setState(GameState state) {
+		SoundManager sm = game.getSoundManager();
+		switch (state) {
+			case MENU ->    sm.playSong(Sound.MENU);
+			case PLAYING -> sm.setLevelSong(game.getPlaying().getLevelManager().getCurrentLevel());
+		}
+		GameState.current = state;
+	}
 
 	public Game getGame() {
 		return game;

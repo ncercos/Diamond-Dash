@@ -41,7 +41,7 @@ public class LevelManager {
 		try {
 			loadResources();
 			loadLevels();
-			currentLevel = 1;
+			currentLevel = 0;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

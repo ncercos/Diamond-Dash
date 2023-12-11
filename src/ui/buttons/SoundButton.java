@@ -18,13 +18,15 @@ public class SoundButton extends Button {
 	private BufferedImage[][] buttonImgs;
 	private boolean muted;
 	private int rowIndex;
+	private final boolean music;
 
 	// Dimensions
 	private static final int DEFAULT_SIZE = 42;
 	private static final int SIZE = (int) (DEFAULT_SIZE * Game.SCALE) / 2;
 
-	public SoundButton(int x, int y) {
+	public SoundButton(int x, int y, boolean music) {
 		super(x, y, SoundButton.SIZE, SoundButton.SIZE);
+		this.music = music;
 		loadButtonImgs();
 	}
 
@@ -66,5 +68,9 @@ public class SoundButton extends Button {
 
 	public void setMuted(boolean muted) {
 		this.muted = muted;
+	}
+
+	public boolean isMusic() {
+		return music;
 	}
 }

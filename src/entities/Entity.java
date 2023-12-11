@@ -4,6 +4,7 @@ import entities.enemies.Flower;
 import game.Game;
 import game.states.Playing;
 import levels.Level;
+import sounds.Sound;
 import sprites.Animation;
 import sprites.Pose;
 import utils.Hitbox;
@@ -214,8 +215,10 @@ public abstract class Entity extends Hitbox {
 		vy = (int) (-dy * Game.SCALE);
 		moving = true;
 		inAir = true;
-		if(!isRolling() && !isAttacking())
+		if(!isRolling() && !isAttacking()) {
 			setCurrentPose(Pose.JUMP);
+			playing.getSoundManager().playSFX(Sound.JUMP);
+		}
 	}
 
 	/**
@@ -374,6 +377,13 @@ public abstract class Entity extends Hitbox {
 	}
 
 	/**
+	 * @return True if the entity is in the jump animation.
+	 */
+	public boolean isJumping() {
+		return currentPose.equals(Pose.JUMP);
+	}
+
+	/**
 	 * @return True if the entity is in the roll animation.
 	 */
 	public boolean isRolling() {
@@ -481,7 +491,10 @@ public abstract class Entity extends Hitbox {
 		// Apply pose
 		if(getHealth() <= 0)
 			setCurrentPose(Pose.DIE);
-		else setCurrentPose(Pose.HURT);
+		else {
+			setCurrentPose(Pose.HURT);
+			playing.getSoundManager().playSFX(Sound.HURT);
+		}
 
 
 		// Apply knockback

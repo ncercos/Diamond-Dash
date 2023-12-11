@@ -2,6 +2,7 @@ package matter.traps;
 
 import game.states.Playing;
 import matter.Trap;
+import sounds.Sound;
 
 /**
  * Written by Nicholas Cercos
@@ -20,6 +21,7 @@ public class ThornFence extends Trap {
 
 	@Override
 	public boolean onCollide() {
+		playing.getSoundManager().playSFX(Sound.BRANCH);
 		damage(playing.getPlayer());
 		return true;
 	}

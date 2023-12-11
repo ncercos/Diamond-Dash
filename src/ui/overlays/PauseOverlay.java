@@ -30,8 +30,8 @@ public class PauseOverlay extends Overlay {
 		int xPos   = (int) (210 * Game.SCALE);
 		int musicY = (int) (65 * Game.SCALE);
 		int sfxY   = (int) (89 * Game.SCALE);
-		addButton(new SoundButton(xPos, musicY));
-		addButton(new SoundButton(xPos, sfxY));
+		addButton(new SoundButton(xPos, musicY, true));
+		addButton(new SoundButton(xPos, sfxY, false));
 	}
 
 	/**
@@ -54,7 +54,9 @@ public class PauseOverlay extends Overlay {
 	private void createVolumeButton() {
 		int xPos = (int) (139 * Game.SCALE);
 		int yPos = (int) (135 * Game.SCALE);
-		addButton(new VolumeButton(xPos, yPos));
+		VolumeButton vb = new VolumeButton(xPos, yPos);
+		playing.getSoundManager().setVolume(vb.getValue());
+		addButton(vb);
 	}
 
 	@Override
@@ -64,12 +66,15 @@ public class PauseOverlay extends Overlay {
 
 	@Override
 	public void onButtonClick(Button button) {
-		if(button instanceof SoundButton sb)
+		super.onButtonClick(button);
+		if(button instanceof SoundButton sb) {
 			sb.setMuted(!sb.isMuted());
-		else if(button instanceof UtilButton ub) {
+			if(sb.isMusic()) playing.getGame().getSoundManager().toggleSongMute();
+			else             playing.getGame().getSoundManager().toggleSFXMute();
+		} else if(button instanceof UtilButton ub) {
 			if(ub.getType().equals(UtilButton.Type.HOME)) {
 				playing.getLevelManager().getCurrentLevel().reset();
-				GameState.current = GameState.MENU;
+				playing.setState(GameState.MENU);
 			} else if(ub.getType().equals(UtilButton.Type.REPLAY)) {
 				playing.getLevelManager().getCurrentLevel().reset();
 				playing.togglePause();

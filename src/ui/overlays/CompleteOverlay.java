@@ -5,6 +5,7 @@ import game.Game;
 import game.GameState;
 import game.states.Playing;
 import levels.LevelManager;
+import sounds.Sound;
 import ui.Button;
 import ui.Overlay;
 import ui.buttons.UtilButton;
@@ -33,11 +34,13 @@ public class CompleteOverlay extends Overlay {
 
 	@Override
 	public void onButtonClick(Button button) {
+		super.onButtonClick(button);
 		if(!(button instanceof UtilButton ub))return;
 		LevelManager lm = playing.getLevelManager();
+		playing.getSoundManager().stopSFX(Sound.LVL_COMPLETE);
 		if(ub.getType().equals(UtilButton.Type.HOME)) {
 			lm.getCurrentLevel().reset();
-			GameState.current = GameState.MENU;
+			playing.setState(GameState.MENU);
 		} else if(ub.getType().equals(UtilButton.Type.START)) {
 			Player player = playing.getPlayer();
 			lm.nextLevel();

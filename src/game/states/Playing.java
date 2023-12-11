@@ -6,6 +6,8 @@ import game.Game;
 import inputs.Input;
 import levels.Level;
 import levels.LevelManager;
+import sounds.Sound;
+import sounds.SoundManager;
 import ui.Overlay;
 import ui.overlays.CompleteOverlay;
 import ui.overlays.DeadOverlay;
@@ -24,6 +26,7 @@ public class Playing extends State {
 
 	private final Player player;
 	private final LevelManager levelManager;
+	private final SoundManager soundManager;
 
 	private boolean paused;
 	private final Overlay[] overlays;
@@ -32,6 +35,7 @@ public class Playing extends State {
 		super(game);
 		paused = false;
 		levelManager = new LevelManager(this);
+		soundManager = game.getSoundManager();
 		player = new Player(this, levelManager.getCurrentLevel().getSpawn());
 		overlays = new Overlay[] {
 				new PauseOverlay(this),
@@ -48,6 +52,10 @@ public class Playing extends State {
 	public void togglePause() {
 		player.resetBinds();
 		paused = !paused;
+
+		if(paused) soundManager.stopSong();
+		else       soundManager.startSong();
+		soundManager.playSFX(paused ? Sound.PAUSE : Sound.UNPAUSE);
 	}
 
 	@Override
@@ -135,6 +143,10 @@ public class Playing extends State {
 
 	public LevelManager getLevelManager() {
 		return levelManager;
+	}
+
+	public SoundManager getSoundManager() {
+		return soundManager;
 	}
 
 	public boolean isPaused() {

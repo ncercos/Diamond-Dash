@@ -2,6 +2,7 @@ package ui;
 
 import game.Game;
 import game.states.Playing;
+import sounds.Sound;
 import ui.buttons.VolumeButton;
 
 import javax.imageio.ImageIO;
@@ -50,7 +51,9 @@ public abstract class Overlay {
 	 *
 	 * @param button The button being clicked.
 	 */
-	public void onButtonClick(Button button) {}
+	public void onButtonClick(Button button) {
+		playing.getSoundManager().playSFX(Sound.CLICK);
+	}
 
 	/**
 	 * Updates all button animations.
@@ -151,8 +154,13 @@ public abstract class Overlay {
 		if(!isActive())return;
 		for(Button button : buttons) {
 			if(!(button instanceof VolumeButton vb))continue;
-			if(vb.isMousePressed())
+			if(vb.isMousePressed()) {
+				float previous = vb.getValue();
 				vb.move(e.getX());
+				float current = vb.getValue();
+				if(previous != current)
+					playing.getGame().getSoundManager().setVolume(current);
+			}
 		}
 	}
 }

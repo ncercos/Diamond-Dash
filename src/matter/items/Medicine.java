@@ -3,6 +3,7 @@ package matter.items;
 import entities.Player;
 import game.states.Playing;
 import matter.Item;
+import sounds.Sound;
 
 /**
  * Written by Nicholas Cercos
@@ -20,6 +21,7 @@ public class Medicine extends Item {
 			return false;
 
 		player.setRegenerating(true);
+		playing.getSoundManager().playSFX(Sound.HEAL);
 		return true;
 	}
 }

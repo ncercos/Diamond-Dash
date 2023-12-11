@@ -2,6 +2,8 @@ package entities;
 
 import game.Game;
 import game.states.Playing;
+import sounds.Sound;
+import sprites.Pose;
 
 /**
  * Written by Nicholas Cercos
@@ -40,6 +42,13 @@ public abstract class Hostile extends Entity {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void damage(int damage) {
+		super.damage(damage);
+		if(currentPose.equals(Pose.DIE))
+			playing.getSoundManager().playSFX(Sound.DEATH);
 	}
 
 	/**

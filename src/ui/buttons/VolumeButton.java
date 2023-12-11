@@ -19,6 +19,7 @@ public class VolumeButton extends Button {
 	private BufferedImage slider;
 	private int bX;
 	private final int minX, maxX, sX;
+	private float value = 1f;
 
 	// Dimensions
 	private static final int DEFAULT_BUTTON_WIDTH = 28;
@@ -29,14 +30,13 @@ public class VolumeButton extends Button {
 
 	private static final int DEFAULT_SLIDER_WIDTH = 215;
 	private static final int SLIDER_WIDTH = (int) (DEFAULT_SLIDER_WIDTH * Game.SCALE) / 2;
-	private static final int SLIDER_CENTER = SLIDER_WIDTH / 2;
 
 	public VolumeButton(int sX, int y) {
-		super(sX + SLIDER_CENTER - BUTTON_CENTER, y, BUTTON_WIDTH, BUTTON_HEIGHT);
+		super((sX + SLIDER_WIDTH) - BUTTON_CENTER, y, BUTTON_WIDTH, BUTTON_HEIGHT);
 		this.sX = sX;
-		bX   = (int)x + BUTTON_CENTER;
 		minX =  sX + (BUTTON_WIDTH / 2);
 		maxX = (sX + SLIDER_WIDTH) - (BUTTON_WIDTH / 2);
+		bX   = maxX;
 		loadSprites();
 	}
 
@@ -65,6 +65,16 @@ public class VolumeButton extends Button {
 		if(x < minX) 			bX = minX;
 		else bX = Math.min(x, maxX);
 		this.x = bX - BUTTON_WIDTH / 2.0;
+		updateValue();
+	}
+
+	private void updateValue() {
+		double range = maxX - minX;
+		this.value = (float) ((bX - minX) / range);
+	}
+
+	public float getValue() {
+		return value;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import entities.Hostile;
 import entities.Player;
 import game.Game;
 import game.states.Playing;
+import sounds.Sound;
 import sprites.Pose;
 
 /**

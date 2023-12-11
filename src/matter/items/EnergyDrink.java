@@ -4,6 +4,7 @@ import entities.Player;
 import game.Game;
 import game.states.Playing;
 import matter.Item;
+import sounds.Sound;
 import utils.Location;
 
 /**
@@ -21,6 +22,7 @@ public class EnergyDrink extends Item {
 		Player player = playing.getPlayer();
 		if(player.isBoosted())return false;
 		player.setBoosted(true);
+		playing.getSoundManager().playSFX(Sound.SPEED);
 		return true;
 	}
 }

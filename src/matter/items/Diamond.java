@@ -4,6 +4,7 @@ import entities.Player;
 import game.states.Playing;
 import levels.Level;
 import matter.Item;
+import sounds.Sound;
 
 /**
  * Written by Nicholas Cercos
@@ -20,6 +21,7 @@ public class Diamond extends Item {
 	public boolean onCollide() {
 		Player player = playing.getPlayer();
 		player.foundDiamond();
+		playing.getSoundManager().playSFX(Sound.GEM);
 		return true;
 	}
 }

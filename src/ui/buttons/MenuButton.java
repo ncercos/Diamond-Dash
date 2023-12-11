@@ -49,18 +49,14 @@ public class MenuButton extends Button {
 		}
 	}
 
-	/**
-	 * The state that will be applied when the button is pressed.
-	 */
-	public void applyState() {
-		GameState.current = state;
-	}
-
 	@Override
 	public void draw(Graphics g) {
 		g.drawImage(sprites[currentIndex], (int) x, (int) y, WIDTH, HEIGHT, null);
 	}
 
+	/**
+	 * The state that will be applied when the button is pressed.
+	 */
 	public GameState getState() {
 		return state;
 	}
