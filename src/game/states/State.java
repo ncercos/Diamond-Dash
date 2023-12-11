@@ -39,10 +39,10 @@ public abstract class State {
 	 */
 	public void setState(GameState state) {
 		SoundManager sm = game.getSoundManager();
-		switch (state) {
-			case MENU ->    sm.playSong(Sound.MENU);
-			case PLAYING -> sm.setLevelSong(game.getPlaying().getLevelManager().getCurrentLevel());
-		}
+		if(state.equals(GameState.MENU))
+			sm.playSong(Sound.MENU);
+		else if(state.equals(GameState.PLAYING))
+			sm.playSong(Sound.LVL);
 		GameState.current = state;
 	}
 

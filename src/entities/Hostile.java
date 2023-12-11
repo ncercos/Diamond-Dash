@@ -97,7 +97,7 @@ public abstract class Hostile extends Entity {
 	 * @return True if player within range and accessible.
 	 */
 	public boolean isInSight(Player player) {
-		if(player.getTileY() == tileY) {
+		if(player.getTileY() == tileY && !playing.getLevelManager().getCurrentLevel().isComplete()) {
 			if(getDistanceFrom(player) <= sightDistance)
 				return isWalkable(player) && player.isActive() && !player.isDying();
 		}
@@ -105,7 +105,7 @@ public abstract class Hostile extends Entity {
 	}
 
 	public boolean isInAttackRange(Player player) {
-		return getDistanceFrom(player) <= attackDistance;
+		return !playing.getLevelManager().getCurrentLevel().isComplete() && getDistanceFrom(player) <= attackDistance;
 	}
 
 	/**

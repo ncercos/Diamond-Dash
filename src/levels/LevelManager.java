@@ -334,6 +334,7 @@ public class LevelManager {
 		if(currentLevel == (levels.length - 1))
 			currentLevel = 0;
 		else currentLevel++;
+		playing.getSoundManager().startSong();
 	}
 
 	public Level getCurrentLevel() {

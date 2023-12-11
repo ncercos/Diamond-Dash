@@ -118,7 +118,7 @@ public class Level {
 		Player player = playing.getPlayer();
 		player.reset();
 		if(spawn != null) player.teleport(spawn);
-		playing.getSoundManager().setLevelSong(this);
+		playing.getSoundManager().startSong();
 	}
 
 	/**

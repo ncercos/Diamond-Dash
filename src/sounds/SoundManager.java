@@ -166,12 +166,6 @@ public class SoundManager {
 		}
 	}
 
-	public void setLevelSong(Level level) {
-		if(level.getId() % 2 == 0)
-			playSong(Sound.LVL_1);
-		else playSong(Sound.LVL_2);
-	}
-
 	/**
 	 * Get an audio file clip to be played.
 	 *

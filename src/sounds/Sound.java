@@ -8,8 +8,7 @@ public enum Sound {
 
 	// Music
 	MENU("menu", true),
-	LVL_1("level_1", true),
-	LVL_2("level_2", true),
+	LVL("level", true),
 
 	// Effects
 	LVL_COMPLETE("level_complete"),

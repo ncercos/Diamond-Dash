@@ -19,6 +19,7 @@ public abstract class Trap extends Matter {
 	@Override
 	public void update() {
 		if(!overlaps(playing.getPlayer()))return;
+		if(!playing.getPlayer().isActive())return;
 		onCollide();
 	}
 
