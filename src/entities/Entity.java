@@ -64,7 +64,6 @@ public abstract class Entity extends Hitbox {
 		attackPoseIndex = 0;
 		loadAllAnimations(spriteWidth);
 		reset();
-		debug = true;
 	}
 
 	/**
