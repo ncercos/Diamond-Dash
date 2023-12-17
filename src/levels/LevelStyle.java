@@ -9,12 +9,6 @@ public enum LevelStyle {
 	LUSH,
 	DRY;
 
-	private final int[] nonSolidIndex;
-
-	LevelStyle(int... nonSolidIndex) {
-		this.nonSolidIndex = nonSolidIndex;
-	}
-
 	/**
 	 * Find style based on name.
 	 *
@@ -35,11 +29,7 @@ public enum LevelStyle {
 	 * @return True if not solid.
 	 */
 	public boolean isNonSolid(int index) {
-		if(index < 1)return true;
-		for (int solidIndex : nonSolidIndex)
-			if (index == solidIndex)
-				return true;
-		return false;
+		return index < 1;
 	}
 
 	public String getName() {

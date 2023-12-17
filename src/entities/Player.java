@@ -9,8 +9,6 @@ import sounds.Sound;
 import sprites.Pose;
 import utils.Location;
 
-import java.awt.*;
-
 /**
  * Written by Nicholas Cercos
  * Created on Oct 04 2023
@@ -79,7 +77,7 @@ public class Player extends Entity {
 				setCurrentPose(Pose.ROLL);
 				consumeEnergy();
 				playing.getSoundManager().playSFX(Sound.ROLL);
-			} else if(clicking[Input.ATTACK] && !isRolling() && isEnergetic()) {
+			} else if(clicking[Input.ATTACK] && !isAttacking() && isEnergetic()) {
 				setCurrentPose(Pose.ATTACK);
 				consumeEnergy();
 			}

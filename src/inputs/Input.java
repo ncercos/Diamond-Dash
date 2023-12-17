@@ -15,4 +15,5 @@ public class Input {
 	public static final int ROLL = KeyEvent.VK_R;
 	public static final int ATTACK = MouseEvent.BUTTON1;
 	public static final int ESC = KeyEvent.VK_ESCAPE;
+
 }

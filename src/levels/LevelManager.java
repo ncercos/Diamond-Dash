@@ -93,10 +93,11 @@ public class LevelManager {
 
 			MAX_TILES_PER_SHEET = (tileSheet.getWidth() / TILES_DEFAULT_SIZE) * (tileSheet.getHeight() / TILES_DEFAULT_SIZE);
 			foregroundTiles.put(style, importTiles(tileSheet));
-			decorTiles     = loadLayerTiles(LevelLayer.DECOR);
-			midGroundTiles = loadLayerTiles(LevelLayer.MIDGROUND);
-			floraTiles     = loadLayerTiles(LevelLayer.FLORA);
 		}
+
+		decorTiles     = loadLayerTiles(LevelLayer.DECOR);
+		midGroundTiles = loadLayerTiles(LevelLayer.MIDGROUND);
+		floraTiles     = loadLayerTiles(LevelLayer.FLORA);
 
 		// Animated tiles
 		addLayerAnimations(LevelLayer.WATER, 4,

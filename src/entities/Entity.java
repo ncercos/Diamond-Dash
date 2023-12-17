@@ -64,6 +64,7 @@ public abstract class Entity extends Hitbox {
 		attackPoseIndex = 0;
 		loadAllAnimations(spriteWidth);
 		reset();
+		debug = true;
 	}
 
 	/**
@@ -260,16 +261,6 @@ public abstract class Entity extends Hitbox {
 	 */
 	public double getKineticX() {
 		return x + vx;
-	}
-
-	/**
-	 * Modifies the y value by the y-velocity to determine
-	 * an entity's kinetic energy on the y-axis.
-	 *
-	 * @return The value of y + vy.
-	 */
-	public double getKineticY() {
-		return y + vy;
 	}
 
 	/**

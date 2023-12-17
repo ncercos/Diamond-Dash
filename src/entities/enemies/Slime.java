@@ -4,7 +4,6 @@ import entities.Hostile;
 import entities.Player;
 import game.Game;
 import game.states.Playing;
-import sounds.Sound;
 
 /**
  * Written by Nicholas Cercos
@@ -36,13 +35,8 @@ public class Slime extends Hostile {
 				if (facingLeft) goLT(speed);
 				else goRT(speed);
 
-				if (canMoveTo(getKineticX(), y)) {
-					if (getLevel().isSolid(getKineticX() + (facingLeft ? 0 : w), y + h + 1)) {
-						move();
-						return;
-					}
-				}
-				facingLeft = !facingLeft;
+				if (getLevel().isSolid(getKineticX() + (facingLeft ? 0 : w), y + h + 1))
+					move();
 			} else if(isAbleToAttack()) {
 				if(player.overlaps(this))
 					attack(player);
