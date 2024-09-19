@@ -19,4 +19,4 @@ Diamond Dash is a thrilling 2D Java platformer that challenges players to naviga
 
 [<img src="https://i.ytimg.com/vi/DTcJq4k3OIY/maxresdefault.jpg" width="50%">](https://youtu.be/DTcJq4k3OIY?si=L-m0hkogo-WQ7baq)
 
-_(Click the images to be redirected to YouTube)_
+<p align="center"><i><b>Click the images to be redirected to YouTube!</p>
