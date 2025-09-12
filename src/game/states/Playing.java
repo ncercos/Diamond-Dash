@@ -93,7 +93,8 @@ public class Playing extends State {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(player.isActive() && e.getKeyCode() == Input.ESC) togglePause();
+		if((levelManager.getCurrentLevel() != null && !levelManager.getCurrentLevel().isComplete()) &&
+				player.isActive() && e.getKeyCode() == Input.ESC) togglePause();
 		if(paused)return;
 		player.setPressing(e.getKeyCode(), true);
 	}
