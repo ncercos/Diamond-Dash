@@ -102,14 +102,17 @@ public class Game implements Runnable {
 	 */
 	@Override
 	public void run() {
+		double timePerFrame = 1000000000.0 / 60;
+		long lastFrame = System.nanoTime();
+		long now;
+
 		while(true) {
-
-			update();
-			gamePanel.repaint();
-
-			try {
-				Thread.sleep(15);
-			} catch (InterruptedException ignored) {}
+			now = System.nanoTime();
+			if(now - lastFrame >= timePerFrame) {
+				update();
+				gamePanel.repaint();
+				lastFrame = now;
+			}
 		}
 	}
 
