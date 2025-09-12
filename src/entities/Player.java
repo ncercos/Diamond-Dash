@@ -56,24 +56,20 @@ public class Player extends Entity {
 	public void update() {
 		super.update();
 
-		if(isRolling()) {
-			if(isFacingLeft()) goLT(2.5);
-			else 							 goRT(2.5);
-		}
-
 		replenishEnergy();
 		regenerateHealth();
 
-		double speed = 1.65;
+		double runSpeed = 1.65,
+				   rollSpeed = 0.5;
 		double xBoost = 0.75,
 				   yBoost = 0.3;
 
 		if(!isAttacking() && !isDying() && !getLevel().isComplete()) {
-			if (pressing[Input.LT]) goLT(speed + (boosted ? xBoost : 0));
-			if (pressing[Input.RT]) goRT(speed + (boosted ? xBoost : 0));
-			if (pressing[Input.UP]) goUP(speed * 2.15 + (boosted ? yBoost : 0));
+			if (pressing[Input.LT]) goLT(runSpeed + (boosted ? xBoost : 0) + (isRolling() ? rollSpeed : 0));
+			if (pressing[Input.RT]) goRT(runSpeed + (boosted ? xBoost : 0) + (isRolling() ? rollSpeed : 0));
+			if (pressing[Input.UP]) goUP(runSpeed * 2.15 + (boosted ? yBoost : 0) + (isRolling() ? rollSpeed : 0));
 
-			if (pressing[Input.ROLL] && !isRolling() && isEnergetic()) {
+			if (clicking[Input.ROLL] && !isRolling() && isEnergetic()) {
 				setCurrentPose(Pose.ROLL);
 				consumeEnergy();
 				playing.getSoundManager().playSFX(Sound.ROLL);
