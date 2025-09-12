@@ -5,16 +5,11 @@ import game.GameState;
 import levels.LevelStyle;
 import ui.Button;
 import ui.buttons.MenuButton;
-import ui.buttons.UtilButton;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -48,15 +43,12 @@ public class Menu extends State {
 	}
 
 	private void loadMenu() {
-		try {
-			logoImg = ImageIO.read(new File(Game.RESOURCE_URL + "ui/logo.png"));
-			w = (int) (logoImg.getWidth() / 3 * Game.SCALE);
-			h = (int) (logoImg.getHeight() / 3 * Game.SCALE);
-			x = (Game.GAME_WIDTH / 2) - (w / 2);
-			y = (int) (20 * Game.SCALE);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		logoImg = Game.loadSprite("ui/logo.png");
+		if(logoImg == null) return;
+		w = (int) ((float) logoImg.getWidth() / 3 * Game.SCALE);
+		h = (int) ((float) logoImg.getHeight() / 3 * Game.SCALE);
+		x = (Game.GAME_WIDTH / 2) - (w / 2);
+		y = (int) (20 * Game.SCALE);
 	}
 
 	/**

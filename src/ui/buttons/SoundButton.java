@@ -3,11 +3,8 @@ package ui.buttons;
 import game.Game;
 import ui.Button;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Written by Nicholas Cercos
@@ -34,16 +31,13 @@ public class SoundButton extends Button {
 	 * Loads all individual sound buttons with their animation.
 	 */
 	private void loadButtonImgs() {
-		try {
-			BufferedImage sheet = ImageIO.read(new File(Game.RESOURCE_URL + "ui/sound_buttons.png"));
-			buttonImgs = new BufferedImage[2][3];
-			for(int h = 0; h < buttonImgs.length; h++) {
-				for(int w = 0; w < buttonImgs[h].length; w++) {
-					buttonImgs[h][w] = sheet.getSubimage(w * DEFAULT_SIZE, h * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
-				}
+		BufferedImage sheet = Game.loadSprite("ui/sound_buttons.png");
+		if(sheet == null) return;
+		buttonImgs = new BufferedImage[2][3];
+		for(int h = 0; h < buttonImgs.length; h++) {
+			for(int w = 0; w < buttonImgs[h].length; w++) {
+				buttonImgs[h][w] = sheet.getSubimage(w * DEFAULT_SIZE, h * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

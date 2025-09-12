@@ -12,10 +12,13 @@ import utils.Location;
 
 import java.awt.*;
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Written by Nicholas Cercos
@@ -326,19 +329,48 @@ public abstract class Entity extends Hitbox {
 	 * the entity's given name. Sprites must be named after pose.
 	 */
 	private void loadAllAnimations(int spriteWidth) {
-		File file = new File(Game.RESOURCE_URL + name + "/");
-		if(!file.exists())return;
-		File[] sprites = file.listFiles();
-		if(sprites == null)return;
+    try {
+        String basePath = name + "/";
+        URL directoryUrl = getClass().getResource("/" + basePath);
+        if (directoryUrl == null) return;
 
-		for(File s : sprites) {
-			String poseName = s.getName().split("\\.")[0];
-			Pose pose = Pose.getPose(poseName);
-			if(pose == null)continue;
-			animations.put(pose, new Animation(name + "/" + pose.getName(), spriteWidth, pose.getDuration()).setRepeatable(pose.isRepeated()));
-			poses.add(pose);
-		}
-	}
+        Set<String> resourceFiles = new HashSet<>();
+        if (directoryUrl.getProtocol().equals("file")) {
+            File directory = new File(directoryUrl.toURI());
+            resourceFiles = Arrays.stream(Objects.requireNonNull(directory.listFiles()))
+                    .map(File::getName)
+                    .collect(Collectors.toSet());
+        } else {
+            URI uri = directoryUrl.toURI();
+            FileSystem fileSystem;
+            try {
+                fileSystem = FileSystems.getFileSystem(uri);
+            } catch (FileSystemNotFoundException e) {
+                fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+            }
+            
+            Path path = fileSystem.getPath(basePath);
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+                for (Path entry : stream) {
+                    resourceFiles.add(entry.getFileName().toString());
+                }
+            }
+        }
+
+        for (String fileName : resourceFiles) {
+            String poseName = fileName.split("\\.")[0];
+            Pose pose = Pose.getPose(poseName);
+            if (pose == null) continue;
+            
+            animations.put(pose, new Animation(name + "/" + pose.getName(), spriteWidth, pose.getDuration())
+                    .setRepeatable(pose.isRepeated()));
+            poses.add(pose);
+        }
+    } catch (IOException | URISyntaxException e) {
+        e.printStackTrace();
+    }
+}
+
 
 	/**
 	 * Sets the pose for the entity.

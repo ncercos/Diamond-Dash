@@ -8,7 +8,6 @@ import sounds.SoundManager;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -34,7 +33,6 @@ public class Game implements Runnable {
 	private final Playing playing;
 
 	// Utils
-	public static final String RESOURCE_URL = "./res/";
 	private SoundManager soundManager;
 
 	public Game() {
@@ -55,7 +53,7 @@ public class Game implements Runnable {
 	 */
 	public static BufferedImage loadSprite(String path) {
 		try {
-			return ImageIO.read(new File(Game.RESOURCE_URL + path));
+			return ImageIO.read(Game.class.getResourceAsStream("/" + path));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

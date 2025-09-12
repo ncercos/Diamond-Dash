@@ -5,12 +5,9 @@ import game.states.Playing;
 import sounds.Sound;
 import ui.buttons.VolumeButton;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,15 +89,12 @@ public abstract class Overlay {
 	 * @param fileName The name of the image file.
 	 */
 	private void load(String fileName) {
-		try {
-			img = ImageIO.read(new File(Game.RESOURCE_URL + "ui/" + fileName + ".png"));
-			w = (int) (img.getWidth()  * Game.SCALE) / 2;
-			h = (int) (img.getHeight() * Game.SCALE) / 2;
-			y = (int) (y * Game.SCALE);
-			if(centerDisplay) x = (Game.GAME_WIDTH / 2) - (w / 2);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		img = Game.loadSprite("ui/" + fileName + ".png");
+		if(img == null) return;
+		w = (int) (img.getWidth()  * Game.SCALE) / 2;
+		h = (int) (img.getHeight() * Game.SCALE) / 2;
+		y = (int) (y * Game.SCALE);
+		if(centerDisplay) x = (Game.GAME_WIDTH / 2) - (w / 2);
 	}
 
 	/**

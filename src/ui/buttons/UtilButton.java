@@ -3,11 +3,8 @@ package ui.buttons;
 import game.Game;
 import ui.Button;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Written by Nicholas Cercos
@@ -37,14 +34,11 @@ public class UtilButton extends Button {
 	 * Loads a specific utility button based on the given type.
 	 */
 	private void loadButtons() {
-		try {
-			BufferedImage sheet = ImageIO.read(new File(Game.RESOURCE_URL + "ui/util_buttons.png"));
-			buttons = new BufferedImage[3];
-			for(int i = 0; i < buttons.length; i++) {
-				buttons[i] = sheet.getSubimage(i * DEFAULT_SIZE, type.getRowIndex() * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		BufferedImage sheet = Game.loadSprite("ui/util_buttons.png");
+		if(sheet == null) return;
+		buttons = new BufferedImage[3];
+		for(int i = 0; i < buttons.length; i++) {
+			buttons[i] = sheet.getSubimage(i * DEFAULT_SIZE, type.getRowIndex() * DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
 		}
 	}
 

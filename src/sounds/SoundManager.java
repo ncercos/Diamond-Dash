@@ -1,11 +1,9 @@
 package sounds;
 
-import game.Game;
-import levels.Level;
-
 import javax.sound.sampled.*;
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -173,18 +171,17 @@ public class SoundManager {
 	 * @return A clip that contains the audio.
 	 */
 	private Clip getClip(String name) {
-		File file = new File(Game.RESOURCE_URL + "sounds/" + name + ".wav");
-		AudioInputStream audio;
+		try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/sounds/" + name + ".wav"));
+				 BufferedInputStream bis = new BufferedInputStream(is)) {
 
-		try {
-			audio = AudioSystem.getAudioInputStream(file);
-			Clip c = AudioSystem.getClip();
-			c.open(audio);
-			return c;
+			AudioInputStream ais = AudioSystem.getAudioInputStream(bis);
+			Clip clip = AudioSystem.getClip();
+			clip.open(ais);
+			return clip;
+
 		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 

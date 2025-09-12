@@ -3,11 +3,8 @@ package ui.buttons;
 import game.Game;
 import ui.Button;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Written by Nicholas Cercos
@@ -45,15 +42,12 @@ public class VolumeButton extends Button {
 	 * and the slider separately.
 	 */
 	private void loadSprites() {
-		try {
-			BufferedImage sheet = ImageIO.read(new File(Game.RESOURCE_URL + "ui/volume_buttons.png"));
-			buttons = new BufferedImage[3];
-			for(int i = 0; i < buttons.length; i++)
-				buttons[i] = sheet.getSubimage(i * DEFAULT_BUTTON_WIDTH, 0, DEFAULT_BUTTON_WIDTH, DEFAULT_BUTTON_HEIGHT);
-			slider = sheet.getSubimage(buttons.length * DEFAULT_BUTTON_WIDTH, 0, DEFAULT_SLIDER_WIDTH, DEFAULT_BUTTON_HEIGHT);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		BufferedImage sheet = Game.loadSprite("ui/volume_buttons.png");
+		if(sheet == null) return;
+		buttons = new BufferedImage[3];
+		for(int i = 0; i < buttons.length; i++)
+			buttons[i] = sheet.getSubimage(i * DEFAULT_BUTTON_WIDTH, 0, DEFAULT_BUTTON_WIDTH, DEFAULT_BUTTON_HEIGHT);
+		slider = sheet.getSubimage(buttons.length * DEFAULT_BUTTON_WIDTH, 0, DEFAULT_SLIDER_WIDTH, DEFAULT_BUTTON_HEIGHT);
 	}
 
 	/**

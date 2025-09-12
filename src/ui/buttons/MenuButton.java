@@ -4,11 +4,8 @@ import game.Game;
 import game.GameState;
 import ui.Button;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Written by Nicholas Cercos
@@ -39,14 +36,11 @@ public class MenuButton extends Button {
 	 */
 	private void loadSprites() {
 		sprites = new BufferedImage[3];
-		try {
-			BufferedImage sheet = ImageIO.read(new File(Game.RESOURCE_URL + "ui/menu_buttons.png"));
-			for (int i = 0; i < sprites.length; i++)
-				sprites[i] = sheet.getSubimage(i * DEFAULT_WIDTH, rowIndex * DEFAULT_HEIGHT,
-						DEFAULT_WIDTH, DEFAULT_HEIGHT);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		BufferedImage sheet = Game.loadSprite("ui/menu_buttons.png");
+		if(sheet == null) return;
+		for (int i = 0; i < sprites.length; i++)
+			sprites[i] = sheet.getSubimage(i * DEFAULT_WIDTH, rowIndex * DEFAULT_HEIGHT,
+					DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 
 	@Override

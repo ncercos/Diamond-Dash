@@ -7,12 +7,15 @@ import sprites.Animation;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.*;
 import java.util.List;
 import java.util.*;
 
-import static game.Game.RESOURCE_URL;
 import static game.Game.TILES_DEFAULT_SIZE;
 
 /**
@@ -29,7 +32,7 @@ public class LevelManager {
 	public int MAX_TILES_PER_SHEET;
 	private final Map<LevelLayer, TileAnimations> animations;
 
-	private Level[] levels;
+	private List<Level> levels;
 	private int currentLevel;
 
 	public LevelManager(Playing playing) {
@@ -38,13 +41,9 @@ public class LevelManager {
 		this.backgrounds = new HashMap<>();
 		this.animations = new HashMap<>();
 
-		try {
-			loadResources();
-			loadLevels();
-			currentLevel = 0;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		loadResources();
+		loadLevels();
+		currentLevel = 0;
 	}
 
 	/**
@@ -58,28 +57,54 @@ public class LevelManager {
 
 	/**
 	 * Loads all levels for the game.
-	 *
-	 * @throws IOException If the directory or level file cannot be accessed/found.
 	 */
-	public void loadLevels() throws IOException {
-		levels = new Level[10];
-		File[] files = new File(RESOURCE_URL + "levels/").listFiles();
-		if(files == null)return;
-		for(int i = 0; i < files.length; i++) {
-			File file = files[i];
+	public void loadLevels(){
+		levels = new ArrayList<>();
+		URL url = getClass().getResource("/levels/");
+		if (url == null) return;
+
+		if (url.getProtocol().equals("file")) {
+			File levelsDir = new File(url.getPath());
+			File[] files = levelsDir.listFiles();
+			if (files != null) loadLevelFiles(files);
+		} else {
+			try {
+				URI uri = url.toURI();
+				FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+				Path levelsPath = fileSystem.getPath("/levels");
+				try (DirectoryStream<Path> stream = Files.newDirectoryStream(levelsPath, "*.properties")) {
+					for (Path path : stream) {
+						String fileName = path.getFileName().toString();
+						int id = Integer.parseInt(fileName.split("\\.")[0]);
+						levels.add(loadLevel(id));
+					}
+				}
+				Collections.reverse(levels);
+			} catch (URISyntaxException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Loads level files from the specified array of files and adds the levels to the levels list.
+	 * Only files with a ".properties" extension are processed.
+	 *
+	 * @param files An array of files representing potential level files.
+	 */
+	private void loadLevelFiles(File[] files) {
+		for (File file : files) {
 			String[] fn = file.getName().split("\\.");
-			if(!fn[1].equals("properties"))break;
-			levels[i] = loadLevel(Integer.parseInt(fn[0]));
+			if (!fn[1].equals("properties")) continue;
+			levels.add(loadLevel(Integer.parseInt(fn[0])));
 		}
 	}
 
 	/**
 	 * Load tiles & backgrounds for all level styles and
 	 * keeps them in memory to easily build worlds.
-	 *
-	 * @throws IOException If the image could not be accessed/found.
 	 */
-	public void loadResources() throws IOException {
+	public void loadResources() {
 
 		for(LevelStyle style : LevelStyle.values()) {
 			// Load background
@@ -265,17 +290,16 @@ public class LevelManager {
 	 */
 	private Properties getLevelPropertyFile(String path) {
 		path = path.concat(".properties");
-		File levelFile = new File(path);
 		Properties properties = new Properties();
-		if(levelFile.exists()) {
-			try {
-				properties.load(new FileInputStream(path));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try (InputStream input = getClass().getResourceAsStream("/" + path)) {
+			if (input != null)
+				properties.load(input);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return properties;
 	}
+
 
 	/**
 	 * Loads a level and all of its data.
@@ -284,7 +308,7 @@ public class LevelManager {
 	 * @return A level object filled with the provided data.
 	 */
 	private Level loadLevel(int id) {
-		Properties levelProperties = getLevelPropertyFile(RESOURCE_URL + "levels/" + id);
+		Properties levelProperties = getLevelPropertyFile("levels/" + id);
 		LevelStyle style = LevelStyle.getStyle(levelProperties.getProperty("style"));
 		return new Level(this, id, style, loadLevelData(id));
 	}
@@ -297,7 +321,7 @@ public class LevelManager {
 	 * @return A map consisting of a key layer with tile index values.
 	 */
 	public Map<LevelLayer, int[][]> loadLevelData(int id) {
-		Properties levelProperties = getLevelPropertyFile(RESOURCE_URL + "levels/" + id);
+		Properties levelProperties = getLevelPropertyFile("levels/" + id);
 		Map<LevelLayer, int[][]> data = new HashMap<>();
 		for(LevelLayer layer : LevelLayer.values())
 			data.put(layer, parseLevelData(levelProperties, layer));
@@ -332,14 +356,39 @@ public class LevelManager {
 	 * Updates current level to the next.
 	 */
 	public void nextLevel() {
-		if(currentLevel == (levels.length - 1))
-			currentLevel = 0;
+		if(currentLevel == (levels.size() - 1))
+			backToFirst();
 		else currentLevel++;
 		playing.getSoundManager().startSong();
 	}
 
+	/**
+	 * Resets the current level to the first level of the game.
+	 */
+	public void backToFirst() {
+		currentLevel = 0;
+	}
+
+	/**
+	 * @return True if the current level is the last level, false otherwise.
+	 */
+	public boolean isLastLevel() {
+		return currentLevel == (levels.size() - 1);
+	}
+
+	/**
+	 * @return True if the current level is valid, false otherwise.
+	 */
+	public boolean isCurrentLevelValid() {
+		return levels != null && !levels.isEmpty() && currentLevel >= 0 && currentLevel < levels.size();
+	}
+
 	public Level getCurrentLevel() {
-		return levels[currentLevel];
+		return levels.get(currentLevel);
+	}
+
+	public List<Level> getLevels() {
+		return levels;
 	}
 
 	public Playing getPlaying() {

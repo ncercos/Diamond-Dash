@@ -3,11 +3,8 @@ package sprites;
 import game.Game;
 import game.states.Playing;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Written by Nicholas Cercos
@@ -15,7 +12,7 @@ import java.io.IOException;
  **/
 public class Animation {
 
-	private Image[] images;
+	private final Image[] images;
 	private int size;
 	private final int duration;
 	private int current, delay;
@@ -26,12 +23,7 @@ public class Animation {
 		this.size = size;
 		this.duration = duration;
 		delay = duration;
-
-		try {
-			images = loadImages(name);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		images = loadImages(name);
 	}
 
 	public Animation(Image[] images, int duration, boolean frozen) {
@@ -54,10 +46,10 @@ public class Animation {
 	 * Loads all the frames for an animation.
 	 *
 	 * @param name The filePath for the animation sprite.
-	 * @throws IOException If the file cannot be accessed/found.
 	 */
-	public Image[] loadImages(String name) throws IOException {
-		BufferedImage sprite = ImageIO.read(new File(Game.RESOURCE_URL + name + ".png"));
+	public Image[] loadImages(String name) {
+		BufferedImage sprite = Game.loadSprite(name + ".png");
+		if(sprite == null) return null;
 		final int WIDTH = sprite.getWidth() / size;
 		Image[] images = new Image[WIDTH];
 
