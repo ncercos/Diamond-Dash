@@ -13,6 +13,18 @@
   </a>
 </p>
 
+## 🎮 How to Play  
+  
+**Objective**: Collect all diamonds in each level to progress. Navigate through two unique environments while avoiding or battling hostile enemies that guard these precious gems.  
+  
+- `A` - Move Left  
+- `D` - Move Right  
+- `SPACE` - Jump  
+- `Left Mouse Button` - Attack  
+- `Right Mouse Button` - Roll  
+- `ESC` - Pause Game
+&nbsp;
+
 ## ⚙️ Technologies Used
 
 -   **Java** - Core programming language
